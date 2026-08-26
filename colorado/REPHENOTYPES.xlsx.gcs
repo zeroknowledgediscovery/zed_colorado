@@ -1,0 +1,6 @@
+version: 1
+type: file
+uri: gs://git-zeroknowledgediscovery-zed-colorado/colorado/REPHENOTYPES.xlsx
+sha256: 2f162879a2901e8bb709e9993c80a1170e995698377ed12951031cf5f6d69cea
+size_bytes: 33989
+source_repo_relpath: colorado/REPHENOTYPES.xlsx
