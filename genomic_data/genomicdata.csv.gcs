@@ -1,0 +1,6 @@
+version: 1
+type: file
+uri: gs://git-zeroknowledgediscovery-zed-colorado/genomic_data/genomicdata.csv
+sha256: d2d2ac8bd78d785552f32b3fc8e9e5ee2851ab5ec26e3de52277366864fdf939
+size_bytes: 66716671276
+source_repo_relpath: genomic_data/genomicdata.csv

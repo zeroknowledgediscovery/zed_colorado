@@ -1,0 +1,42 @@
+# Genomic data
+
+## no. samples
+19651
+
+## no. of columns
+1698906  genomicdataheader.csv (including the FID, which is the index column)
+
+## primary target column
+PFdx
+
+## Top known drivers
+
+```
+rs35705950,MUC5B,rs35705950.1_G,1019666,strongest/common IPF risk locus
+rs2736100,TERT,rs2736100_A,497818,telomerase locus
+rs2609255,FAM13A,rs2609255_T,443280,GWAS IPF locus
+rs2076295,DSP,rs2076295_T,596952,desmoplakin locus
+rs11191865,OBFC1/STN1,rs11191865_G,998101,telomere-related locus
+rs1278769,ATP11A,rs1278769_G,1235606,GWAS IPF locus
+rs12610495,DPP9,rs12610495_A,1506647,GWAS IPF locus
+rs4727443,7q22.1/ZKSCAN1 region,rs4727443_C,751993,GWAS IPF locus
+rs2034650,IVD,rs2034650_A,1300337,confirmed IPF locus
+rs1981997,KANSL1/MAPT region,rs1981997_G,1431105,confirmed IPF locus
+rs5743890,TOLLIP,rs5743890_T,1019856,candidate/replicated in some IPF studies
+rs5743894,TOLLIP,rs5743894_T,1019853,candidate/replicated in some IPF studies
+rs17690703,SPPL2C,rs17690703_C,1431024,reported IPF locus
+rs7934606,MUC2,rs7934606_C,1019543,11p15 signal; may not be independent of MUC5B
+rs4077759,MUC2/TOLLIP region,rs4077759_T,1019588,11p15 signal; may not be independent of MUC5B
+rs7942850,11p15 region,rs7942850_T,1019450,reported 11p15/IPF-region SNP
+rs7122936,11p15 region,rs7122936_A,1019889,reported 11p15/IPF-region SNP
+rs3778337,DSP-region/listed,rs3778337_G,596960,reported in IPF SNP panels/lists
+rs2109069,DPP9-region/listed,rs2109069_G,1506652,reported IPF SNP
+rs10484326,TERT-region/listed,rs10484326_T,596944,reported IPF SNP
+rs10748858,TERT-region/listed,rs10748858_T,998070,reported IPF SNP
+rs2067832,TERT-region/listed,rs2067832_G,998075,reported IPF SNP
+rs3829223,OBFC1/STN1-region,rs3829223_C,1019827,reported IPF SNP
+rs2857476,OBFC1/STN1-region,rs2857476_C,1019805,reported IPF SNP
+rs10518693,ATP11A-region,rs10518693_C,1300312,reported IPF SNP
+rs415430,SPPL2C-region,rs415430_T,1431377,reported IPF SNP
+
+```
