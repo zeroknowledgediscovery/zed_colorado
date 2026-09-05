@@ -1,0 +1,311 @@
+\documentclass[journal]{IEEEtran}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{pgfplots}
+\usepgfplotslibrary{statistics,groupplots}
+\pgfplotsset{compat=1.18}
+\usepackage{cite}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+\usepackage{docmute}
+\usepackage{etoolbox}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+
+\newcommand{\Pone}{\mathbb{P}_1}
+\newcommand{\Pzero}{\mathbb{P}_0}
+\newcommand{\Eone}{\mathbb{E}_1}
+\newcommand{\Ezero}{\mathbb{E}_0}
+\newcommand{\LR}{\Lambda}
+\newcommand{\ind}{\mathbf{1}}
+
+\title{Boundary-Localized Genomic Utility and Clinical-Tail Dominance:\\
+A Likelihood-Ratio Theory for ZeBRA and Fibrotic Interstitial Lung Disease}
+\author{Ishanu Chattopadhyay\\
+Division of Biomedical Informatics, University of Kentucky College of Medicine}
+
+\newcommand{\empiricalcallout}{%
+\par\noindent
+The archived three-target AUC comparison and the repeated-split boundary analyses are reported explicitly in Section~\ref{sec:empirical} and Supplementary Tables~\ref{tab:supp-targets}--\ref{tab:supp-boundary}.
+\par
+}
+
+\newcommand{\empiricalsection}{%
+\origsection{Empirical correspondence in the v1 ILD analysis}
+\label{sec:empirical}
+
+The archived \texttt{ZEBRA\_GENDRIVERS\_CLASSIFIER/v1} analysis used three adjudicated clinical targets and a targeted genomic panel assembled before model fitting. The three targets were (i) \texttt{FILD or FILA ADJUDICATED}, (ii) \texttt{NONFIBROTIC ILD ADJUDICATED}, and (iii) \texttt{NON FIBROTIC ILA ADJUDICATED}. Under the legacy notebook-03/032 construction, each target was converted to a binary endpoint and the analysis was restricted to observations with an available ZeBRA score. The resulting target-specific cohort sizes and case counts are documented in Supplementary Table~\ref{tab:supp-targets}.
+
+The genomic matrix was assembled by matching an expanded ILD/IPF locus list to available genotype columns and taking the union with the pre-existing biological-driver panel. The archived v1 matrix contains 171 distinct variant loci, represented during discriminative modeling by three categorical one-hot states per locus. Of these, 148 variant columns were matched from the expanded \texttt{MORE\_LOCI.csv} screen before union and de-duplication with the original driver set. The complete 171-locus panel is given in Supplementary Table~\ref{tab:snp-panel}; rs35705950 (\textit{MUC5B}) is included explicitly.
+
+Table~\ref{tab:auc-three-targets} gives the archived fixed-split AUC comparison. Across the three phenotype contexts, ZeBRA remained the stronger single channel, while adding the genomic panel did not yield a consistent global AUC improvement. The genomic-only AUCs were materially lower than the corresponding ZeBRA AUCs for all three targets.
+
+\begin{table}[!t]
+\caption{Archived fixed-split AUC comparison across the three v1 clinical targets.}
+\label{tab:auc-three-targets}
+\centering
+\footnotesize
+\begin{tabular}{lccc}
+\toprule
+Target & ZeBRA & Genomic & Combined\\
+\midrule
+FILD/FILA & 0.804 & 0.643 & 0.800\\
+Nonfibrotic ILD & 0.838 & 0.629 & 0.855\\
+Nonfibrotic ILA & 0.809 & 0.573 & 0.806\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The boundary-localization prediction is more directly tested by repeated outer splits for the FILD/FILA target. Figure~\ref{fig:auc-boundary} shows that a fixed regional \textit{MUC5B} rule does not improve global AUC: over 100 splits, mean AUC was 0.8160 for raw ZeBRA and 0.8135 for the regional hybrid. Nevertheless, at the nominal 5\% FPR operating point the same rule increased mean held-out sensitivity from 0.4576 to 0.4969 while the realized FPR changed only from 0.0586 to 0.0591. Mean LR$+$ increased from 7.89 to 8.46 and mean LR$-$ decreased from 0.576 to 0.535 (Table~\ref{tab:boundary5}). Thus the observed effect is concentrated at an operating boundary despite negligible---indeed slightly unfavorable---global AUC change.
+
+\begin{figure}[!t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+width=\columnwidth,
+height=0.68\columnwidth,
+ylabel={Held-out ROC AUC},
+ymin=0.77,ymax=0.845,
+xtick={1,2},
+xticklabels={ZeBRA,{ZeBRA + regional \textit{MUC5B}}},
+x tick label style={font=\scriptsize,align=center},
+y tick label style={font=\scriptsize},
+title={FILD/FILA: 100 repeated outer splits},
+title style={font=\footnotesize},
+boxplot/draw direction=y
+]
+\addplot+[boxplot prepared={lower whisker=0.78649,lower quartile=0.80707,median=0.81787,upper quartile=0.82407,upper whisker=0.83793}] coordinates {};
+\addplot+[boxplot prepared={lower whisker=0.77676,lower quartile=0.80478,median=0.81447,upper quartile=0.82269,upper whisker=0.83862}] coordinates {};
+\end{axis}
+\end{tikzpicture}
+\caption{Held-out AUC distributions over 100 repeated outer splits for the FILD/FILA target. The regional \textit{MUC5B} rule does not improve global AUC, consistent with genomic information being useful only in a restricted decision region rather than throughout the score space.}
+\label{fig:auc-boundary}
+\end{figure}
+
+\begin{table}[!t]
+\caption{Repeated-split performance near the nominal 5\% FPR operating point ($n=100$ splits).}
+\label{tab:boundary5}
+\centering
+\footnotesize
+\begin{tabular}{lrrr}
+\toprule
+Metric & ZeBRA & Hybrid & Difference\\
+\midrule
+AUC & 0.8160 & 0.8135 & -0.0025\\
+Sensitivity & 0.4576 & 0.4969 & +0.0393\\
+Realized FPR & 0.0586 & 0.0591 & +0.0005\\
+LR$+$ & 7.89 & 8.46 & +0.57\\
+LR$-$ & 0.576 & 0.535 & -0.042\\
+PPV & 0.1367 & 0.1453 & +0.0086\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:boundary-performance} shows the corresponding matched-FPR behavior across the evaluated operating points. The largest sensitivity gain appears around the intermediate 5\% FPR boundary rather than in the most extreme clinical tail. This is the qualitative pattern predicted by Theorem~\ref{thm:main}: bounded genomic evidence can be useful where the clinical likelihood ratio is sufficiently close to the chosen threshold, while it has progressively less ability to alter decisions when clinical evidence is far from that threshold.
+
+\begin{figure}[!t]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[
+group style={group size=2 by 1,horizontal sep=0.75cm},
+width=0.53\columnwidth,
+height=0.47\columnwidth,
+xmode=log,xmin=0.004,xmax=0.12,
+xtick={0.005,0.01,0.05,0.1},
+xticklabels={.005,.01,.05,.10},
+tick label style={font=\tiny},
+label style={font=\scriptsize},
+title style={font=\scriptsize},
+legend style={font=\tiny,draw=none,at={(0.5,-0.38)},anchor=north,legend columns=1}
+]
+\nextgroupplot[title={Sensitivity},xlabel={Nominal FPR},ylabel={Mean sensitivity},ymin=0.30,ymax=0.65]
+\addplot+[mark=*] coordinates {(0.005,0.3462) (0.010,0.3590) (0.020,0.3684) (0.050,0.4576) (0.100,0.6056)};
+\addlegendentry{ZeBRA}
+\addplot+[mark=square*] coordinates {(0.005,0.3504) (0.010,0.3634) (0.020,0.3723) (0.050,0.4969) (0.100,0.6197)};
+\addlegendentry{Hybrid}
+\nextgroupplot[title={LR$+$},xlabel={Nominal FPR},ylabel={Mean LR$+$},ymin=0,ymax=31]
+\addplot+[mark=*] coordinates {(0.005,28.36) (0.010,15.63) (0.020,14.69) (0.050,7.89) (0.100,4.39)};
+\addplot+[mark=square*] coordinates {(0.005,28.32) (0.010,15.55) (0.020,14.62) (0.050,8.46) (0.100,4.47)};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Repeated-split boundary performance of raw ZeBRA and the fixed regional \textit{MUC5B} hybrid. Left: mean held-out sensitivity at training-derived operating points. Right: mean LR$+$. The regional rule was selected exploratorily and requires independent or prespecified confirmation.}
+\label{fig:boundary-performance}
+\end{figure}
+}
+
+\newcommand{\supplementarymaterial}{%
+\appendices
+
+\origsection{v1 phenotype definitions and cohort construction}
+\label{app:targets}
+The three phenotype fields were read from \texttt{REPHENOTYPES FOR IC.csv}. In the legacy v1 notebook construction, \texttt{Y/y} was mapped to 1, \texttt{N/n} to 0, values were converted to numeric, missing values were assigned 0 for the notebook-03/032 target geometry, and observations without an available \texttt{predicted\_risk} were excluded. Table~\ref{tab:supp-targets} records the exact stored target labels and the cohort counts reproduced by the v1 sanity split.
+
+\begin{table*}[!t]
+\caption{Clinical prediction targets used in the archived v1 analysis.}
+\label{tab:supp-targets}
+\centering
+\small
+\begin{tabular}{p{0.29\textwidth}p{0.41\textwidth}rr}
+\toprule
+Stored target label & Operational interpretation in the v1 analysis & $N$ & Positives\\
+\midrule
+\texttt{FILD or FILA ADJUDICATED} & Adjudicated fibrotic ILD or fibrotic interstitial lung abnormality endpoint. & 12,825 & 254\\
+\texttt{NONFIBROTIC ILD ADJUDICATED} & Adjudicated nonfibrotic interstitial lung disease endpoint. & 12,825 & 27\\
+\texttt{NON FIBROTIC ILA ADJUDICATED} & Adjudicated nonfibrotic interstitial lung abnormality endpoint. & 12,825 & 74\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\origsection{Genomic panel construction}
+\label{app:genomics}
+The v1 data-construction notebook combined the pre-existing biological-driver columns with loci matched from \texttt{MORE\_LOCI.csv}. The latter file contained 3,113 candidate records; 148 genotype columns were matched to the available genomic header. After union with the original biological-driver columns and de-duplication, the archived model matrix contained 171 distinct variant loci across 19,651 rows before phenotype/ZeBRA cohort restriction. Each locus was cast to the categorical states 0, 1, and 2 and represented by one-hot indicator columns for the discriminative analyses. Supplementary Table~\ref{tab:snp-panel} lists the unique variant/allele prefixes reconstructed from the archived v1 combined-model feature matrix.
+
+\begin{table*}[!t]
+\caption{Complete 171-locus genomic panel used by the archived v1 combined model. The suffix after the rs identifier is the allele label retained in the v1 feature name; each locus was represented by categorical states 0/1/2.}
+\label{tab:snp-panel}
+\centering
+\tiny
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{0.92}
+\begin{tabular}{r l r l r l}
+\toprule
+No. & Locus & No. & Locus & No. & Locus\\
+\midrule
+1 & \texttt{rs1015097\_A} & 58 & \texttt{rs17616659\_G} & 115 & \texttt{rs57625989\_A} \\
+2 & \texttt{rs10422762\_A} & 59 & \texttt{rs17690703\_C} & 116 & \texttt{rs601878\_C} \\
+3 & \texttt{rs10484326\_T} & 60 & \texttt{rs1851741\_G} & 117 & \texttt{rs616768\_G} \\
+4 & \texttt{rs10518693\_C} & 61 & \texttt{rs1923802\_T} & 118 & \texttt{rs61829240\_G} \\
+5 & \texttt{rs10748858\_T} & 62 & \texttt{rs1981997\_G} & 119 & \texttt{rs61867586\_C} \\
+6 & \texttt{rs10776482\_A} & 63 & \texttt{rs2034650\_A} & 120 & \texttt{rs62112917\_C} \\
+7 & \texttt{rs10783497\_A} & 64 & \texttt{rs2067832\_G} & 121 & \texttt{rs62354543\_A} \\
+8 & \texttt{rs10842996\_T} & 65 & \texttt{rs2071627\_C} & 122 & \texttt{rs62505367\_T} \\
+9 & \texttt{rs10869195\_A} & 66 & \texttt{rs2076295\_T} & 123 & \texttt{rs62530710\_G} \\
+10 & \texttt{rs10881263\_G} & 67 & \texttt{rs2109069\_G} & 124 & \texttt{rs6491201\_C} \\
+11 & \texttt{rs10886437\_C} & 68 & \texttt{rs2228972\_G} & 125 & \texttt{rs6499642\_C} \\
+12 & \texttt{rs10976897\_G} & 69 & \texttt{rs2353082\_C} & 126 & \texttt{rs6532150\_G} \\
+13 & \texttt{rs11083093\_G} & 70 & \texttt{rs2361278\_T} & 127 & \texttt{rs664034\_T} \\
+14 & \texttt{rs11102362\_G} & 71 & \texttt{rs2375892\_T} & 128 & \texttt{rs66884960\_C} \\
+15 & \texttt{rs11154034\_T} & 72 & \texttt{rs2577254\_T} & 129 & \texttt{rs6736148\_C} \\
+16 & \texttt{rs11191865\_G} & 73 & \texttt{rs2609255\_T} & 130 & \texttt{rs68170294\_G} \\
+17 & \texttt{rs1123573\_A} & 74 & \texttt{rs2609260\_T} & 131 & \texttt{rs6899532\_G} \\
+18 & \texttt{rs11264306\_A} & 75 & \texttt{rs2726049\_A} & 132 & \texttt{rs6970647\_T} \\
+19 & \texttt{rs114064385\_G} & 76 & \texttt{rs2736100\_A} & 133 & \texttt{rs699240\_T} \\
+20 & \texttt{rs116575227\_A} & 77 & \texttt{rs2857476\_C} & 134 & \texttt{rs7041597\_T} \\
+21 & \texttt{rs11680126\_C} & 78 & \texttt{rs28703652\_G} & 135 & \texttt{rs708686\_C} \\
+22 & \texttt{rs117427783\_T} & 79 & \texttt{rs302837\_A} & 136 & \texttt{rs7122936\_A} \\
+23 & \texttt{rs117750427\_A} & 80 & \texttt{rs3130157\_G} & 137 & \texttt{rs71389435\_C} \\
+24 & \texttt{rs1189320\_G} & 81 & \texttt{rs3131520\_C} & 138 & \texttt{rs72722911\_G} \\
+25 & \texttt{rs12275748\_C} & 82 & \texttt{rs325093\_T} & 139 & \texttt{rs72755986\_C} \\
+26 & \texttt{rs12422371\_C} & 83 & \texttt{rs34262641\_A} & 140 & \texttt{rs72762052\_C} \\
+27 & \texttt{rs12446021\_G} & 84 & \texttt{rs34425120\_G} & 141 & \texttt{rs73008477\_C} \\
+28 & \texttt{rs12610495\_A} & 85 & \texttt{rs34547036\_C} & 142 & \texttt{rs73409602\_C} \\
+29 & \texttt{rs12626788\_C} & 86 & \texttt{rs34625679\_T} & 143 & \texttt{rs73997403\_C} \\
+30 & \texttt{rs12658068\_G} & 87 & \texttt{rs34825924\_G} & 144 & \texttt{rs74490361\_T} \\
+31 & \texttt{rs12665063\_A} & 88 & \texttt{rs35677769\_G} & 145 & \texttt{rs74760554\_C} \\
+32 & \texttt{rs12710674\_C} & 89 & \texttt{rs35705950.1\_G} & 146 & \texttt{rs74987898\_C} \\
+33 & \texttt{rs12713927\_G} & 90 & \texttt{rs3744761\_C} & 147 & \texttt{rs75291377\_G} \\
+34 & \texttt{rs1273431\_A} & 91 & \texttt{rs3750920\_C} & 148 & \texttt{rs7547997\_G} \\
+35 & \texttt{rs1278769\_G} & 92 & \texttt{rs3778337\_G} & 149 & \texttt{rs756345\_G} \\
+36 & \texttt{rs12928193\_G} & 93 & \texttt{rs3829223\_C} & 150 & \texttt{rs75714781\_G} \\
+37 & \texttt{rs12975986\_C} & 94 & \texttt{rs3887876\_C} & 151 & \texttt{rs75764565\_C} \\
+38 & \texttt{rs13183751\_G} & 95 & \texttt{rs4077759\_T} & 152 & \texttt{rs76160568\_A} \\
+39 & \texttt{rs13299670\_C} & 96 & \texttt{rs41482151\_C} & 153 & \texttt{rs76475316\_T} \\
+40 & \texttt{rs1422506\_G} & 97 & \texttt{rs415430\_T} & 154 & \texttt{rs76739551\_C} \\
+41 & \texttt{rs1423029\_A} & 98 & \texttt{rs45619034\_G} & 155 & \texttt{rs76931164\_T} \\
+42 & \texttt{rs144128391\_T} & 99 & \texttt{rs4672388\_T} & 156 & \texttt{rs77144736\_C} \\
+43 & \texttt{rs144948432\_A} & 100 & \texttt{rs4680134\_C} & 157 & \texttt{rs7725218\_G} \\
+44 & \texttt{rs145802912\_A} & 101 & \texttt{rs469942\_C} & 158 & \texttt{rs7730878\_A} \\
+45 & \texttt{rs146764446\_A} & 102 & \texttt{rs4727443\_C} & 159 & \texttt{rs77998999\_A} \\
+46 & \texttt{rs1479945\_C} & 103 & \texttt{rs4811028\_G} & 160 & \texttt{rs78288787\_C} \\
+47 & \texttt{rs148106529\_G} & 104 & \texttt{rs4918072\_G} & 161 & \texttt{rs79242376\_G} \\
+48 & \texttt{rs1488496\_C} & 105 & \texttt{rs4960330\_T} & 162 & \texttt{rs79252367\_G} \\
+49 & \texttt{rs148877274\_T} & 106 & \texttt{rs55672765\_C} & 163 & \texttt{rs7934606\_C} \\
+50 & \texttt{rs1496725\_A} & 107 & \texttt{rs55682827\_C} & 164 & \texttt{rs7942850\_T} \\
+51 & \texttt{rs151036604\_T} & 108 & \texttt{rs55993474\_A} & 165 & \texttt{rs7952154\_C} \\
+52 & \texttt{rs1669778\_T} & 109 & \texttt{rs56111559\_G} & 166 & \texttt{rs893889\_G} \\
+53 & \texttt{rs16837903\_G} & 110 & \texttt{rs56184452\_G} & 167 & \texttt{rs918174\_T} \\
+54 & \texttt{rs169889\_A} & 111 & \texttt{rs56387623\_T} & 168 & \texttt{rs923077\_A} \\
+55 & \texttt{rs17007563\_C} & 112 & \texttt{rs56744128\_A} & 169 & \texttt{rs9397724\_G} \\
+56 & \texttt{rs17019820\_A} & 113 & \texttt{rs5743890\_T} & 170 & \texttt{rs9577395\_C} \\
+57 & \texttt{rs17372089\_A} & 114 & \texttt{rs5743894\_T} & 171 & \texttt{rs9931202\_G} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\origsection{Detailed empirical comparisons}
+\label{app:empirical}
+Supplementary Table~\ref{tab:supp-auc} gives the archived fixed-split AUC values used in Table~\ref{tab:auc-three-targets}. These values are retained as a descriptive record of the v1 analysis. The genomic-only rows in the archived validation output were evaluated on their stored genomic validation geometry, whereas ZeBRA and combined values correspond to the target-specific ZeBRA-available validation geometry; the comparison should therefore be interpreted as descriptive rather than as a formal paired test.
+
+\begin{table*}[!t]
+\caption{Archived v1 fixed-split AUC values and target-specific validation counts.}
+\label{tab:supp-auc}
+\centering
+\small
+\begin{tabular}{lrrrrrr}
+\toprule
+Target & ZeBRA AUC & Genomic AUC & Combined AUC & ZeBRA/combined $n_+$ & Genomic $n_+$ & ZeBRA/combined $n_-$\\
+\midrule
+FILD/FILA & 0.8041 & 0.6426 & 0.8000 & 152 & 206 & 7,543\\
+Nonfibrotic ILD & 0.8379 & 0.6290 & 0.8547 & 16 & 22 & 7,679\\
+Nonfibrotic ILA & 0.8092 & 0.5728 & 0.8060 & 44 & 55 & 7,651\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The fixed regional rule used \textit{MUC5B} information within ZeBRA percentile intervals 0--50, 65--75, and 85--95, and used the calibrated ZeBRA score outside those regions. These regions were selected after inspection of the local-information curves and are therefore exploratory. Across 100 repeated outer splits, the training-split median \textit{MUC5B} odds ratios were 2.88, 4.40, and 4.07 in the three respective regions (Supplementary Fig.~\ref{fig:supp-muc5b-or}).
+
+\begin{figure*}[!t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+width=0.68\textwidth,height=0.30\textwidth,
+ybar,bar width=28pt,ymin=0,ymax=5.2,
+ylabel={Median training-split \textit{MUC5B} odds ratio},
+symbolic x coords={P00--P50,P65--P75,P85--P95},
+xtick=data,tick label style={font=\small},label style={font=\small},
+nodes near coords,nodes near coords style={font=\small}]
+\addplot coordinates {(P00--P50,2.881) (P65--P75,4.397) (P85--P95,4.074)};
+\end{axis}
+\end{tikzpicture}
+\caption{Training-split \textit{MUC5B} disease association in the three fixed ZeBRA-percentile switch regions used for the exploratory boundary rule. Median odds ratios across 100 splits were 2.88 (P00--P50), 4.40 (P65--P75), and 4.07 (P85--P95).}
+\label{fig:supp-muc5b-or}
+\end{figure*}
+
+Supplementary Table~\ref{tab:supp-boundary} reports the repeated-split operating-point results. The nominal target FPR is used only to determine a threshold in each training split; the table reports the mean realized held-out FPR. The 5\% operating point shows the clearest boundary effect: sensitivity increased by 0.0393 on average while realized FPR changed by 0.0005. The mean global AUC difference was -0.0025 at every operating point because the same pair of continuous raw/hybrid scores was evaluated before thresholding.
+
+\begin{table*}[!t]
+\caption{Repeated-split FILD/FILA boundary results for the fixed regional \textit{MUC5B} rule ($n=100$ splits).}
+\label{tab:supp-boundary}
+\centering
+\scriptsize
+\begin{tabular}{rrrrrrrr}
+\toprule
+Nominal FPR & ZeBRA sens. & Hybrid sens. & $\Delta$ sens. & ZeBRA FPR & Hybrid FPR & ZeBRA LR$+$ & Hybrid LR$+$\\
+\midrule
+0.005 & 0.3462 & 0.3504 & +0.0042 & 0.0202 & 0.0204 & 28.36 & 28.32\\
+0.010 & 0.3590 & 0.3634 & +0.0044 & 0.0239 & 0.0241 & 15.63 & 15.55\\
+0.020 & 0.3684 & 0.3723 & +0.0039 & 0.0263 & 0.0266 & 14.69 & 14.62\\
+0.050 & 0.4576 & 0.4969 & +0.0393 & 0.0586 & 0.0591 & 7.89 & 8.46\\
+0.100 & 0.6056 & 0.6197 & +0.0141 & 0.1427 & 0.1434 & 4.39 & 4.47\\
+\bottomrule
+\end{tabular}
+\end{table*}
+}
+
+\begin{document}
+\let\origsection\section
+\renewcommand{\section}[1]{%
+  \ifstrequal{#1}{Latent-state and information-channel formulation}{\empiricalcallout}{}%
+  \ifstrequal{#1}{Scope and limitations}{\empiricalsection}{}%
+  \origsection{#1}%
+}
+\let\origthebibliography\thebibliography
+\renewcommand{\thebibliography}[1]{\supplementarymaterial\origthebibliography{#1}}
+\input{zebra_genomics_boundary_theorem.tex}
+\end{document}
