@@ -1,0 +1,2 @@
+N_permutations,observed_max_enrichment,observed_best_percentile,permutation_p_max_enrichment,null_max_enrichment_mean,null_max_enrichment_q95,null_max_enrichment_q99,observed_99_enrichment,permutation_p_fixed_99
+5000,1.4652124415657737,99,0.007798440311937612,1.097074415631523,1.306811096531636,1.4256121053072393,1.4652124415657737,0.007598480303939212

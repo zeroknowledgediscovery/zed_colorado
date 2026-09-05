@@ -1,0 +1,8 @@
+model,feature,coefficient
+zebra_prs,ZeBRA_logit_z,0.3172603899655349
+zebra_prs,PRS_z,0.3938905901860513
+zebra_prs,intercept,-0.36870913710283293
+zebra_prs_interaction,ZeBRA_logit_z,0.3177473252368458
+zebra_prs_interaction,PRS_z,0.3924517429586158
+zebra_prs_interaction,ZeBRA_x_PRS,0.036994458919764064
+zebra_prs_interaction,intercept,-0.3669111778869801

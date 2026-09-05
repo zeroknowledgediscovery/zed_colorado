@@ -1,0 +1,9 @@
+metric,value
+prediction_rows,19519.0
+unique_patient_ids,12825.0
+duplicate_rows_beyond_first,6693.0
+patients_with_multiple_rows,0.0
+patients_with_multiple_distinct_risks,0.0
+median_within_patient_risk_range_among_duplicates,0.0
+max_within_patient_risk_range_among_duplicates,0.0
+median_within_patient_risk_sd_among_duplicates,0.0

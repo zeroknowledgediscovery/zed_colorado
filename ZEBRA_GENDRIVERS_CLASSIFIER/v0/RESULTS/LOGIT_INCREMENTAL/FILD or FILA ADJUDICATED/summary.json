@@ -1,0 +1,14 @@
+{
+  "target": "FILD or FILA ADJUDICATED",
+  "n_total": 615,
+  "n_total_positive": 254,
+  "n_development": 461,
+  "n_development_positive": 190,
+  "n_test": 154,
+  "n_test_positive": 64,
+  "n_snp_features": 169,
+  "test_auc_zebra": 0.5712673611111111,
+  "test_auc_prs_only": 0.5943576388888889,
+  "test_auc_zebra_prs": 0.6521701388888889,
+  "test_auc_zebra_prs_interaction": 0.6514756944444444
+}

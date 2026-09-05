@@ -1,0 +1,2 @@
+target_name,n_pos,n_neg,auc,fpr_target,threshold,fpr,sensitivity,specificity,ppv,npv,accuracy,f1,LR+,LR-
+NONFIBROTIC ILD ADJUDICATED,22,11769,0.628992576800377,0.05,inf,0.0,0.0,1.0,,0.99813417012976,0.99813417012976,0.0,inf,1.0

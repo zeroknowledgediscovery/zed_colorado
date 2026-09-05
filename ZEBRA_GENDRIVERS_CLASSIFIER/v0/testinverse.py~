@@ -1,0 +1,147 @@
+import numpy as np
+import pandas as pd
+
+from sklearn.metrics import roc_auc_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import StratifiedKFold, cross_val_score
+
+# ------------------------------------------------------------
+# Load exactly the same sources as notebook 32
+# ------------------------------------------------------------
+
+BASE_DATA = pd.read_csv(
+    "ILD_TOP_DRIVERS_DATA.csv"
+).drop(columns=["target"], errors="ignore")
+
+TARGETS = (
+    pd.read_csv("REPHENOTYPES FOR IC.csv")
+    .replace({
+        "N": 0, "Y": 1,
+        "n": 0, "y": 1,
+        "na": np.nan,
+    })
+    .rename(columns={"arb_person_id": "patient_id"})
+)
+
+PREDS = pd.read_parquet(
+    "PREDICTIONS_104W_PRED_WINDOW.parquet"
+)
+
+TARGET_NAME = "FILD or FILA ADJUDICATED"
+
+# ------------------------------------------------------------
+# EXACT 32 cohort construction
+# ------------------------------------------------------------
+
+DATA = (
+    BASE_DATA
+    .merge(
+        TARGETS[["patient_id", TARGET_NAME]]
+        .rename(columns={TARGET_NAME: "target"}),
+        on="patient_id",
+        how="left",
+    )
+    .merge(
+        PREDS[["patient_id", "predicted_risk"]],
+        on="patient_id",
+        how="left",
+    )
+)
+
+DATA["target"] = (
+    pd.to_numeric(DATA["target"], errors="coerce")
+    .fillna(0)
+    .astype(int)
+)
+
+DATA = DATA[
+    DATA["predicted_risk"].notnull()
+].copy()
+
+# ------------------------------------------------------------
+# Find MUC5B rs35705950 genotype columns
+# ------------------------------------------------------------
+
+MUC5B = [
+    c for c in DATA.columns
+    if str(c).startswith("rs35705950")
+]
+
+print("Cohort N:", len(DATA))
+print("MUC5B columns:", MUC5B)
+
+# ------------------------------------------------------------
+# Can ZeBRA predict each MUC5B genotype state?
+# ------------------------------------------------------------
+
+rows = []
+
+for col in MUC5B:
+
+    y = pd.to_numeric(
+        DATA[col],
+        errors="coerce",
+    )
+
+    keep = y.notnull()
+
+    X = DATA.loc[
+        keep,
+        ["predicted_risk"]
+    ]
+
+    yy = y.loc[keep].astype(int)
+
+    if yy.nunique() != 2:
+        continue
+
+    # Raw ZeBRA ranking
+    raw_auc = roc_auc_score(
+        yy,
+        X["predicted_risk"],
+    )
+
+    # Direction-independent AUC
+    raw_auc_abs = max(
+        raw_auc,
+        1 - raw_auc,
+    )
+
+    # 5-fold CV logistic prediction of genotype from ZeBRA
+    cv = StratifiedKFold(
+        n_splits=5,
+        shuffle=True,
+        random_state=1321,
+    )
+
+    model = LogisticRegression(
+        max_iter=5000
+    )
+
+    cv_auc = cross_val_score(
+        model,
+        X,
+        yy,
+        cv=cv,
+        scoring="roc_auc",
+    )
+
+    rows.append({
+        "MUC5B_state": col,
+        "N": len(yy),
+        "state_positive": int(yy.sum()),
+        "raw_auc": raw_auc,
+        "direction_independent_auc": raw_auc_abs,
+        "logistic_cv_auc_mean": cv_auc.mean(),
+        "logistic_cv_auc_sd": cv_auc.std(),
+    })
+
+RESULT = pd.DataFrame(rows)
+
+print()
+print(RESULT.to_string(index=False))
+
+RESULT.to_csv(
+    "ZEBRA_PREDICTS_MUC5B.csv",
+    index=False,
+)

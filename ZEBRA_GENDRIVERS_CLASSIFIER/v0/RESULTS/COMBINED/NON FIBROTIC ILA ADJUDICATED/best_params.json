@@ -1,0 +1,20 @@
+{
+  "colsample_bytree": 0.45463020345411936,
+  "learning_rate": 0.023514786162591634,
+  "max_bin": 31,
+  "max_depth": 20,
+  "min_child_samples": 17,
+  "min_child_weight": 6.714139661589483,
+  "min_split_gain": 1.4970396822419632,
+  "num_leaves": 40,
+  "reg_alpha": 0.4972188731501981,
+  "reg_lambda": 0.029584154059378916,
+  "scale_pos_weight": 410.25865544537055,
+  "subsample": 0.9745896887961392,
+  "objective": "binary",
+  "n_estimators": 1,
+  "subsample_freq": 1,
+  "n_jobs": -1,
+  "random_state": 1321,
+  "verbosity": -1
+}
