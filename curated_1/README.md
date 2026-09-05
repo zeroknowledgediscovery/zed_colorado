@@ -1,134 +1,88 @@
-# Curated v0 analyses for the ZeBRA–genomics manuscript
+# Curated analyses for the ZeBRA–genomics manuscript
 
-This folder isolates the v0 files that directly support the current manuscript results and framing. It intentionally excludes superseded model variants, stale/overwritten result aggregates, and exploratory analyses that are not needed for the present claims.
+This folder contains only the analysis lineage needed for the current manuscript framing. The canonical combined-classifier analysis is notebook `32_COMBINED_CLASSIFIERS.ipynb`; notebook `03_COMBINED_CLASSIFIERS.ipynb` is an earlier fixed-split analysis and is intentionally not retained here.
 
-## Bottom line
+## Manuscript result structure
 
-The current evidence supports two distinct conclusions:
+The retained analyses support two linked conclusions:
 
-1. **Genomics does not materially improve global discrimination when added broadly to ZeBRA.** This is supported by the fixed-split analyses (`02`, the preserved manuscript-run `03`), the repeated-split analysis (`32`), and the conditional incremental analysis (`33`).
-2. **Genomics can add local information near selected parts of the ZeBRA decision surface.** The strongest current evidence is the 100-split fixed MUC5B switch analysis. MUC5B is used only in pre-specified ZeBRA-percentile regions, while calibrated ZeBRA is used elsewhere.
+1. Broadly adding genomic features to ZeBRA does not materially improve global discrimination.
+2. Genomic information can nevertheless improve classification locally at a ZeBRA decision boundary when it is used selectively between a stringent high threshold and a lower rescue threshold.
 
-The high/low-threshold MUC5B rescue analysis is retained because it is the direct analysis lineage behind the idea that genotype can selectively reclassify patients between a stringent high threshold and a lower threshold. It is best treated as supporting/exploratory; the fixed-switch experiment is the cleaner primary result for the manuscript.
+The second result is the boundary result retained here. The separate fixed-percentile MUC5B switch experiment is deliberately excluded.
 
-## Critical provenance note: fixed-split table
-
-The current manuscript reports the original fixed-split AUCs:
-
-| phenotype | ZeBRA | genomics | combined |
-|---|---:|---:|---:|
-| FILD/FILA | 0.8041 | 0.6426 | 0.8000 |
-| Nonfibrotic ILD | 0.8379 | 0.6290 | 0.8547 |
-| Nonfibrotic ILA | 0.8092 | 0.5728 | 0.8060 |
-
-Those exact values are preserved in the archived **checkpoint execution of notebook 03**, not in the later consolidated `v0/RESULTS/COMBINED/validation_performance.csv`, which was subsequently overwritten by a different/later run. Therefore, the file named `03_COMBINED_CLASSIFIERS.ipynb` in this curated folder is deliberately the preserved manuscript-generating checkpoint blob (`v0/.ipynb_checkpoints/03_COMBINED_CLASSIFIERS-checkpoint.ipynb`, Git blob `9f2a2cd...`). The misleading later consolidated `COMBINED/validation_performance.csv` is deliberately excluded.
-
-`RESULTS/MANUSCRIPT_FIXED_SPLIT/sanity_exact_03_target_logic.csv` independently preserves the exact ZeBRA fixed-split sanity values and cohort counts used in this lineage.
-
-## Core notebooks retained
+## Core notebooks
 
 ### `01_GATHER_GENDRIVER_DATA.ipynb`
-Constructs the processed genomic feature matrix. The downstream processed file `ILD_TOP_DRIVERS_DATA.csv` is included, so the downstream manuscript analyses do not require rebuilding the raw genotype matrix. Re-running `01` from scratch still requires the restricted/raw Colorado genotype source used originally.
+Upstream provenance for construction of the genomic feature matrix. Downstream analyses can start from the included processed `ILD_TOP_DRIVERS_DATA.csv`.
 
 ### `02_GEN_DRIVER_CLASSIFIERS.ipynb`
-Genomics-only LightGBM models for the adjudicated phenotypes. Supplies the genomic-only comparator and feature-importance analyses.
-
-### `03_COMBINED_CLASSIFIERS.ipynb`
-**Exact preserved manuscript fixed-split run.** This curated copy comes from the v0 notebook checkpoint because that archived execution contains the AUCs printed in the current manuscript. It performs the original 40% train / 60% held-out ZeBRA-versus-combined comparison.
+Genomics-only comparator models.
 
 ### `32_COMBINED_CLASSIFIERS.ipynb`
-**Required.** Final v0 repeated-split analysis using `PREDICTIONS_104W_PRED_WINDOW.parquet`, with repeated ZeBRA/genomic/combined comparisons and zedstat performance/calibration analyses. This file has the same Git blob as `032_COMBINED_CLASSIFIERS_REPEATED_SPLITS_ZEDSTAT_FIXED.ipynb`; only `32` is retained here to avoid duplication.
+**Canonical/latest combined-classifier notebook for this v0 lineage.** It supersedes notebook 03 for the curated analysis. It uses the 104-week ZeBRA predictions, repeated randomized outer splits, and the notebook-03 phenotype/target logic, with repeated ZeBRA/genomic/combined comparisons plus the zedstat/calibration/SHAP analyses.
 
-For FILD/FILA over 30 repeated splits, the retained summary gives approximately:
+`32_COMBINED_CLASSIFIERS.ipynb` is the same Git blob as the later-named `032_COMBINED_CLASSIFIERS_REPEATED_SPLITS_ZEDSTAT_FIXED.ipynb`; only `32` is retained to avoid duplication.
+
+For FILD/FILA across the retained repeated splits, the summary is approximately:
 - ZeBRA mean AUC: 0.8141
 - genomics mean AUC: 0.5623
 - combined mean AUC: 0.7888
 
-Thus broad genomic augmentation does not improve global ZeBRA ranking for the principal FILD/FILA outcome.
+Thus indiscriminate genomic augmentation does not improve the principal global ZeBRA result.
 
 ### `33_INCREMENTAL_LOGISTIC_ANALYSIS.ipynb`
-Conditional incremental-value analysis asking the more appropriate question: after ZeBRA is known, does genomics add predictive information? Across 30 splits, the all-genomics-plus-ZeBRA model has only a very small mean AUC delta (about +0.0007; median 0), while average precision is lower on average and Brier score/log loss are worse. This supports little robust *global* incremental value from broad genomic augmentation.
+Conditional incremental-value analysis on the notebook-32 cohort. Adding the genomic panel after ZeBRA produces only a very small mean AUC change (about +0.0007, median 0) and does not provide robust global improvement.
 
-## Local genomic information / decision-boundary analyses
-
-### `test_local_zebra_genomics_predictive_curves.py`
-Exploratory localization analysis. It maps where local MUC5B discrimination/information can exceed local ZeBRA information across the ZeBRA score distribution. The outputs in `RESULTS/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/` provide provenance for selecting fixed regions for the subsequent validation experiment. These results are hypothesis-generating, not the final inferential result.
-
-### `test_muc5b_zebra_rescue_rule.py`
-Original **high/low-threshold rescue** formulation. A stringent ZeBRA threshold defines baseline positives; a lower ZeBRA threshold defines an intermediate rescue band; MUC5B T-carriers in that band can be promoted. It uses 100 repeated 40/60 splits and considers main FPR targets of 0.5% and 1% with lower-band targets of 2%, 5%, and 10%.
+## Decision-boundary analysis
 
 ### `test_muc5b_zebra_rescue_matched_fpr_lr.py`
-Refined high/low-threshold rescue experiment with a fair matched-empirical-FPR ZeBRA comparator and LR+/LR-/diagnostic-odds-ratio calculations. This is the preferred script for interpreting the high/low rescue concept. Its outputs are retained under `RESULTS/MUC5B_ZEBRA_RESCUE_RULE/`.
+**Primary retained boundary analysis.** This is the analysis corresponding to the manuscript concept that genomics can improve prediction selectively between a high and low ZeBRA threshold.
 
-### `test_fixed_muc5b_switch_regions.py`
-**Primary boundary result for the current manuscript.** Uses the exact notebook-32 FILD/FILA cohort, 104-week ZeBRA predictions, 40% training / 60% held-out testing, and 100 repeated splits. The switch windows are fixed at:
+For each repeated 40/60 train/test split:
 
-- P00–P50
-- P65–P75
-- P85–P95
+1. A stringent **high ZeBRA threshold** is derived from training negatives at a target FPR of 0.5% or 1%.
+2. A less stringent **low ZeBRA threshold** is derived at a target FPR of 2%, 5%, or 10%.
+3. Patients above the high threshold are ZeBRA-positive without using genomics.
+4. Patients below the low threshold remain negative.
+5. Only patients in the intermediate band are eligible for MUC5B-based rescue/reclassification.
+6. Performance is compared with a ZeBRA-only classifier matched to the empirical FPR of the rescue rule.
 
-Percentiles are defined from the training distribution only. Outside these regions, calibrated ZeBRA is used. Inside them, exact ZeBRA ranking is deliberately replaced by training-estimated MUC5B genotype-specific risk.
+This directly tests whether genomic information improves the classifier at the decision boundary rather than whether it raises global AUC.
 
-At approximately 5% FPR the current result is:
+Representative 100-split results from `RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MATCHED_FPR_RESCUE_VS_ZEBRA.csv` include:
 
-| metric | ZeBRA | fixed MUC5B hybrid |
-|---|---:|---:|
-| global AUC | 0.8160 | 0.8135 |
-| sensitivity | 0.4576 | 0.4969 |
-| realized FPR | 0.0586 | 0.0591 |
-| LR+ | 7.89 | 8.46 |
-| LR- | 0.576 | 0.535 |
+| high-threshold FPR | low-threshold FPR | rescue sensitivity | matched ZeBRA sensitivity | sensitivity gain | rescue FPR | matched ZeBRA FPR |
+|---:|---:|---:|---:|---:|---:|---:|
+| 0.5% | 5% | 0.3486 | 0.3126 | +0.0360 | 0.01405 | 0.01430 |
+| 0.5% | 10% | 0.4012 | 0.3584 | +0.0428 | 0.02326 | 0.02374 |
+| 1% | 5% | 0.3529 | 0.3320 | +0.0209 | 0.01837 | 0.01870 |
 
-Sensitivity therefore increases by about 0.0393 at essentially unchanged FPR, even though global AUC is not improved. This is the clearest empirical support for the manuscript's central framing: genomic information can be useful **locally at the decision boundary without improving global discrimination**.
+The interpretation is not that genomics globally improves ZeBRA. Rather, selective MUC5B use inside a predefined uncertainty/rescue band can recover additional cases at nearly matched false-positive burden.
 
-Mean local MUC5B odds ratios in the three fixed switch regions are approximately 2.88, 4.40, and 4.07, respectively.
+## Retained result directories
 
-## Error-strata audit
+- `RESULTS/GENDRIVERS/` — genomic-only comparator.
+- `RESULTS/032_REPEATED_SPLITS_03_TARGET_LOGIC/` — compact repeated-split/global summaries from notebook 32.
+- `RESULTS/033_INCREMENTAL_LOGISTIC_32_COHORT/` — compact conditional incremental-value summaries from notebook 33.
+- `RESULTS/MUC5B_ZEBRA_RESCUE_RULE/` — the high/low-threshold decision-boundary experiment, including matched-FPR sensitivity, LR+, LR−, diagnostic-odds-ratio, and rescue summaries.
 
-### `testinverse_muc5b_error_strata.py`
-Retained as an audit/supporting analysis only. It asks whether MUC5B is enriched among ZeBRA false negatives/false positives at selected thresholds. The false-negative enrichment is not strong enough to serve as the headline justification for the boundary claim (for example, at the approximately 5% operating point the FN-vs-TP MUC5B OR is only about 1.3 and is not statistically compelling). The manuscript should therefore base the boundary claim on the pre-specified repeated switch experiment rather than wording that implies strong generic MUC5B enrichment among all ZeBRA false negatives.
+## Deliberately excluded
 
-## Result directories retained
+- `03_COMBINED_CLASSIFIERS.ipynb` and its fixed-split-only result provenance: superseded in this curated package by notebook 32.
+- `test_fixed_muc5b_switch_regions.py` and `RESULTS/FIXED_MUC5B_SWITCH_REGIONS/`: not part of the intended manuscript analysis.
+- the original `test_muc5b_zebra_rescue_rule.py`: superseded by the matched-FPR/LR implementation retained above.
+- `test_local_zebra_genomics_predictive_curves.py` and its exploratory window-search results: not required for the final high/low boundary claim.
+- `testinverse_muc5b_error_strata.py` and its error-strata outputs: audit/exploratory analysis, not required for the manuscript claim.
+- older 032 variants, ExtraTrees/isotonic branches, checkpoints, backup files, fitted model pickles, and unrelated exploratory analyses.
 
-- `RESULTS/GENDRIVERS/validation_performance.csv`: genomic-only fixed-split comparator.
-- `RESULTS/MANUSCRIPT_FIXED_SPLIT/sanity_exact_03_target_logic.csv`: exact fixed-split ZeBRA cohort/sanity values corresponding to the manuscript-run lineage.
-- `RESULTS/032_REPEATED_SPLITS_03_TARGET_LOGIC/`: selected compact summaries from the final repeated-split/zedstat analysis.
-- `RESULTS/033_INCREMENTAL_LOGISTIC_32_COHORT/`: selected summaries from the conditional incremental analysis.
-- `RESULTS/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/`: exploratory localization/provenance for the fixed regions.
-- `RESULTS/MUC5B_ZEBRA_RESCUE_RULE/`: high/low-threshold rescue analyses.
-- `RESULTS/FIXED_MUC5B_SWITCH_REGIONS/`: complete primary 100-split boundary analysis and figures.
-- `RESULTS/MUC5B_ZEBRA_ERROR_STRATA/`: error-strata audit.
-
-## Files deliberately not retained
-
-- `032_COMBINED_CLASSIFIERS_REPEATED_SPLITS_ZEDSTAT_FIXED.ipynb`: exact duplicate of `32_COMBINED_CLASSIFIERS.ipynb`.
-- `032_COMBINED_CLASSIFIERS_REPEATED_SPLITS.ipynb` and `032_COMBINED_CLASSIFIERS_REPEATED_SPLITS_ZEDSTAT.ipynb`: earlier stages superseded by `32` for the present 104-week repeated-split analysis.
-- the later top-level v0 `03_COMBINED_CLASSIFIERS.ipynb` execution and `RESULTS/COMBINED/validation_performance.csv`: later result state does not match the fixed-split values printed in the present manuscript; the exact preserved checkpoint run is used instead.
-- `033_COMBINED_CLASSIFIERS_REPEATED_SPLITS_EXTRATREES.ipynb`: alternative-model robustness experiment, not needed for current claims.
-- `321_COMBINED_CLASSIFIERS_ISOTONIC_CALIBRATED.ipynb`: alternative calibration/modeling branch, not needed for current claims.
-- `04_INCREMENTAL_GENETIC_LOGIT.ipynb`: superseded for current purposes by the repeated-split `33_INCREMENTAL_LOGISTIC_ANALYSIS.ipynb`.
-- `test_zebra_hybrid_roc_convex_hull_zedstat.py`: interesting ROC-envelope analysis, but not used in the current manuscript result.
-- `test_zebra_predicts_ipf_prs.py`, `testinverse.py`, `testinverse_muc5b_extended.py`, and `testinverse_muc5b_stratified_by_fild.py`: exploratory/tangential to the present manuscript argument.
-- all other notebook checkpoints, backup files, fitted model pickles, and large checkpoint/intermediate outputs.
-
-## Reproduction order for the current manuscript
+## Reproduction order
 
 Starting from the included processed inputs:
 
 1. `02_GEN_DRIVER_CLASSIFIERS.ipynb`
-2. `03_COMBINED_CLASSIFIERS.ipynb` — exact archived manuscript fixed-split run
-3. `32_COMBINED_CLASSIFIERS.ipynb` — repeated-split/global comparison on the 104-week cohort
-4. `33_INCREMENTAL_LOGISTIC_ANALYSIS.ipynb` — conditional incremental-value test
-5. `test_local_zebra_genomics_predictive_curves.py` — exploratory localization/provenance
-6. `test_muc5b_zebra_rescue_matched_fpr_lr.py` — high/low-threshold rescue support
-7. `test_fixed_muc5b_switch_regions.py` — primary 100-split boundary result
-8. `testinverse_muc5b_error_strata.py` — audit/sensitivity only
+2. `32_COMBINED_CLASSIFIERS.ipynb`
+3. `33_INCREMENTAL_LOGISTIC_ANALYSIS.ipynb`
+4. `test_muc5b_zebra_rescue_matched_fpr_lr.py`
 
-`01_GATHER_GENDRIVER_DATA.ipynb` is upstream provenance for reconstructing the processed genomic matrix, but downstream manuscript analyses can begin with `ILD_TOP_DRIVERS_DATA.csv`.
-
-## Two provenance lineages that should not be conflated
-
-1. **Original fixed-split table:** use the preserved notebook-03 manuscript run (the archived checkpoint) and its fixed-split sanity output.
-2. **Repeated/global and boundary-localization analyses:** use notebook **32**, the 104-week prediction file, and the notebook-32 cohort. The boundary scripts explicitly reconstruct this lineage.
-
-The manuscript methods/results should be audited so these two lineages are described consistently rather than referring generically to `03/032` for analyses that were actually generated from notebook 32.
+`01_GATHER_GENDRIVER_DATA.ipynb` is retained only for upstream data provenance.
