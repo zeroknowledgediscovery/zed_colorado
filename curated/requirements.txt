@@ -1,0 +1,13 @@
+numpy
+pandas
+polars
+pyarrow
+requests
+PyYAML
+matplotlib
+seaborn
+scipy
+scikit-learn
+lightgbm
+shap
+tqdm
