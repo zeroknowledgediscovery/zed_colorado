@@ -1,0 +1,10 @@
+numpy
+pandas
+scipy
+scikit-learn
+matplotlib
+pyarrow
+lightgbm
+shap
+jupyter
+git+https://github.com/zeroknowledgediscovery/zedstat.git
