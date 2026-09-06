@@ -179,9 +179,12 @@ def main() -> None:
             },
         )
 
+        # This analysis is deterministic and has no random-state parameter.
         local = tmp / LOCAL_SCRIPT.name
-        patch_script(LOCAL_SCRIPT, local, {"RANDOM_STATE": p["random_state"]})
+        patch_script(LOCAL_SCRIPT, local, {})
 
+        # The rescue script currently draws independent split seeds internally;
+        # only its exposed repeat count and train fraction are configurable.
         rescue = tmp / RESCUE_SCRIPT.name
         patch_script(
             RESCUE_SCRIPT,
@@ -189,17 +192,16 @@ def main() -> None:
             {
                 "N_REPEATS": p["rescue_repeats"],
                 "TRAIN_SIZE": p["train_size"],
-                "RANDOM_STATE": p["random_state"],
             },
         )
 
+        # The hull analysis uses K-fold OOF predictions, not a train fraction.
         hull = tmp / HULL_SCRIPT.name
         patch_script(
             HULL_SCRIPT,
             hull,
             {
                 "N_FOLDS": p["hull_folds"],
-                "TRAIN_FRAC": p["train_size"],
                 "RANDOM_STATE": p["random_state"],
             },
         )
