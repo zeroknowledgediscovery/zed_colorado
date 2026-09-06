@@ -23,6 +23,8 @@ PARAM_FILE = ROOT / "run_parameters.json"
 
 NOTEBOOK32 = ROOT / "32_COMBINED_CLASSIFIERS.ipynb"
 NOTEBOOK33 = ROOT / "33_INCREMENTAL_LOGISTIC_ANALYSIS.ipynb"
+APPARENT_SCRIPT = ROOT / "test_zebra_muc5b_apparent_association.py"
+STRATIFIED_SCRIPT = ROOT / "testinverse_muc5b_stratified_by_fild.py"
 LOCAL_SCRIPT = ROOT / "test_local_zebra_genomics_predictive_curves.py"
 RESCUE_SCRIPT = ROOT / "test_muc5b_zebra_rescue_matched_fpr_lr.py"
 HULL_SCRIPT = ROOT / "test_zebra_hybrid_roc_convex_hull_zedstat.py"
@@ -155,6 +157,28 @@ def main() -> None:
             },
         )
 
+        apparent = tmp / APPARENT_SCRIPT.name
+        patch_script(
+            APPARENT_SCRIPT,
+            apparent,
+            {
+                "CV_FOLDS": p["apparent_association_cv_folds"],
+                "CV_SEED": p["random_state"],
+            },
+        )
+
+        stratified = tmp / STRATIFIED_SCRIPT.name
+        patch_script(
+            STRATIFIED_SCRIPT,
+            stratified,
+            {
+                "N_PERMUTATIONS": p["stratified_permutations"],
+                "PERMUTATION_SEED": p["random_state"],
+                "CV_FOLDS": p["stratified_cv_folds"],
+                "CV_SEED": p["random_state"],
+            },
+        )
+
         local = tmp / LOCAL_SCRIPT.name
         patch_script(LOCAL_SCRIPT, local, {"RANDOM_STATE": p["random_state"]})
 
@@ -182,7 +206,8 @@ def main() -> None:
 
         staged = []
         try:
-            for src in [n32, n33, local, rescue, hull]:
+            sources = [n32, n33, apparent, stratified, local, rescue, hull]
+            for src in sources:
                 dst = ROOT / (".run_" + src.name)
                 shutil.copy2(src, dst)
                 staged.append(dst)

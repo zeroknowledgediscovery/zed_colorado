@@ -13,17 +13,53 @@ This directory is the minimal analysis package for the current manuscript framin
    - supporting robustness analysis, not required for the headline result
    - asks whether genomics adds conditional predictive information after ZeBRA in a regularized logistic framework
 
-3. `test_local_zebra_genomics_predictive_curves.py`
-   - maps where MUC5B/genomic information is locally informative across the ZeBRA score distribution
+3. `test_zebra_muc5b_apparent_association.py`
+   - intentionally pooled/descriptive analysis
+   - asks whether ZeBRA appears associated with MUC5B rs35705950 T-carrier status before conditioning on FILD
+   - generates the two manuscript-framing figures:
+     - `ZEBRA_BY_MUC5B_T_CARRIER.png`
+     - `ZEBRA_MUC5B_NONLINEAR_ASSOCIATION.png`
+   - this result must not be interpreted as evidence that ZeBRA reconstructs genotype
 
-4. `test_muc5b_zebra_rescue_matched_fpr_lr.py`
+4. `testinverse_muc5b_stratified_by_fild.py`
+   - critical clarification of the pooled association above
+   - repeats ZeBRA–MUC5B association/enrichment analyses within FILD-positive and explicitly FILD-negative strata
+   - the pooled association largely disappears within disease strata, supporting the interpretation that the apparent pooled ZeBRA–MUC5B relationship is consistent with both quantities tracking FILD status rather than ZeBRA recovering MUC5B genotype
+
+5. `test_local_zebra_genomics_predictive_curves.py`
+   - maps where MUC5B/genomic information is locally informative for FILD prediction across the ZeBRA score distribution
+
+6. `test_muc5b_zebra_rescue_matched_fpr_lr.py`
    - primary decision-boundary analysis
    - uses MUC5B only between a stringent high ZeBRA threshold and a lower rescue threshold, then compares against ZeBRA at matched empirical FPR
 
-5. `test_zebra_hybrid_roc_convex_hull_zedstat.py`
+7. `test_zebra_hybrid_roc_convex_hull_zedstat.py`
    - supporting ROC/convex-hull/zedstat analysis of attainable operating points
 
 The deliberately excluded fixed-percentile switch experiment is not part of this curated lineage.
+
+### Intended manuscript logic
+
+The MUC5B analyses are deliberately ordered to avoid a misleading interpretation:
+
+```text
+Pooled ZeBRA–MUC5B association
+        ↓
+apparent concordance between clinical trajectory and genotype
+        ↓
+stratify on FILD status
+        ↓
+pooled association largely disappears
+        ↓
+therefore do not interpret ZeBRA as reconstructing MUC5B genotype
+        ↓
+ask the separate predictive question:
+does MUC5B still provide local information for FILD classification?
+        ↓
+local-information + matched-FPR boundary analyses
+```
+
+A suitable interpretation is: *In pooled analyses, ZeBRA is weakly associated with MUC5B rs35705950 carrier status. This relationship is markedly attenuated after stratification by FILD status, consistent with shared association to disease status rather than recovery of genotype from the clinical trajectory. Nevertheless, MUC5B can provide locally useful information for FILD classification near selected ZeBRA operating boundaries.*
 
 ## Required processed inputs
 
@@ -41,7 +77,7 @@ It must satisfy the following contract:
 - no ZeBRA score is required in this file; ZeBRA `predicted_risk` is merged separately from `PREDICTIONS_104W_PRED_WINDOW.parquet`
 - no phenotype label should be used as a genomic feature
 - a historical `target` column is tolerated by the analyses and dropped, but it is not required and should preferably be absent
-- the current MUC5B boundary analyses require the three one-hot columns:
+- the current MUC5B analyses require the three one-hot columns:
 
 ```text
 rs35705950.1_G_0
@@ -49,7 +85,17 @@ rs35705950.1_G_1
 rs35705950.1_G_2
 ```
 
-The runner validates these required columns before starting.
+Historical encoding for rs35705950 is interpreted as:
+
+```text
+rs35705950.1_G_2 = GG
+rs35705950.1_G_1 = GT
+rs35705950.1_G_0 = TT
+```
+
+A valid called genotype has exactly one of those columns equal to 1. An all-zero row represents an unavailable/missing original genotype after `pd.get_dummies(dummy_na=False)` and must not be interpreted as TT or as a T-risk carrier.
+
+The runner validates the required columns before starting.
 
 ### How `ILD_TOP_DRIVERS_DATA.csv` was historically generated
 
@@ -97,6 +143,9 @@ All run-level iteration controls live in `run_parameters.json`.
 
 - notebook 32 repeated splits: 30
 - notebook 33 repeated splits: 30
+- pooled apparent-association CV folds: 5
+- FILD-stratified MUC5B permutations: 5,000
+- FILD-stratified CV folds: 5
 - MUC5B rescue repeated splits: 100
 - ROC-hull cross-validation folds: 5
 - LightGBM parameter trials in notebook 32: 12
@@ -110,6 +159,9 @@ For code/path verification rather than final manuscript numbers:
 
 - notebook 32 repeated splits: 5
 - notebook 33 repeated splits: 5
+- pooled apparent-association CV folds: 3
+- FILD-stratified MUC5B permutations: 250
+- FILD-stratified CV folds: 3
 - MUC5B rescue repeated splits: 5
 - ROC-hull folds: 5
 - LightGBM parameter trials: 3
@@ -144,6 +196,8 @@ Execution order:
 ```text
 32_COMBINED_CLASSIFIERS.ipynb
 33_INCREMENTAL_LOGISTIC_ANALYSIS.ipynb
+test_zebra_muc5b_apparent_association.py
+testinverse_muc5b_stratified_by_fild.py
 test_local_zebra_genomics_predictive_curves.py
 test_muc5b_zebra_rescue_matched_fpr_lr.py
 test_zebra_hybrid_roc_convex_hull_zedstat.py
@@ -154,6 +208,8 @@ Expected output directories include:
 ```text
 RESULTS/032_REPEATED_SPLITS_03_TARGET_LOGIC/
 RESULTS/033_INCREMENTAL_LOGISTIC_32_COHORT/
+RESULTS/ZEBRA_MUC5B_APPARENT_ASSOCIATION/
+RESULTS/MUC5B_STRATIFIED_BY_FILD/
 RESULTS/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/
 RESULTS/MUC5B_ZEBRA_RESCUE_RULE/
 RESULTS/ZEBRA_HYBRID_ROC_CONVEX_HULL/

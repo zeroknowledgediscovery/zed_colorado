@@ -2,6 +2,9 @@
   "full": {
     "notebook32_repeats": 30,
     "notebook33_repeats": 30,
+    "apparent_association_cv_folds": 5,
+    "stratified_permutations": 5000,
+    "stratified_cv_folds": 5,
     "rescue_repeats": 100,
     "hull_folds": 5,
     "train_size": 0.4,
@@ -12,6 +15,9 @@
   "fast": {
     "notebook32_repeats": 5,
     "notebook33_repeats": 5,
+    "apparent_association_cv_folds": 3,
+    "stratified_permutations": 250,
+    "stratified_cv_folds": 3,
     "rescue_repeats": 5,
     "hull_folds": 5,
     "train_size": 0.4,
