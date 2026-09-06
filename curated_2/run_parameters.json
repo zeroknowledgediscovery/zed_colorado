@@ -1,0 +1,22 @@
+{
+  "full": {
+    "notebook32_repeats": 30,
+    "notebook33_repeats": 30,
+    "rescue_repeats": 100,
+    "hull_folds": 5,
+    "train_size": 0.4,
+    "inner_cv_folds": 3,
+    "model_search_trials": 12,
+    "random_state": 1321
+  },
+  "fast": {
+    "notebook32_repeats": 5,
+    "notebook33_repeats": 5,
+    "rescue_repeats": 5,
+    "hull_folds": 5,
+    "train_size": 0.4,
+    "inner_cv_folds": 3,
+    "model_search_trials": 3,
+    "random_state": 1321
+  }
+}
