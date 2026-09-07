@@ -1,0 +1,2 @@
+N_with_called_MUC5B,MUC5B_T_carrier_N,MUC5B_T_carrier_prevalence,pearson_r,pearson_p,spearman_rho,spearman_p,raw_ZeBRA_to_carrier_AUC,direction_independent_AUC,linear_logistic_CV_AUC,linear_logistic_CV_logloss,spline_logistic_CV_AUC,spline_logistic_CV_logloss,CV_folds,CV_seed
+12766,2499,0.19575434748550838,0.010674269870939588,0.2278301958192306,0.012031253534567025,0.17405534054003383,0.5087532626764546,0.5087532626764546,0.5039945266116577,0.49446145277615133,0.5021213706092157,0.49482597269378575,5,1321
