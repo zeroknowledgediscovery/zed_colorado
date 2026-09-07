@@ -65,6 +65,6 @@ The historical ZeBRA field `predicted_risk` is also not treated as an absolute p
 
 ## Layout
 
-The canonical IEEE build uses permissive two-column float settings and intentionally avoids forced float barriers. This keeps the wide PGFPlots figures and tables close to their discussion without the large blank regions produced by earlier forced float placement. The four-panel local-information figure is slightly reduced in height at build time to avoid an overfull two-column float, while retaining all canonical RESULTS data.
+The canonical IEEE build uses permissive two-column float settings and intentionally avoids forced float barriers. This keeps the wide PGFPlots figures and tables close to their discussion without the large blank regions produced by earlier forced float placement. The four-panel local-information figure is sized compactly in `empirical_figures.tex` to avoid an overfull two-column float while retaining the full canonical RESULTS data.
 
 The analysis pipeline that regenerates the corresponding `zebra_comp/RESULTS` folders is documented in `../zebra_comp/README.md` and run with `../zebra_comp/run_all.sh`.
