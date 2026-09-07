@@ -89,16 +89,6 @@ The upper bound $M$ alone gives the ``no upward rescue'' statement below $\lambd
   \ifstrequal{#1}{Main theorem}{\theoryassumptionnote}{}%
 }
 
-% Slightly reduce the height of the four-panel local-information figure; this
-% prevents an overfull two-column float while retaining the full RESULTS data.
-\AtBeginDocument{%
-  \patchcmd{\figLocalInformation}{height=0.22\textwidth}{height=0.21\textwidth}{}{}%
-  \patchcmd{\empiricalsection}
-    {These analyses test a qualitative implication of Theorem~\ref{thm:main}(ii):}
-    {Here ``conditional LRT'' denotes the nested-model likelihood-ratio (deviance) statistic for adding one predictor after the other within a local subset; it is evidence for conditional predictive contribution, not an estimate of the individual-level factor $\LR_{G\mid C}$. These analyses test a qualitative implication of Theorem~\ref{thm:main}(ii):}
-    {}{}%
-}
-
 % Balance the short reference list on the final IEEE page.
 \let\origthebibliography\thebibliography
 \renewcommand{\thebibliography}[1]{\IEEEtriggeratref{4}\origthebibliography{#1}}
