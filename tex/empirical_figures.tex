@@ -141,7 +141,6 @@
  tick label style={font=\scriptsize},label style={font=\footnotesize},
  title style={font=\footnotesize},
  xmajorgrids=true,ymajorgrids=true,major grid style={dotted}]
-
 \nextgroupplot[
  title={A. FPR-defined conditional information},
  ylabel={Partial LRT statistic},ymin=0,ymax=19,
@@ -155,7 +154,6 @@
  table[x expr=\coordindex,y=LRT_G_given_Z]{\localbands};
 \addlegendentry{MUC5B $|$ ZeBRA}
 \addplot+[dashed,no marks] coordinates {(-0.5,3.84) (3.5,3.84)};
-
 \nextgroupplot[
  title={B. Conditional information across risk axis},
  xlabel={ZeBRA risk percentile},ylabel={Partial LRT statistic},
@@ -169,7 +167,6 @@
  table[x=window_center_percentile,y=LRT_G_given_Z]{\localwindows};
 \addlegendentry{MUC5B $|$ ZeBRA}
 \addplot+[dashed,no marks] coordinates {(23,3.84) (100,3.84)};
-
 \nextgroupplot[
  title={C. Disease prevalence by MUC5B},
  xlabel={ZeBRA risk percentile},ylabel={FILD/FILA prevalence},
@@ -183,7 +180,6 @@
 \addplot+[mark=square*,mark size=1.5pt,thick]
  table[x=window_center_percentile,y=case_prevalence_MUC5B_carrier]{\localwindows};
 \addlegendentry{MUC5B T-carrier}
-
 \nextgroupplot[
  title={D. Local odds ratios},
  xlabel={ZeBRA risk percentile},ylabel={Adjusted odds ratio},
@@ -197,7 +193,6 @@
  table[x=window_center_percentile,y=OR_MUC5B_carrier]{\localwindows};
 \addlegendentry{MUC5B carrier}
 \addplot+[dashed,no marks] coordinates {(23,1) (100,1)};
-
 \end{groupplot}
 \end{tikzpicture}
 \caption{\textbf{Localized complementarity across the ZeBRA risk axis.} All four panels are regenerated natively in PGFPlots from \texttt{FPR\_DEFINED\_LOCAL\_INFORMATION\_BANDS.csv} and \texttt{LOCAL\_ZEBRA\_MUC5B\_INFORMATION\_WINDOWS.csv} in \texttt{zebra\_comp/RESULTS}. (A) In clinically relevant FPR bands, residual \textit{MUC5B} information after ZeBRA exceeds the converse conditional contribution, especially in the 5--10\% and 20--40\% bands. (B) Overlapping moving windows show the same spatial heterogeneity continuously: residual genomic information is substantial through intermediate/high ZeBRA percentiles, whereas residual ZeBRA information rises sharply in the extreme clinical-risk tail. (C) The same phenomenon is visible epidemiologically: within ZeBRA strata, T-carriers have higher observed FILD/FILA prevalence than non-carriers. (D) Local odds ratios provide an effect-size view, with persistent \textit{MUC5B} association across much of the axis and a marked increase in ZeBRA association at the extreme tail. The moving windows overlap and are used for descriptive localization rather than as independent confirmatory tests.}
@@ -280,3 +275,7 @@
 \label{fig:low-fpr-geometry}
 \end{figure*}%
 }
+
+% The master manuscript defines \empiricalsection after this file is read.
+% Load the revised empirical section at \begin{document}, when that macro exists.
+\AtBeginDocument{\InputIfFileExists{empirical_section_update.tex}{}{}}
