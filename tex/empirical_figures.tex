@@ -1,13 +1,62 @@
-% Empirical figure source for the ZeBRA--genomics manuscript.
-% Rich notebook outputs are retained for Figures 1, 3, and 4. Figures 5 and 6
-% are regenerated natively in PGFPlots directly from CSV evidence under
-% zebra_comp/RESULTS so all axes, tick labels, and annotations remain vector.
+% Empirical figures for the ZeBRA--genomics manuscript.
+% ALL manuscript figures are generated natively with PGFPlots/TikZ.
+% Data are read directly from ../zebra_comp/RESULTS at compile time.
+% No manuscript-side data copies and no raster result figures are used.
+
+\RequirePackage{pgfplotstable}
+\newcommand{\resultroot}{../zebra_comp/RESULTS}
+
+\pgfplotstableread[col sep=comma]{\resultroot/032_REPEATED_SPLITS_03_TARGET_LOGIC/auc_distribution_summary.csv}\globalauc
+\pgfplotstableread[col sep=comma]{\resultroot/032_REPEATED_SPLITS_03_TARGET_LOGIC/paired_auc_delta_summary.csv}\globalpaired
+\pgfplotstableread[col sep=comma]{\resultroot/033_INCREMENTAL_LOGISTIC_32_COHORT/paired_incremental_summary.csv}\incremental
+\pgfplotstableread[col sep=comma]{\resultroot/MUC5B_STRATIFIED_BY_FILD/MUC5B_ZEBRA_STRATIFIED_SUMMARY.csv}\mucfive
+\pgfplotstableread[col sep=comma]{\resultroot/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/FPR_DEFINED_LOCAL_INFORMATION_BANDS.csv}\localbands
+\pgfplotstableread[col sep=comma]{\resultroot/MUC5B_ZEBRA_RESCUE_RULE/REPEATED_SPLIT_MUC5B_RESCUE_SUMMARY.csv}\rescuedata
+\pgfplotstableread[col sep=comma]{\resultroot/032_REPEATED_SPLITS_03_TARGET_LOGIC/zedstat_operating_points_summary.csv}\operatingpoints
+
+% FILD/FILA zedstat rows for LR+ at requested FPR 0.5,1,2,5,10%.
+\newcommand{\OperatingMean}[2]{%
+  \pgfplotstablegetelem{#1}{mean}\of\operatingpoints%
+  \expandafter\xdef\csname #2\endcsname{\pgfplotsretval}%
+}
+\OperatingMean{428}{zlrA}\OperatingMean{462}{zlrB}\OperatingMean{496}{zlrC}\OperatingMean{530}{zlrD}\OperatingMean{564}{zlrE}
+\OperatingMean{230}{glrA}\OperatingMean{264}{glrB}\OperatingMean{298}{glrC}\OperatingMean{332}{glrD}\OperatingMean{366}{glrE}
+\OperatingMean{32}{clrA}\OperatingMean{66}{clrB}\OperatingMean{100}{clrC}\OperatingMean{134}{clrD}\OperatingMean{168}{clrE}
 
 \newcommand{\figGlobalRepeatedSplits}{%
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=0.93\textwidth]{../zebra_comp/RESULTS/032_REPEATED_SPLITS_03_TARGET_LOGIC/auc_distributions_three_targets.png}
-\caption{\textbf{Global repeated-split discrimination (notebook 32).} Distribution of held-out AUC over 30 repeated outer splits for ZeBRA, genomics-only, and globally combined ZeBRA+genomics models for FILD/FILA, nonfibrotic ILD, and nonfibrotic ILA. This is the primary global-comparison figure. The split-level distributions show that ZeBRA is substantially stronger than genomics alone and that indiscriminate global combination does not yield a reproducible improvement over ZeBRA.}
+\begin{tikzpicture}
+\begin{groupplot}[
+ group style={group size=2 by 1,horizontal sep=1.45cm},
+ width=0.425\textwidth,height=0.285\textwidth,
+ tick label style={font=\footnotesize},label style={font=\footnotesize},
+ ymajorgrids=true,major grid style={dotted}]
+\nextgroupplot[
+ ylabel={Held-out ROC AUC},ymin=0.35,ymax=0.90,
+ xtick={0,1,2},xticklabels={FILD/FILA,NF-ILA,NF-ILD},
+ legend style={at={(0.5,1.03)},anchor=south,legend columns=3,draw=none,font=\scriptsize}]
+\addplot+[only marks,mark=*,mark size=2.6pt,error bars/.cd,y dir=both,y explicit]
+ table[x expr=floor(\coordindex/3),y=mean,y error=sd,restrict expr to domain={mod(\coordindex,3)}{1.9:2.1}]{\globalauc};
+\addlegendentry{ZeBRA}
+\addplot+[only marks,mark=square*,mark size=2.5pt,error bars/.cd,y dir=both,y explicit]
+ table[x expr=floor(\coordindex/3),y=mean,y error=sd,restrict expr to domain={mod(\coordindex,3)}{0.9:1.1}]{\globalauc};
+\addlegendentry{Genomic}
+\addplot+[only marks,mark=triangle*,mark size=2.8pt,error bars/.cd,y dir=both,y explicit]
+ table[x expr=floor(\coordindex/3),y=mean,y error=sd,restrict expr to domain={mod(\coordindex,3)}{-0.1:0.1}]{\globalauc};
+\addlegendentry{Combined}
+\nextgroupplot[
+ ylabel={Combined $-$ ZeBRA AUC},ymin=-0.44,ymax=0.035,
+ xtick={0,1,2},xticklabels={FILD/FILA,NF-ILA,NF-ILD}]
+\addplot+[only marks,mark=*,mark size=2.6pt,error bars/.cd,y dir=both,y explicit]
+ table[x expr=floor(\coordindex/3),y=mean_delta_auc,
+ y error plus expr=\thisrow{q975}-\thisrow{mean_delta_auc},
+ y error minus expr=\thisrow{mean_delta_auc}-\thisrow{q025},
+ restrict expr to domain={mod(\coordindex,3)}{-0.1:0.1}]{\globalpaired};
+\addplot+[dashed,no marks] coordinates {(-0.4,0) (2.4,0)};
+\end{groupplot}
+\end{tikzpicture}
+\caption{\textbf{Global repeated-split discrimination (notebook 32).} Left: mean held-out AUC $\pm$ one SD across 30 repeated outer splits. Right: paired combined-minus-ZeBRA AUC with split-wise 2.5th--97.5th percentile ranges. Both panels are generated directly from canonical CSVs in \texttt{zebra\_comp/RESULTS}.}
 \label{fig:global-repeated-boxplots}
 \end{figure*}%
 }
@@ -16,27 +65,29 @@
 \begin{figure*}[!t]
 \centering
 \begin{tikzpicture}
-\begin{axis}[
-width=0.84\textwidth,height=0.29\textwidth,
-xmin=0.5,xmax=3.5,ymin=-0.24,ymax=0.03,
-xtick={1,2,3},xticklabels={FILD/FILA,Nonfibrotic ILD,Nonfibrotic ILA},
-ylabel={Paired $\Delta$AUC (genomics + ZeBRA $-$ ZeBRA)},
-tick label style={font=\footnotesize},label style={font=\footnotesize},
-ymajorgrids=true,major grid style={dotted}]
-\addplot+[only marks,mark=*,mark size=2.7pt] coordinates {(1,0.0004349) (2,-0.1005250) (3,-0.0373684)};
-\addplot+[no marks,dashed] coordinates {(0.5,0) (3.5,0)};
-\draw (axis cs:1,-0.0050703) -- (axis cs:1,0.0040843);
-\draw (axis cs:0.94,-0.0050703) -- (axis cs:1.06,-0.0050703);
-\draw (axis cs:0.94,0.0040843) -- (axis cs:1.06,0.0040843);
-\draw (axis cs:2,-0.2257717) -- (axis cs:2,-0.0050563);
-\draw (axis cs:1.94,-0.2257717) -- (axis cs:2.06,-0.2257717);
-\draw (axis cs:1.94,-0.0050563) -- (axis cs:2.06,-0.0050563);
-\draw (axis cs:3,-0.0738433) -- (axis cs:3,-0.0070462);
-\draw (axis cs:2.94,-0.0738433) -- (axis cs:3.06,-0.0738433);
-\draw (axis cs:2.94,-0.0070462) -- (axis cs:3.06,-0.0070462);
-\end{axis}
+\begin{groupplot}[
+ group style={group size=2 by 1,horizontal sep=1.45cm},
+ width=0.425\textwidth,height=0.285\textwidth,
+ tick label style={font=\footnotesize},label style={font=\footnotesize},
+ ymajorgrids=true,major grid style={dotted}]
+\nextgroupplot[
+ ylabel={Paired $\Delta$AUC},ymin=-0.25,ymax=0.03,
+ xtick={0,1,2},xticklabels={FILD/FILA,NF-ILA,NF-ILD}]
+\addplot+[only marks,mark=*,mark size=2.6pt,error bars/.cd,y dir=both,y explicit]
+ table[x expr=floor(\coordindex/4),y=mean_delta,
+ y error plus expr=\thisrow{q975}-\thisrow{mean_delta},
+ y error minus expr=\thisrow{mean_delta}-\thisrow{q025},
+ restrict expr to domain={mod(\coordindex,4)}{-0.1:0.1}]{\incremental};
+\addplot+[dashed,no marks] coordinates {(-0.4,0) (2.4,0)};
+\nextgroupplot[
+ ylabel={Mean paired change},ymin=-0.04,ymax=0.008,
+ xtick={1,2,3},xticklabels={$\Delta$AP,$\Delta$Brier,$\Delta$log loss}]
+\addplot+[ybar,bar width=15pt]
+ table[x expr=\coordindex,y=mean_delta,restrict expr to domain={\coordindex}{1:3}]{\incremental};
+\addplot+[dashed,no marks] coordinates {(0.5,0) (3.5,0)};
+\end{groupplot}
 \end{tikzpicture}
-\caption{\textbf{Paired incremental discrimination (notebook 33).} Mean paired change in AUC from adding the complete genomic panel to ZeBRA, evaluated on the same held-out subjects in each of 30 repeated splits. Vertical intervals are the split-wise 2.5th--97.5th percentile range. For FILD/FILA the distribution is centered essentially at zero; for both nonfibrotic endpoints the change is negative.}
+\caption{\textbf{Paired incremental-value analysis (notebook 33).} Left: mean paired change in AUC after adding the genomic panel to ZeBRA, with split-wise 2.5th--97.5th percentile ranges. Right: FILD/FILA changes in average precision, Brier score, and log loss. Data are read directly from \texttt{paired\_incremental\_summary.csv}.}
 \label{fig:incremental-auc}
 \end{figure*}%
 }
@@ -44,15 +95,34 @@ ymajorgrids=true,major grid style={dotted}]
 \newcommand{\figMUCfiveBApparentAndStratified}{%
 \begin{figure*}[!t]
 \centering
-\begin{minipage}[t]{0.49\textwidth}\centering
-\textbf{A}\par\smallskip
-\includegraphics[width=\linewidth]{../zebra_comp/RESULTS/ZEBRA_MUC5B_APPARENT_ASSOCIATION/ZEBRA_MUC5B_NONLINEAR_ASSOCIATION.png}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.49\textwidth}\centering
-\textbf{B}\par\smallskip
-\includegraphics[width=\linewidth]{../zebra_comp/RESULTS/MUC5B_STRATIFIED_BY_FILD/MUC5B_enrichment_by_FILD_stratum.png}
-\end{minipage}
-\caption{\textbf{Apparent pooled ZeBRA--\textit{MUC5B} association and disease-stratified clarification.} (A) The pooled analysis can create the appearance of a relationship between ZeBRA risk and rs35705950 carrier frequency, particularly in the extreme score tail. Globally, however, ZeBRA predicts carrier status at chance level. (B) Stratification by FILD/FILA status shows that carrier prevalence is strongly associated with disease status while the within-stratum ZeBRA--genotype association disappears. The pooled signal is therefore consistent with both channels tracking disease rather than ZeBRA reconstructing genotype.}
+\begin{tikzpicture}
+\begin{groupplot}[
+ group style={group size=3 by 1,horizontal sep=1.15cm},
+ width=0.285\textwidth,height=0.255\textwidth,
+ tick label style={font=\scriptsize},label style={font=\footnotesize},
+ ymajorgrids=true,major grid style={dotted}]
+\nextgroupplot[
+ ylabel={Carrier AUC},ymin=0.45,ymax=0.53,
+ xtick={0,2,3},xticklabels={Pooled,Explicit neg.,FILD+},
+ xticklabel style={rotate=18,anchor=east}]
+\addplot+[ybar,bar width=12pt] table[x expr=\coordindex,y=continuous_auc,restrict expr to domain={\coordindex}{0:0}]{\mucfive};
+\addplot+[ybar,bar width=12pt] table[x expr=\coordindex,y=continuous_auc,restrict expr to domain={\coordindex}{2:3}]{\mucfive};
+\addplot+[dashed,no marks] coordinates {(-0.4,0.5) (3.4,0.5)};
+\nextgroupplot[
+ ylabel={T-carrier prevalence},ymin=0.15,ymax=0.43,
+ xtick={2,3},xticklabels={Explicit neg.,FILD+},
+ xticklabel style={rotate=18,anchor=east}]
+\addplot+[ybar,bar width=14pt] table[x expr=\coordindex,y=MUC5B_T_carrier_prevalence,restrict expr to domain={\coordindex}{2:3}]{\mucfive};
+\nextgroupplot[
+ ylabel={Top-1\% enrichment},ymin=0.70,ymax=1.60,
+ xtick={0,2,3},xticklabels={Pooled,Explicit neg.,FILD+},
+ xticklabel style={rotate=18,anchor=east}]
+\addplot+[ybar,bar width=12pt] table[x expr=\coordindex,y=observed_99_enrichment,restrict expr to domain={\coordindex}{0:0}]{\mucfive};
+\addplot+[ybar,bar width=12pt] table[x expr=\coordindex,y=observed_99_enrichment,restrict expr to domain={\coordindex}{2:3}]{\mucfive};
+\addplot+[dashed,no marks] coordinates {(-0.4,1) (3.4,1)};
+\end{groupplot}
+\end{tikzpicture}
+\caption{\textbf{ZeBRA does not reconstruct \textit{MUC5B}.} Left: ZeBRA-to-carrier AUC is near chance pooled and within disease strata. Center: carrier prevalence is strongly higher among FILD/FILA-positive subjects. Right: the pooled top-1\% carrier enrichment disappears within explicit-negative and FILD-positive strata; the dashed line denotes no enrichment. All panels are generated directly from \texttt{MUC5B\_ZEBRA\_STRATIFIED\_SUMMARY.csv}.}
 \label{fig:muc5b-apparent-stratified}
 \end{figure*}%
 }
@@ -60,15 +130,28 @@ ymajorgrids=true,major grid style={dotted}]
 \newcommand{\figLocalInformation}{%
 \begin{figure*}[!t]
 \centering
-\begin{minipage}[t]{0.49\textwidth}\centering
-\textbf{A}\par\smallskip
-\includegraphics[width=\linewidth]{../zebra_comp/RESULTS/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/LOCAL_INFORMATION_CROSSOVER.png}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.49\textwidth}\centering
-\textbf{B}\par\smallskip
-\includegraphics[width=\linewidth]{../zebra_comp/RESULTS/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/FPR_DEFINED_INFORMATION_BANDS.png}
-\end{minipage}
-\caption{\textbf{Residual genomic information is localized in ZeBRA score space.} Results from \texttt{test\_local\_zebra\_genomics\_predictive\_curves.py}. (A) Local information changes across the ZeBRA score distribution rather than remaining spatially uniform. (B) FPR-defined operating bands make this heterogeneity explicit: adding \textit{MUC5B} after ZeBRA is significant in several restricted regions, including the 5--10\% and 20--40\% control-FPR bands. This is the empirical counterpart of boundary localization.}
+\begin{tikzpicture}
+\begin{groupplot}[
+ group style={group size=2 by 1,horizontal sep=1.65cm},
+ width=0.40\textwidth,height=0.27\textwidth,
+ tick label style={font=\footnotesize},label style={font=\footnotesize},
+ ymajorgrids=true,major grid style={dotted}]
+\nextgroupplot[
+ ylabel={Conditional LRT statistic},ymin=0,ymax=18,
+ xtick={0,1,2,3},xticklabels={2--5,5--10,10--20,20--40},
+ xlabel={ZeBRA control-FPR band (\%)}]
+\addplot+[ybar,bar width=10pt] table[x expr=\coordindex,y=LRT_G_given_Z]{\localbands};
+\nextgroupplot[
+ ylabel={Within-band AUC},ymin=0.30,ymax=0.72,
+ xtick={0,1,2,3},xticklabels={2--5,5--10,10--20,20--40},
+ xlabel={ZeBRA control-FPR band (\%)},
+ legend style={at={(0.5,1.04)},anchor=south,legend columns=2,draw=none,font=\scriptsize}]
+\addplot+[mark=*,thick] table[x expr=\coordindex,y=AUC_Z]{\localbands};\addlegendentry{ZeBRA}
+\addplot+[mark=square*,thick] table[x expr=\coordindex,y=AUC_MUC5B]{\localbands};\addlegendentry{MUC5B}
+\addplot+[dashed,no marks] coordinates {(-0.4,0.5) (3.4,0.5)};
+\end{groupplot}
+\end{tikzpicture}
+\caption{\textbf{Residual genomic information is heterogeneous across ZeBRA score space.} Left: likelihood-ratio statistic for adding \textit{MUC5B} after ZeBRA within FPR-defined bands. Right: within-band discrimination of ZeBRA and \textit{MUC5B}. The 5--10\% ZeBRA AUC of 0.367 is read directly from the canonical result CSV and is a genuine within-band reversal, not a transcription artifact.}
 \label{fig:local-information}
 \end{figure*}%
 }
@@ -78,36 +161,38 @@ ymajorgrids=true,major grid style={dotted}]
 \centering
 \begin{tikzpicture}
 \begin{groupplot}[
- group style={group size=3 by 1,horizontal sep=1.15cm},
- width=0.30\textwidth,height=0.285\textwidth,
+ group style={group size=2 by 1,horizontal sep=2.0cm},
+ width=0.40\textwidth,height=0.255\textwidth,
  tick label style={font=\footnotesize},label style={font=\footnotesize},
- ymajorgrids=true,major grid style={dotted}]
+ xmajorgrids=true,ymajorgrids=true,major grid style={dotted}]
 \nextgroupplot[
- ylabel={Held-out sensitivity},ymin=0.28,ymax=0.42,
- xtick={0,1,2,3,4,5},xticklabels={1/2,1/5,0.5/2,0.5/5,1/10,0.5/10},
- xticklabel style={rotate=32,anchor=east},xlabel={Upper/lower target FPR (\%)},
- legend style={at={(0.5,1.02)},anchor=south,legend columns=2,draw=none,font=\scriptsize}]
-\addplot+[mark=*,thick] table[col sep=comma,x expr=\coordindex,y=matched_zebra_sensitivity_mean]{../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MATCHED_FPR_RESCUE_VS_ZEBRA.csv};
-\addlegendentry{Matched-FPR ZeBRA}
-\addplot+[mark=square*,thick] table[col sep=comma,x expr=\coordindex,y=rescued_sensitivity_mean]{../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MATCHED_FPR_RESCUE_VS_ZEBRA.csv};
-\addlegendentry{MUC5B rescue}
+ xlabel={Lower target FPR (\%)},ylabel={Sensitivity gain (pp)},
+ xmin=1.5,xmax=10.5,xtick={2,5,10},ymin=-1.5,ymax=8.5,
+ legend style={at={(0.5,1.05)},anchor=south,legend columns=2,draw=none,font=\scriptsize}]
+\addplot+[mark=*,thick,error bars/.cd,y dir=both,y explicit]
+ table[x expr=100*\thisrow{lower_target_fpr},y expr=100*\thisrow{rescue_minus_matched_sensitivity_mean},
+ y error plus expr=100*(\thisrow{rescue_minus_matched_sensitivity_q975}-\thisrow{rescue_minus_matched_sensitivity_mean}),
+ y error minus expr=100*(\thisrow{rescue_minus_matched_sensitivity_mean}-\thisrow{rescue_minus_matched_sensitivity_q025}),
+ restrict expr to domain={\thisrow{main_target_fpr}}{0.0049:0.0051}]{\rescuedata};
+\addlegendentry{Upper 0.5\%}
+\addplot+[mark=square*,thick,error bars/.cd,y dir=both,y explicit]
+ table[x expr=100*\thisrow{lower_target_fpr},y expr=100*\thisrow{rescue_minus_matched_sensitivity_mean},
+ y error plus expr=100*(\thisrow{rescue_minus_matched_sensitivity_q975}-\thisrow{rescue_minus_matched_sensitivity_mean}),
+ y error minus expr=100*(\thisrow{rescue_minus_matched_sensitivity_mean}-\thisrow{rescue_minus_matched_sensitivity_q025}),
+ restrict expr to domain={\thisrow{main_target_fpr}}{0.0099:0.0101}]{\rescuedata};
+\addlegendentry{Upper 1\%}
+\addplot+[dashed,no marks] coordinates {(1.5,0) (10.5,0)};
 \nextgroupplot[
- xlabel={$\Delta$FPR (rescue $-$ matched ZeBRA)},ylabel={$\Delta$sensitivity},
- xmin=-0.00032,xmax=0.00006,ymin=0.0,ymax=0.05,
- scaled x ticks=false,xtick={-0.0003,-0.0002,-0.0001,0},
- xticklabel style={/pgf/number format/fixed,/pgf/number format/precision=4,rotate=28,anchor=east}]
-\addplot+[only marks,mark=*,mark size=2.5pt] table[col sep=comma,x expr=\thisrow{rescued_FPR_mean}-\thisrow{matched_zebra_FPR_mean},y=matched_sensitivity_advantage]{../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MATCHED_FPR_RESCUE_VS_ZEBRA.csv};
-\addplot+[dashed,no marks] coordinates {(-0.00032,0) (0.00006,0)};
-\addplot+[dashed,no marks] coordinates {(0,0) (0,0.05)};
-\nextgroupplot[
- ylabel={Positive likelihood ratio (LR+)},ymin=12,ymax=42,
- xtick={0,1,2,3,4,5},xticklabels={1/2,1/5,0.5/2,0.5/5,1/10,0.5/10},
- xticklabel style={rotate=32,anchor=east},xlabel={Upper/lower target FPR (\%)}]
-\addplot+[mark=*,thick] table[col sep=comma,x expr=\coordindex,y=matched_zebra_LR_positive_mean]{../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MATCHED_FPR_RESCUE_VS_ZEBRA.csv};
-\addplot+[mark=square*,thick] table[col sep=comma,x expr=\coordindex,y=rescued_LR_positive_mean]{../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MATCHED_FPR_RESCUE_VS_ZEBRA.csv};
+ xlabel={Lower target FPR (\%)},ylabel={FPR difference (pp)},
+ xmin=1.5,xmax=10.5,xtick={2,5,10},scaled y ticks=false,
+ ymin=-0.035,ymax=0.008,
+ yticklabel style={/pgf/number format/fixed,/pgf/number format/precision=3}]
+\addplot+[mark=*,thick] table[x expr=100*\thisrow{lower_target_fpr},y expr=100*\thisrow{rescue_minus_matched_FPR_mean},restrict expr to domain={\thisrow{main_target_fpr}}{0.0049:0.0051}]{\rescuedata};
+\addplot+[mark=square*,thick] table[x expr=100*\thisrow{lower_target_fpr},y expr=100*\thisrow{rescue_minus_matched_FPR_mean},restrict expr to domain={\thisrow{main_target_fpr}}{0.0099:0.0101}]{\rescuedata};
+\addplot+[dashed,no marks] coordinates {(1.5,0) (10.5,0)};
 \end{groupplot}
 \end{tikzpicture}
-\caption{\textbf{Boundary-targeted genomics improves the operating decision.} Publication-quality PGFPlots generated directly from \texttt{MATCHED\_FPR\_RESCUE\_VS\_ZEBRA.csv}. Left: sensitivity of the two-threshold \textit{MUC5B} rescue rule and a ZeBRA-only rule matched to the same realized FPR. Center: every evaluated operating pair has positive sensitivity gain while the overall FPR difference remains near zero. Right: LR$+$ also improves with rescue.}
+\caption{\textbf{Boundary-targeted \textit{MUC5B} rescue.} Left: paired held-out sensitivity gain over the matched-ZeBRA comparator, in percentage points, with split-wise 2.5th--97.5th percentile ranges. Right: operational FPR difference remains close to zero. Data are read directly from \texttt{REPEATED\_SPLIT\_MUC5B\_RESCUE\_SUMMARY.csv}.}
 \label{fig:boundary-rescue}
 \end{figure*}%
 }
@@ -117,28 +202,30 @@ ymajorgrids=true,major grid style={dotted}]
 \centering
 \begin{tikzpicture}
 \begin{groupplot}[
- group style={group size=2 by 1,horizontal sep=1.4cm},
- width=0.43\textwidth,height=0.33\textwidth,
+ group style={group size=2 by 1,horizontal sep=1.6cm},
+ width=0.405\textwidth,height=0.275\textwidth,
  tick label style={font=\footnotesize},label style={font=\footnotesize},
  xmajorgrids=true,ymajorgrids=true,major grid style={dotted}]
 \nextgroupplot[
- xlabel={False-positive rate},ylabel={Sensitivity (true-positive rate)},
+ xlabel={False-positive rate},ylabel={Sensitivity},
  xmin=0,xmax=0.05,ymin=0,ymax=0.65,
- legend style={at={(0.5,1.02)},anchor=south,legend columns=3,draw=none,font=\scriptsize}]
-\addplot+[thick,no marks] table[col sep=comma,x=fpr,y=tpr,restrict x to domain=0:0.05]{../zebra_comp/RESULTS/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_ZEBRA.csv};
+ legend style={at={(0.5,1.04)},anchor=south,legend columns=3,draw=none,font=\scriptsize}]
+\addplot+[thick,no marks] table[col sep=comma,x=fpr,y=tpr,restrict x to domain=0:0.05]{\resultroot/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_ZEBRA.csv};
 \addlegendentry{ZeBRA}
-\addplot+[thick,no marks] table[col sep=comma,x=fpr,y=tpr,restrict x to domain=0:0.05]{../zebra_comp/RESULTS/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_HYBRID.csv};
+\addplot+[thick,no marks] table[col sep=comma,x=fpr,y=tpr,restrict x to domain=0:0.05]{\resultroot/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_HYBRID.csv};
 \addlegendentry{Hybrid}
-\addplot+[very thick,dashed,no marks] table[col sep=comma,x=fpr,y=tpr,restrict x to domain=0:0.05]{../zebra_comp/RESULTS/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_UNION_ZEDSTAT_CONVEX_HULL.csv};
-\addlegendentry{Union convex envelope}
+\addplot+[very thick,dashed,no marks] table[col sep=comma,x=fpr,y=tpr,restrict x to domain=0:0.05]{\resultroot/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_UNION_ZEDSTAT_CONVEX_HULL.csv};
+\addlegendentry{Union hull}
 \nextgroupplot[
- xlabel={False-positive rate},ylabel={Hybrid $-$ ZeBRA sensitivity},
- xmin=0,xmax=0.05,ymin=-0.06,ymax=0.08]
-\addplot+[no marks,thick] table[col sep=comma,x=fpr,y expr=\thisrow{hybrid_tpr}-\thisrow{zebra_tpr},restrict x to domain=0:0.05]{../zebra_comp/RESULTS/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_MODEL_WINNER_BY_FPR.csv};
-\addplot+[dashed,no marks] coordinates {(0,0) (0.05,0)};
+ xlabel={Requested FPR (\%)},ylabel={Held-out LR$+$},xmode=log,
+ xmin=0.4,xmax=12,xtick={0.5,1,2,5,10},xticklabels={0.5,1,2,5,10},
+ ymin=0,ymax=65]
+\addplot+[mark=*,thick] coordinates {(0.5,\zlrA) (1,\zlrB) (2,\zlrC) (5,\zlrD) (10,\zlrE)};
+\addplot+[mark=square*,thick] coordinates {(0.5,\glrA) (1,\glrB) (2,\glrC) (5,\glrD) (10,\glrE)};
+\addplot+[mark=triangle*,thick] coordinates {(0.5,\clrA) (1,\clrB) (2,\clrC) (5,\clrD) (10,\clrE)};
 \end{groupplot}
 \end{tikzpicture}
-\caption{\textbf{Low-FPR ROC geometry, regenerated natively in PGFPlots from the evidence CSVs.} Left: out-of-fold ZeBRA and exploratory hybrid ROC curves together with the zedstat union convex envelope, restricted to the high-specificity region relevant to the theorem. Right: pointwise hybrid-minus-ZeBRA sensitivity advantage across FPR. Positive regions identify operating regimes where the genomic boundary modification improves sensitivity despite lower global hybrid AUC. The convex envelope is a geometric operating envelope, not a third deployable classifier.}
+\caption{\textbf{Low-FPR geometry and stringent-tail likelihood ratios.} Left: out-of-fold ZeBRA and exploratory hybrid ROC curves with the union convex envelope, restricted to the high-specificity region. Right: held-out LR$+$ for ZeBRA, genomic-only, and combined models at stringent requested FPRs. The ROC envelope is descriptive, whereas the LR$+$ values are held-out operating-point summaries. All data are read directly from \texttt{zebra\_comp/RESULTS}.}
 \label{fig:low-fpr-geometry}
 \end{figure*}%
 }
