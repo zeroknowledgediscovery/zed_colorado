@@ -1,0 +1,115 @@
+% Empirical figure source for the ZeBRA--genomics manuscript.
+% This file deliberately uses the original zebra_comp output plots when those
+% contain richer split-level information than a reduced replot, and PGFPlots
+% for compact manuscript-native summaries derived from the CSV outputs.
+
+\newcommand{\figGlobalRepeatedSplits}{%
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.93\textwidth]{../zebra_comp/RESULTS/032_REPEATED_SPLITS_03_TARGET_LOGIC/auc_distributions_three_targets.png}
+\caption{\textbf{Global repeated-split discrimination (notebook 32).} Distribution of held-out AUC over 30 repeated outer splits for ZeBRA, genomics-only, and globally combined ZeBRA+genomics models for FILD/FILA, nonfibrotic ILD, and nonfibrotic ILA. This is the primary global-comparison figure. The split-level distributions show that ZeBRA is substantially stronger than genomics alone and that indiscriminate global combination does not yield a reproducible improvement over ZeBRA.}
+\label{fig:global-repeated-boxplots}
+\end{figure*}%
+}
+
+\newcommand{\figIncrementalAUC}{%
+\begin{figure*}[!t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+width=0.84\textwidth,
+height=0.29\textwidth,
+xmin=0.5,xmax=3.5,
+ymin=-0.24,ymax=0.03,
+xtick={1,2,3},
+xticklabels={FILD/FILA,Nonfibrotic ILD,Nonfibrotic ILA},
+ylabel={Paired $\Delta$AUC (genomics + ZeBRA $-$ ZeBRA)},
+tick label style={font=\footnotesize},
+label style={font=\footnotesize},
+ymajorgrids=true,
+major grid style={dotted}]
+\addplot+[only marks,mark=*,mark size=2.7pt] coordinates {(1,0.0004349) (2,-0.1005250) (3,-0.0373684)};
+\addplot+[no marks,dashed] coordinates {(0.5,0) (3.5,0)};
+\draw (axis cs:1,-0.0050703) -- (axis cs:1,0.0040843);
+\draw (axis cs:0.94,-0.0050703) -- (axis cs:1.06,-0.0050703);
+\draw (axis cs:0.94,0.0040843) -- (axis cs:1.06,0.0040843);
+\draw (axis cs:2,-0.2257717) -- (axis cs:2,-0.0050563);
+\draw (axis cs:1.94,-0.2257717) -- (axis cs:2.06,-0.2257717);
+\draw (axis cs:1.94,-0.0050563) -- (axis cs:2.06,-0.0050563);
+\draw (axis cs:3,-0.0738433) -- (axis cs:3,-0.0070462);
+\draw (axis cs:2.94,-0.0738433) -- (axis cs:3.06,-0.0738433);
+\draw (axis cs:2.94,-0.0070462) -- (axis cs:3.06,-0.0070462);
+\end{axis}
+\end{tikzpicture}
+\caption{\textbf{Paired incremental discrimination (notebook 33).} Mean paired change in AUC from adding the complete genomic panel to ZeBRA, evaluated on the same held-out subjects in each of 30 repeated splits. Vertical intervals are the split-wise 2.5th--97.5th percentile range. For FILD/FILA the distribution is centered essentially at zero; for both nonfibrotic endpoints the change is negative.}
+\label{fig:incremental-auc}
+\end{figure*}%
+}
+
+\newcommand{\figMUCfiveBApparentAndStratified}{%
+\begin{figure*}[!t]
+\centering
+\begin{minipage}[t]{0.49\textwidth}
+\centering
+\textbf{A}\par\smallskip
+\includegraphics[width=\linewidth]{../zebra_comp/RESULTS/ZEBRA_MUC5B_APPARENT_ASSOCIATION/ZEBRA_MUC5B_NONLINEAR_ASSOCIATION.png}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.49\textwidth}
+\centering
+\textbf{B}\par\smallskip
+\includegraphics[width=\linewidth]{../zebra_comp/RESULTS/MUC5B_STRATIFIED_BY_FILD/MUC5B_enrichment_by_FILD_stratum.png}
+\end{minipage}
+\caption{\textbf{Apparent pooled ZeBRA--\textit{MUC5B} association and disease-stratified clarification.} (A) The pooled analysis can create the appearance of a relationship between ZeBRA risk and rs35705950 carrier frequency, particularly in the extreme score tail. Globally, however, ZeBRA predicts carrier status at chance level. (B) Stratification by FILD/FILA status shows that carrier prevalence is strongly associated with disease status while the within-stratum ZeBRA--genotype association disappears. The pooled signal is therefore consistent with both channels tracking disease rather than ZeBRA reconstructing genotype.}
+\label{fig:muc5b-apparent-stratified}
+\end{figure*}%
+}
+
+\newcommand{\figLocalInformation}{%
+\begin{figure*}[!t]
+\centering
+\begin{minipage}[t]{0.49\textwidth}
+\centering
+\textbf{A}\par\smallskip
+\includegraphics[width=\linewidth]{../zebra_comp/RESULTS/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/LOCAL_INFORMATION_CROSSOVER.png}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.49\textwidth}
+\centering
+\textbf{B}\par\smallskip
+\includegraphics[width=\linewidth]{../zebra_comp/RESULTS/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/FPR_DEFINED_INFORMATION_BANDS.png}
+\end{minipage}
+\caption{\textbf{Residual genomic information is localized in ZeBRA score space.} Results from \texttt{test\_local\_zebra\_genomics\_predictive\_curves.py}. (A) Local information changes across the ZeBRA score distribution rather than remaining spatially uniform. (B) FPR-defined operating bands make this heterogeneity explicit: adding \textit{MUC5B} after ZeBRA is significant in several restricted regions, including the 5--10\% and 20--40\% control-FPR bands. This is the empirical counterpart of boundary localization.}
+\label{fig:local-information}
+\end{figure*}%
+}
+
+\newcommand{\figBoundaryRescue}{%
+\begin{figure*}[!t]
+\centering
+\begin{minipage}[t]{0.325\textwidth}
+\centering
+\textbf{A}\par\smallskip
+\includegraphics[width=\linewidth]{../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MATCHED_FPR_sensitivity_rescue_vs_zebra.png}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.325\textwidth}
+\centering
+\textbf{B}\par\smallskip
+\includegraphics[width=\linewidth]{../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MUC5B_RESCUE_delta_sensitivity_vs_delta_FPR.png}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.325\textwidth}
+\centering
+\textbf{C}\par\smallskip
+\includegraphics[width=\linewidth]{../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MATCHED_FPR_LRplus_rescue_vs_zebra.png}
+\end{minipage}
+\caption{\textbf{Boundary-targeted genomics improves the operating decision.} Results from \texttt{test\_muc5b\_zebra\_rescue\_matched\_fpr\_lr.py}. (A) Sensitivity of the two-threshold \textit{MUC5B} rescue rule versus a ZeBRA-only rule matched to the same realized FPR. (B) The sensitivity gain is achieved with essentially no increase in overall FPR across the evaluated operating bands. (C) LR$+$ is also improved for the rescue rule. These plots show the central empirical result directly: genomic information is useful when deployed selectively near a ZeBRA decision boundary, even though it does not improve the global ranking.}
+\label{fig:boundary-rescue}
+\end{figure*}%
+}
+
+\newcommand{\figLowFPRGeometry}{%
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.84\textwidth]{../zebra_comp/RESULTS/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_ZEBRA_HYBRID_ZEDSTAT_CONVEX_HULL_LOW_FPR.png}
+\caption{\textbf{Low-FPR ROC geometry.} Out-of-fold ZeBRA and exploratory boundary-aware hybrid ROC behavior from \texttt{test\_zebra\_hybrid\_roc\_convex\_hull\_zedstat.py}, shown in the operating region most relevant to the theorem. The curves occupy different favorable regions despite the hybrid having lower global AUC. The union convex envelope is a geometric operating envelope, not a third deployable scalar classifier.}
+\label{fig:low-fpr-geometry}
+\end{figure*}%
+}
