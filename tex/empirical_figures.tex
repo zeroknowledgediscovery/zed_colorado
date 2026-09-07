@@ -17,17 +17,12 @@
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-width=0.84\textwidth,
-height=0.29\textwidth,
-xmin=0.5,xmax=3.5,
-ymin=-0.24,ymax=0.03,
-xtick={1,2,3},
-xticklabels={FILD/FILA,Nonfibrotic ILD,Nonfibrotic ILA},
+width=0.84\textwidth,height=0.29\textwidth,
+xmin=0.5,xmax=3.5,ymin=-0.24,ymax=0.03,
+xtick={1,2,3},xticklabels={FILD/FILA,Nonfibrotic ILD,Nonfibrotic ILA},
 ylabel={Paired $\Delta$AUC (genomics + ZeBRA $-$ ZeBRA)},
-tick label style={font=\footnotesize},
-label style={font=\footnotesize},
-ymajorgrids=true,
-major grid style={dotted}]
+tick label style={font=\footnotesize},label style={font=\footnotesize},
+ymajorgrids=true,major grid style={dotted}]
 \addplot+[only marks,mark=*,mark size=2.7pt] coordinates {(1,0.0004349) (2,-0.1005250) (3,-0.0373684)};
 \addplot+[no marks,dashed] coordinates {(0.5,0) (3.5,0)};
 \draw (axis cs:1,-0.0050703) -- (axis cs:1,0.0040843);
@@ -49,13 +44,11 @@ major grid style={dotted}]
 \newcommand{\figMUCfiveBApparentAndStratified}{%
 \begin{figure*}[!t]
 \centering
-\begin{minipage}[t]{0.49\textwidth}
-\centering
+\begin{minipage}[t]{0.49\textwidth}\centering
 \textbf{A}\par\smallskip
 \includegraphics[width=\linewidth]{../zebra_comp/RESULTS/ZEBRA_MUC5B_APPARENT_ASSOCIATION/ZEBRA_MUC5B_NONLINEAR_ASSOCIATION.png}
 \end{minipage}\hfill
-\begin{minipage}[t]{0.49\textwidth}
-\centering
+\begin{minipage}[t]{0.49\textwidth}\centering
 \textbf{B}\par\smallskip
 \includegraphics[width=\linewidth]{../zebra_comp/RESULTS/MUC5B_STRATIFIED_BY_FILD/MUC5B_enrichment_by_FILD_stratum.png}
 \end{minipage}
@@ -67,13 +60,11 @@ major grid style={dotted}]
 \newcommand{\figLocalInformation}{%
 \begin{figure*}[!t]
 \centering
-\begin{minipage}[t]{0.49\textwidth}
-\centering
+\begin{minipage}[t]{0.49\textwidth}\centering
 \textbf{A}\par\smallskip
 \includegraphics[width=\linewidth]{../zebra_comp/RESULTS/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/LOCAL_INFORMATION_CROSSOVER.png}
 \end{minipage}\hfill
-\begin{minipage}[t]{0.49\textwidth}
-\centering
+\begin{minipage}[t]{0.49\textwidth}\centering
 \textbf{B}\par\smallskip
 \includegraphics[width=\linewidth]{../zebra_comp/RESULTS/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/FPR_DEFINED_INFORMATION_BANDS.png}
 \end{minipage}
@@ -88,42 +79,30 @@ major grid style={dotted}]
 \begin{tikzpicture}
 \begin{groupplot}[
  group style={group size=3 by 1,horizontal sep=1.15cm},
- width=0.30\textwidth,
- height=0.285\textwidth,
- tick label style={font=\footnotesize},
- label style={font=\footnotesize},
- ymajorgrids=true,
- major grid style={dotted}]
+ width=0.30\textwidth,height=0.285\textwidth,
+ tick label style={font=\footnotesize},label style={font=\footnotesize},
+ ymajorgrids=true,major grid style={dotted}]
 \nextgroupplot[
- ylabel={Held-out sensitivity},
- ymin=0.28,ymax=0.42,
- xtick={0,1,2,3,4,5},
- xticklabels={1/2,1/5,0.5/2,0.5/5,1/10,0.5/10},
- xticklabel style={rotate=32,anchor=east},
- xlabel={Upper/lower target FPR (\%)},
+ ylabel={Held-out sensitivity},ymin=0.28,ymax=0.42,
+ xtick={0,1,2,3,4,5},xticklabels={1/2,1/5,0.5/2,0.5/5,1/10,0.5/10},
+ xticklabel style={rotate=32,anchor=east},xlabel={Upper/lower target FPR (\%)},
  legend style={at={(0.5,1.02)},anchor=south,legend columns=2,draw=none,font=\scriptsize}]
 \addplot+[mark=*,thick] table[col sep=comma,x expr=\coordindex,y=matched_zebra_sensitivity_mean]{../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MATCHED_FPR_RESCUE_VS_ZEBRA.csv};
 \addlegendentry{Matched-FPR ZeBRA}
 \addplot+[mark=square*,thick] table[col sep=comma,x expr=\coordindex,y=rescued_sensitivity_mean]{../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MATCHED_FPR_RESCUE_VS_ZEBRA.csv};
 \addlegendentry{MUC5B rescue}
 \nextgroupplot[
- xlabel={$\Delta$FPR (rescue $-$ matched ZeBRA)},
- ylabel={$\Delta$sensitivity},
- xmin=-0.00032,xmax=0.00006,
- ymin=0.0,ymax=0.05,
- scaled x ticks=false,
- xtick={-0.0003,-0.0002,-0.0001,0},
+ xlabel={$\Delta$FPR (rescue $-$ matched ZeBRA)},ylabel={$\Delta$sensitivity},
+ xmin=-0.00032,xmax=0.00006,ymin=0.0,ymax=0.05,
+ scaled x ticks=false,xtick={-0.0003,-0.0002,-0.0001,0},
  xticklabel style={/pgf/number format/fixed,/pgf/number format/precision=4,rotate=28,anchor=east}]
 \addplot+[only marks,mark=*,mark size=2.5pt] table[col sep=comma,x expr=\thisrow{rescued_FPR_mean}-\thisrow{matched_zebra_FPR_mean},y=matched_sensitivity_advantage]{../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MATCHED_FPR_RESCUE_VS_ZEBRA.csv};
 \addplot+[dashed,no marks] coordinates {(-0.00032,0) (0.00006,0)};
 \addplot+[dashed,no marks] coordinates {(0,0) (0,0.05)};
 \nextgroupplot[
- ylabel={Positive likelihood ratio (LR+)},
- ymin=12,ymax=42,
- xtick={0,1,2,3,4,5},
- xticklabels={1/2,1/5,0.5/2,0.5/5,1/10,0.5/10},
- xticklabel style={rotate=32,anchor=east},
- xlabel={Upper/lower target FPR (\%)}]
+ ylabel={Positive likelihood ratio (LR+)},ymin=12,ymax=42,
+ xtick={0,1,2,3,4,5},xticklabels={1/2,1/5,0.5/2,0.5/5,1/10,0.5/10},
+ xticklabel style={rotate=32,anchor=east},xlabel={Upper/lower target FPR (\%)}]
 \addplot+[mark=*,thick] table[col sep=comma,x expr=\coordindex,y=matched_zebra_LR_positive_mean]{../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MATCHED_FPR_RESCUE_VS_ZEBRA.csv};
 \addplot+[mark=square*,thick] table[col sep=comma,x expr=\coordindex,y=rescued_LR_positive_mean]{../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MATCHED_FPR_RESCUE_VS_ZEBRA.csv};
 \end{groupplot}
@@ -139,17 +118,12 @@ major grid style={dotted}]
 \begin{tikzpicture}
 \begin{groupplot}[
  group style={group size=2 by 1,horizontal sep=1.4cm},
- width=0.43\textwidth,
- height=0.33\textwidth,
- tick label style={font=\footnotesize},
- label style={font=\footnotesize},
- xmajorgrids=true,ymajorgrids=true,
- major grid style={dotted}]
+ width=0.43\textwidth,height=0.33\textwidth,
+ tick label style={font=\footnotesize},label style={font=\footnotesize},
+ xmajorgrids=true,ymajorgrids=true,major grid style={dotted}]
 \nextgroupplot[
- xlabel={False-positive rate},
- ylabel={Sensitivity (true-positive rate)},
- xmin=0,xmax=0.05,
- ymin=0,ymax=0.65,
+ xlabel={False-positive rate},ylabel={Sensitivity (true-positive rate)},
+ xmin=0,xmax=0.05,ymin=0,ymax=0.65,
  legend style={at={(0.5,1.02)},anchor=south,legend columns=3,draw=none,font=\scriptsize}]
 \addplot+[thick,no marks] table[col sep=comma,x=fpr,y=tpr,restrict x to domain=0:0.05]{../zebra_comp/RESULTS/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_ZEBRA.csv};
 \addlegendentry{ZeBRA}
@@ -158,11 +132,9 @@ major grid style={dotted}]
 \addplot+[very thick,dashed,no marks] table[col sep=comma,x=fpr,y=tpr,restrict x to domain=0:0.05]{../zebra_comp/RESULTS/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_UNION_ZEDSTAT_CONVEX_HULL.csv};
 \addlegendentry{Union convex envelope}
 \nextgroupplot[
- xlabel={False-positive rate},
- ylabel={Hybrid $-$ ZeBRA sensitivity},
- xmin=0,xmax=0.05,
- ymin=-0.06,ymax=0.08]
-\addplot+[no marks,thick] table[col sep=comma,x=fpr,y expr=\thisrow{tpr_hybrid}-\thisrow{tpr_zebra},restrict x to domain=0:0.05]{../zebra_comp/RESULTS/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_MODEL_WINNER_BY_FPR.csv};
+ xlabel={False-positive rate},ylabel={Hybrid $-$ ZeBRA sensitivity},
+ xmin=0,xmax=0.05,ymin=-0.06,ymax=0.08]
+\addplot+[no marks,thick] table[col sep=comma,x=fpr,y expr=\thisrow{hybrid_tpr}-\thisrow{zebra_tpr},restrict x to domain=0:0.05]{../zebra_comp/RESULTS/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_MODEL_WINNER_BY_FPR.csv};
 \addplot+[dashed,no marks] coordinates {(0,0) (0.05,0)};
 \end{groupplot}
 \end{tikzpicture}
