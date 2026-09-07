@@ -16,30 +16,33 @@ Empirical figure source is modularized in:
 empirical_figures.tex
 ```
 
-The manuscript deliberately uses the original `zebra_comp` result plots when they contain richer split-level or operating-point information than a reduced replot, while retaining PGFPlots for compact manuscript-native summaries. This makes the source traceable to the exact analyses that produced each result.
+All manuscript result figures are generated natively with PGFPlots/TikZ. The figure code reads the canonical analysis outputs directly from:
 
-Current main empirical figures:
+```text
+../zebra_comp/RESULTS/
+```
 
-1. Notebook-32 repeated-split AUC boxplots:
-   `../zebra_comp/RESULTS/032_REPEATED_SPLITS_03_TARGET_LOGIC/auc_distributions_three_targets.png`
-2. Notebook-33 paired incremental AUC:
-   PGFPlot in `empirical_figures.tex`, derived from
+There is deliberately no manuscript-side `data/` directory and no copied CSV layer. The manuscript figures also do not depend on pre-rendered PNG result plots. This keeps the plotted values tied directly to the outputs of the analysis pipeline.
+
+Current empirical figure inputs include:
+
+1. Global repeated-split discrimination:
+   `../zebra_comp/RESULTS/032_REPEATED_SPLITS_03_TARGET_LOGIC/auc_distribution_summary.csv`
+   `../zebra_comp/RESULTS/032_REPEATED_SPLITS_03_TARGET_LOGIC/paired_auc_delta_summary.csv`
+2. Paired incremental analysis:
    `../zebra_comp/RESULTS/033_INCREMENTAL_LOGISTIC_32_COHORT/paired_incremental_summary.csv`
-3. Apparent versus disease-stratified ZeBRA--MUC5B association:
-   `../zebra_comp/RESULTS/ZEBRA_MUC5B_APPARENT_ASSOCIATION/ZEBRA_MUC5B_NONLINEAR_ASSOCIATION.png`
-   and
-   `../zebra_comp/RESULTS/MUC5B_STRATIFIED_BY_FILD/MUC5B_enrichment_by_FILD_stratum.png`
+3. Disease-stratified ZeBRA--MUC5B analysis:
+   `../zebra_comp/RESULTS/MUC5B_STRATIFIED_BY_FILD/MUC5B_ZEBRA_STRATIFIED_SUMMARY.csv`
 4. Local genomic information:
-   `../zebra_comp/RESULTS/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/LOCAL_INFORMATION_CROSSOVER.png`
-   and
-   `../zebra_comp/RESULTS/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/FPR_DEFINED_INFORMATION_BANDS.png`
-5. Matched-FPR decision-boundary rescue:
-   `../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MATCHED_FPR_sensitivity_rescue_vs_zebra.png`
-   `../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MUC5B_RESCUE_delta_sensitivity_vs_delta_FPR.png`
-   `../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/MATCHED_FPR_LRplus_rescue_vs_zebra.png`
-6. Low-FPR ROC geometry:
-   `../zebra_comp/RESULTS/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_ZEBRA_HYBRID_ZEDSTAT_CONVEX_HULL_LOW_FPR.png`
+   `../zebra_comp/RESULTS/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/FPR_DEFINED_LOCAL_INFORMATION_BANDS.csv`
+5. Matched-operational-FPR MUC5B rescue:
+   `../zebra_comp/RESULTS/MUC5B_ZEBRA_RESCUE_RULE/REPEATED_SPLIT_MUC5B_RESCUE_SUMMARY.csv`
+6. Low-FPR ROC geometry and stringent-tail operating behavior:
+   `../zebra_comp/RESULTS/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_ZEBRA.csv`
+   `../zebra_comp/RESULTS/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_HYBRID.csv`
+   `../zebra_comp/RESULTS/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_UNION_ZEDSTAT_CONVEX_HULL.csv`
+   `../zebra_comp/RESULTS/032_REPEATED_SPLITS_03_TARGET_LOGIC/zedstat_operating_points_summary.csv`
 
-The empirical section also contains a theory--evidence map tying the figures/tables to the likelihood-ratio theorem. Wide tables and multi-panel figures use IEEE `table*`/`figure*` floats to avoid column and margin overlap.
+The empirical section contains a theory--evidence map tying the figures and tables to the likelihood-ratio theorem. Wide tables and multi-panel figures use IEEE `table*`/`figure*` floats.
 
 The analysis pipeline that regenerates the corresponding `zebra_comp/RESULTS` folders is documented in `../zebra_comp/README.md` and run with `../zebra_comp/run_all.sh`.
