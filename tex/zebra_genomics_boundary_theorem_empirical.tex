@@ -3,6 +3,10 @@
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{graphicx}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=1.18}
 \usepackage{cite}
 \usepackage{url}
 \usepackage[hidelinks]{hyperref}
@@ -29,7 +33,7 @@ Division of Biomedical Informatics, University of Kentucky College of Medicine}
 
 \newcommand{\empiricalcallout}{%
 \par\noindent
-The current Colorado analysis is summarized in Section~\ref{sec:empirical}. The principal empirical distinction is between \emph{global incremental discrimination}, for which broad genomic augmentation provides no meaningful gain over ZeBRA, and \emph{local decision utility}, for which \textit{MUC5B} can improve classification within restricted ZeBRA operating regions.
+The current Colorado analysis is summarized in Section~\ref{sec:empirical}. The central empirical distinction is between \emph{global incremental discrimination}, for which broad genomic augmentation provides no meaningful gain over ZeBRA, and \emph{localized decision utility}, for which \textit{MUC5B} retains conditional information within restricted ZeBRA operating regions.
 \par
 }
 
@@ -39,19 +43,20 @@ The current Colorado analysis is summarized in Section~\ref{sec:empirical}. The 
 
 \subsection{Cohort and analysis geometry}
 
-The current analysis uses the Colorado genomic-clinical cohort assembled in \texttt{zebra\_comp}. Three stored phenotype fields are evaluated: \texttt{FILD or FILA ADJUDICATED}, \texttt{NONFIBROTIC ILD ADJUDICATED}, and \texttt{NON FIBROTIC ILA ADJUDICATED}. The legacy operational target construction maps \texttt{Y/y} to 1, \texttt{N/n} to 0, converts the field to numeric, assigns missing target values to 0, and excludes observations without an available 104-week ZeBRA score. Thus the reported endpoint should be understood as the notebook-defined prediction target; not every target-zero observation is an independently adjudicated negative. This distinction is especially important for interpretation of false-positive rates and is retained explicitly as a limitation below.
+The current analysis uses the Colorado genomic--clinical cohort assembled in \texttt{zebra\_comp}. Three stored phenotype fields are evaluated: \texttt{FILD or FILA ADJUDICATED}, \texttt{NONFIBROTIC ILD ADJUDICATED}, and \texttt{NON FIBROTIC ILA ADJUDICATED}. The operational target construction maps \texttt{Y/y} to 1 and \texttt{N/n} to 0, converts the field to numeric, assigns missing target values to 0, and excludes observations without an available 104-week ZeBRA score. Thus the reported endpoint is the notebook-defined prediction target; not every target-zero observation is an independently adjudicated negative. This distinction is especially important when interpreting false-positive rates.
 
-The processed genomic matrix contains 171 selected variant loci represented by categorical genotype states; rs35705950 in \textit{MUC5B} is included explicitly. The principal global comparison uses 30 repeated stratified outer splits with 40\% training and 60\% held-out evaluation. Within each split, ZeBRA is evaluated as the existing clinical-history score, a genomic-only LightGBM model is fitted to the genomic variables, and a combined LightGBM model is fitted to genomics plus ZeBRA. Hyperparameter selection occurs within the training split.
+The processed genomic matrix contains 171 selected variant loci represented by categorical genotype states; rs35705950 in \textit{MUC5B} is included explicitly. The principal global comparison uses 30 repeated stratified outer splits with 40\% training and 60\% held-out evaluation. Within each split, ZeBRA is evaluated as the existing clinical-history score, a genomic-only LightGBM model is fitted to the genomic variables, and a combined LightGBM model is fitted to genomics plus ZeBRA.
 
-\subsection{Repeated-split global discrimination: clinical history dominates}
+\subsection{Global discrimination: clinical history dominates}
 
-Table~\ref{tab:auc-repeated} summarizes the 30-split analysis. ZeBRA is the strongest single predictor for all three targets. For FILD/FILA, mean held-out AUC is 0.814 for ZeBRA, 0.566 for genomics alone, and 0.799 for the nonlinear combined model. The same qualitative ordering is stronger for the two nonfibrotic targets. These repeated-split results supersede the earlier single-split comparison as the primary global-discrimination result.
+Across 30 repeated held-out splits, ZeBRA was the strongest predictor for all three endpoints. For FILD/FILA, mean AUC was 0.8142 for ZeBRA, 0.5662 for genomics alone, and 0.7988 for the nonlinear combined model. The same ordering was more pronounced for the two nonfibrotic outcomes (Table~\ref{tab:auc-repeated}; Fig.~\ref{fig:global-auc}). These repeated-split results supersede the earlier single-split comparison as the primary global-discrimination analysis.
 
-\begin{table}[!t]
+\begin{table*}[!t]
 \caption{Held-out AUC over 30 repeated outer splits. Values are mean $\pm$ SD.}
 \label{tab:auc-repeated}
 \centering
 \footnotesize
+\setlength{\tabcolsep}{8pt}
 \begin{tabular}{lccc}
 \toprule
 Target & ZeBRA & Genomic & Combined\\
@@ -61,139 +66,235 @@ Nonfibrotic ILD & $0.8202\pm0.0257$ & $0.5141\pm0.0719$ & $0.6145\pm0.0953$\\
 Nonfibrotic ILA & $0.8281\pm0.0162$ & $0.4717\pm0.0443$ & $0.7112\pm0.0541$\\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
-The marginal AUC distributions overlap for ZeBRA and the combined model in FILD/FILA, but overlap of boxplots is not a significance test because the same outer splits are shared by the models. More importantly, the scientific question is not whether one fitted combined learner is significantly worse than ZeBRA; it is whether genomic information yields a reproducible \emph{incremental gain} once ZeBRA is known. We therefore performed a second, explicitly paired analysis designed around that question.
+\begin{figure*}[!t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+width=0.88\textwidth,height=0.31\textwidth,
+ybar,bar width=9pt,
+ymin=0.40,ymax=0.90,
+ylabel={Mean held-out ROC AUC},
+symbolic x coords={FILD/FILA,Nonfibrotic ILD,Nonfibrotic ILA},
+xtick=data,
+xticklabel style={font=\footnotesize},
+yticklabel style={font=\footnotesize},
+legend style={at={(0.5,1.02)},anchor=south,legend columns=3,draw=none,font=\footnotesize},
+major grid style={dotted},ymajorgrids=true,
+enlarge x limits=0.20]
+\addplot coordinates {(FILD/FILA,0.8142) (Nonfibrotic ILD,0.8202) (Nonfibrotic ILA,0.8281)};
+\addlegendentry{ZeBRA}
+\addplot coordinates {(FILD/FILA,0.5662) (Nonfibrotic ILD,0.5141) (Nonfibrotic ILA,0.4717)};
+\addlegendentry{Genomic}
+\addplot coordinates {(FILD/FILA,0.7988) (Nonfibrotic ILD,0.6145) (Nonfibrotic ILA,0.7112)};
+\addlegendentry{Combined}
+\end{axis}
+\end{tikzpicture}
+\caption{Global discrimination across three phenotype targets. Bars show mean held-out AUC over 30 repeated outer splits. Genomics alone is substantially weaker than ZeBRA, and indiscriminate global combination does not improve the clinical-history predictor.}
+\label{fig:global-auc}
+\end{figure*}
 
-\subsection{Paired incremental-value analysis: essentially zero global FILD gain}
+The marginal AUC distributions overlap for ZeBRA and the combined model in FILD/FILA, but overlap of boxplots is not a statistical test because the models share the same repeated splits. More importantly, the scientific question is whether genomic information yields a reproducible \emph{incremental gain} once ZeBRA is known. We therefore performed a second explicitly paired analysis.
 
-A separate 30-split analysis compared a ZeBRA-only logistic model with a regularized elastic-net model containing ZeBRA plus the complete genomic panel on the same held-out subjects in each split. For FILD/FILA, mean AUC was 0.81250 for ZeBRA and 0.81293 for ZeBRA plus genomics. The paired mean difference was only $+0.00043$, the median difference was exactly 0, and the split-wise 2.5th--97.5th percentile interval ranged from $-0.00507$ to $+0.00408$. Thus the data do not support a meaningful global AUC improvement from adding the genomic panel to ZeBRA.
+\subsection{Paired incremental value is essentially zero for FILD/FILA}
 
-Proper scoring rules strengthen this conclusion. For FILD/FILA, adding all genomic variables decreased average precision by 0.0311 on average and worsened Brier score and log loss in all 30 splits (mean $\Delta$Brier $=+3.12\times10^{-4}$; mean $\Delta$log-loss $=+0.00468$, where positive differences are worse). For the two nonfibrotic endpoints, genomic augmentation reduced mean AUC by 0.1005 and 0.0374, respectively (Table~\ref{tab:incremental}). The central empirical conclusion is therefore not that genomics is uninformative biologically, but that broad genomic augmentation provides no robust global predictive gain conditional on the near-term clinical-history score.
+A separate 30-split analysis compared a ZeBRA-only logistic model with a regularized elastic-net model containing ZeBRA plus the complete genomic panel on the same held-out subjects in each split. For FILD/FILA, mean AUC was 0.81250 for ZeBRA and 0.81293 for ZeBRA plus genomics. The paired mean difference was only $+0.00043$, the median difference was 0, and the split-wise 2.5th--97.5th percentile range was $[-0.00507,0.00408]$ (Fig.~\ref{fig:incremental-auc}). Thus the data do not support a meaningful global FILD/FILA AUC improvement from broad genomic augmentation.
 
-\begin{table}[!t]
-\caption{Paired incremental effect of adding the genomic panel to ZeBRA over 30 repeated splits.}
-\label{tab:incremental}
+Proper scoring rules reinforce this conclusion. For FILD/FILA, adding all genomic variables decreased average precision by 0.0311 on average and worsened Brier score and log loss in all 30 splits (mean $\Delta$Brier $=+3.12\times10^{-4}$; mean $\Delta$log-loss $=+0.00468$, where positive differences are worse). For nonfibrotic ILD and ILA, mean paired AUC changes were -0.1005 and -0.0374, respectively.
+
+\begin{figure*}[!t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+width=0.82\textwidth,height=0.29\textwidth,
+xmin=0.5,xmax=3.5,
+ymin=-0.24,ymax=0.03,
+xtick={1,2,3},xticklabels={FILD/FILA,Nonfibrotic ILD,Nonfibrotic ILA},
+ylabel={Paired $\Delta$AUC (genomics + ZeBRA $-$ ZeBRA)},
+tick label style={font=\footnotesize},label style={font=\footnotesize},
+ymajorgrids=true,major grid style={dotted}]
+\addplot+[only marks,mark=*] coordinates {(1,0.00043) (2,-0.10052) (3,-0.03737)};
+\addplot+[no marks,dashed] coordinates {(0.5,0) (3.5,0)};
+\draw (axis cs:1,-0.00507) -- (axis cs:1,0.00408);
+\draw (axis cs:0.94,-0.00507) -- (axis cs:1.06,-0.00507);
+\draw (axis cs:0.94,0.00408) -- (axis cs:1.06,0.00408);
+\draw (axis cs:2,-0.22577) -- (axis cs:2,-0.00506);
+\draw (axis cs:1.94,-0.22577) -- (axis cs:2.06,-0.22577);
+\draw (axis cs:1.94,-0.00506) -- (axis cs:2.06,-0.00506);
+\draw (axis cs:3,-0.07384) -- (axis cs:3,-0.00705);
+\draw (axis cs:2.94,-0.07384) -- (axis cs:3.06,-0.07384);
+\draw (axis cs:2.94,-0.00705) -- (axis cs:3.06,-0.00705);
+\end{axis}
+\end{tikzpicture}
+\caption{Paired incremental AUC from the regularized analysis. Points are mean paired differences; vertical intervals show the split-wise 2.5th--97.5th percentile range. FILD/FILA is centered essentially at zero, while the two nonfibrotic endpoints worsen with global genomic augmentation.}
+\label{fig:incremental-auc}
+\end{figure*}
+
+\subsection{ZeBRA does not reconstruct \textit{MUC5B} genotype}
+
+A possible explanation for weak global genomic increment is that the clinical history has already reconstructed the major genetic signal. The data do not support that interpretation. Among 12,766 subjects with a called rs35705950 genotype, 2,499 were \textit{MUC5B} T-allele carriers (19.6\%). ZeBRA predicted carrier status at essentially chance level: raw AUC 0.5088, five-fold cross-validated linear-logistic AUC 0.5040, spline-logistic AUC 0.5021, Pearson $r=0.0107$ ($p=0.228$), and Spearman $\rho=0.0120$ ($p=0.174$).
+
+There was nevertheless an apparent pooled tail association: the top 1\% of the ZeBRA distribution showed 1.47-fold \textit{MUC5B} carrier enrichment, with permutation-adjusted $p\approx0.009$. That concordance disappears after conditioning on FILD/FILA status. Among explicitly adjudicated FILD/FILA-negative subjects, the continuous ZeBRA-to-carrier AUC was 0.485; among FILD/FILA-positive subjects it was 0.482. In contrast, carrier prevalence was 39.3\% among FILD/FILA-positive subjects compared with 19.2\% among explicitly adjudicated negatives (Fig.~\ref{fig:muc5b-strata}). The pooled signal is therefore consistent with both ZeBRA and \textit{MUC5B} tracking disease, rather than ZeBRA encoding genotype.
+
+\begin{figure*}[!t]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[
+group style={group size=2 by 1,horizontal sep=1.4cm},
+width=0.43\textwidth,height=0.30\textwidth,
+tick label style={font=\scriptsize},label style={font=\footnotesize},title style={font=\footnotesize},
+ymajorgrids=true,major grid style={dotted}]
+\nextgroupplot[
+title={ZeBRA prediction of MUC5B carrier status},
+ybar,bar width=15pt,ymin=0.45,ymax=0.53,
+ylabel={ROC AUC},xtick={1,2,3},xticklabels={Pooled,Explicit negative,FILD/FILA positive},xticklabel style={font=\scriptsize,rotate=18,anchor=east}]
+\addplot coordinates {(1,0.50875) (2,0.48471) (3,0.48168)};
+\addplot+[no marks,dashed] coordinates {(0.5,0.5) (3.5,0.5)};
+\nextgroupplot[
+title={MUC5B T-carrier prevalence},
+ybar,bar width=15pt,ymin=0,ymax=45,
+ylabel={Carrier prevalence (\%)},xtick={1,2,3},xticklabels={Pooled,Explicit negative,FILD/FILA positive},xticklabel style={font=\scriptsize,rotate=18,anchor=east}]
+\addplot coordinates {(1,19.58) (2,19.17) (3,39.29)};
+\end{groupplot}
+\end{tikzpicture}
+\caption{ZeBRA does not reconstruct \textit{MUC5B} genotype. Left: ZeBRA discrimination of rs35705950 T-carrier status is at chance in the pooled cohort and within disease strata. Right: \textit{MUC5B} carrier prevalence is substantially higher among FILD/FILA-positive subjects, explaining how pooled disease-risk enrichment can arise without genotype reconstruction.}
+\label{fig:muc5b-strata}
+\end{figure*}
+
+\subsection{Residual genomic information is localized in ZeBRA score space}
+
+The absence of global incremental AUC does not imply zero conditional genomic information everywhere. We evaluated FILD/FILA prediction within bands defined by ZeBRA thresholds corresponding to control-FPR ranges. The residual contribution of \textit{MUC5B} is highly heterogeneous. In the 5--10\% FPR band, for example, the likelihood-ratio statistic for adding \textit{MUC5B} after ZeBRA was 16.55 ($p=4.74\times10^{-5}$); local AUC was 0.677 for \textit{MUC5B} versus 0.367 for ZeBRA. Conditional genomic information was also detected in the 2--5\%, 10--20\%, and 20--40\% bands (Fig.~\ref{fig:localized-rescue}, left).
+
+These results provide the empirical bridge to Theorem~\ref{thm:main}: the relevant question is not whether genomics improves a population-wide ranking, but whether residual genomic likelihood evidence is strong enough to change a decision for patients whose clinical evidence lies near a chosen operating boundary.
+
+\subsection{Boundary-targeted \textit{MUC5B} use improves matched-FPR sensitivity}
+
+We therefore evaluated a clinically interpretable two-threshold rule. Patients above a stringent upper ZeBRA threshold are classified directly by ZeBRA. Patients below a lower threshold remain negative. Only patients between the two thresholds are eligible for \textit{MUC5B}-based rescue. Thresholds are estimated from the training split, and the resulting rule is evaluated on held-out subjects. A ZeBRA-only threshold is then selected to match the realized FPR of the rescue rule.
+
+Across 100 repeated splits, the boundary rule increased sensitivity at essentially matched overall FPR. With an upper threshold corresponding to 0.5\% training-control FPR and a lower threshold corresponding to 10\%, mean sensitivity increased from 0.3587 for matched-FPR ZeBRA to 0.4033 with \textit{MUC5B} rescue ($\Delta=+0.0446$), while mean FPR was 0.02335 versus 0.02310. Mean LR$+$ increased from 15.58 to 17.54 and mean LR$-$ decreased from 0.657 to 0.611. The sensitivity advantage was positive in 97\% of the 100 repeated splits. The pattern across all evaluated threshold pairs is shown in Fig.~\ref{fig:localized-rescue} (right), with selected operating points in Table~\ref{tab:boundary-selected}.
+
+\begin{figure*}[!t]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[
+group style={group size=2 by 1,horizontal sep=1.3cm},
+width=0.43\textwidth,height=0.31\textwidth,
+tick label style={font=\scriptsize},label style={font=\footnotesize},title style={font=\footnotesize},
+ymajorgrids=true,major grid style={dotted}]
+\nextgroupplot[
+title={Conditional MUC5B information},
+ybar,bar width=13pt,ymin=0,ymax=19,
+ylabel={LRT for adding MUC5B after ZeBRA},
+xtick={1,2,3,4},xticklabels={2--5,5--10,10--20,20--40},xlabel={ZeBRA-defined control-FPR band (\%)}]
+\addplot coordinates {(1,4.44) (2,16.55) (3,4.77) (4,13.69)};
+\addplot+[no marks,dashed] coordinates {(0.5,3.84) (4.5,3.84)};
+\nextgroupplot[
+title={Matched-FPR boundary rescue},
+ybar,bar width=12pt,ymin=0,ymax=5.2,
+ylabel={$\Delta$ sensitivity (percentage points)},
+xtick={1,2,3,4,5,6},xticklabels={1/2,1/5,0.5/2,0.5/5,1/10,0.5/10},xlabel={Upper/lower target FPR (\%)}]
+\addplot coordinates {(1,0.96) (2,2.25) (3,1.81) (4,3.66) (5,3.35) (6,4.46)};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Localized genomic utility. Left: conditional \textit{MUC5B} likelihood-ratio statistics vary strongly across ZeBRA score regions; the dashed line marks the nominal $\chi^2_1=3.84$ reference. Right: using \textit{MUC5B} only within a two-threshold ZeBRA decision band increases held-out sensitivity at essentially matched overall FPR.}
+\label{fig:localized-rescue}
+\end{figure*}
+
+\begin{table*}[!t]
+\caption{Selected matched-FPR boundary-rescue results over 100 repeated splits.}
+\label{tab:boundary-selected}
 \centering
 \footnotesize
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{lrrrrrr}
+\toprule
+Upper/lower target FPR & ZeBRA sensitivity & Rescue sensitivity & $\Delta$ sensitivity & ZeBRA FPR & Rescue FPR & Rescue LR$+$\\
+\midrule
+1\% / 5\% & 0.3303 & 0.3528 & +0.0225 & 0.01844 & 0.01826 & 19.52\\
+0.5\% / 5\% & 0.3121 & 0.3487 & +0.0366 & 0.01404 & 0.01400 & 25.21\\
+1\% / 10\% & 0.3740 & 0.4075 & +0.0335 & 0.02753 & 0.02735 & 14.95\\
+0.5\% / 10\% & 0.3587 & 0.4033 & +0.0446 & 0.02335 & 0.02310 & 17.54\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+This result is stronger than asking whether a global combined model has higher AUC. It demonstrates that germline information can improve an operating decision precisely where the clinical score is ambiguous, while providing little or no benefit to the global ranking.
+
+\subsection{ROC-envelope analysis as supporting geometry}
+
+A separate five-fold out-of-fold analysis compared ZeBRA with an exploratory fixed-region \textit{MUC5B} hybrid and the upper convex hull of the union of their ROC points. Empirical/interpolated AUC was 0.8142 for ZeBRA and 0.8095 for the hybrid; the convex hull of the union had AUC 0.8260. This hull is not a third scalar classifier and should not be interpreted as a deployable model. Rather, it is a geometric diagnostic showing that the two channels attain different favorable operating regions. We therefore treat the ROC hull as supporting evidence for regime-dependent complementarity rather than as the primary performance result.
+
+\subsection{Empirical interpretation and limitations}
+
+Taken together, the analyses support four statements. First, a near-term longitudinal clinical-history score substantially outperforms the selected genomic panel as a global predictor. Second, explicitly paired regularized modeling provides essentially no global FILD/FILA AUC increment from adding the complete genomic panel to ZeBRA, and proper scoring rules do not improve. Third, this is not because ZeBRA reconstructs \textit{MUC5B} genotype: global genotype prediction is at chance, and the apparent pooled tail association disappears within disease strata. Fourth, residual \textit{MUC5B} information remains locally useful and can improve held-out sensitivity when applied selectively near a ZeBRA operating boundary at matched overall FPR.
+
+Several limitations prevent stronger causal or universal claims. The genomic panel is selected rather than a complete externally weighted IPF polygenic score. The local bands and threshold pairs are evaluated in the same Colorado resource and require independent replication or prospective prespecification. Repeated train/test splits share subjects and therefore should not be treated as independent biological replicates; split-wise quantiles summarize robustness to data partitioning rather than classical independent-sample confidence intervals. Most importantly, the notebook target construction assigns missing adjudication fields to zero. Accordingly, overall FPR in the operational target should not be described as FPR among fully adjudicated controls until that endpoint definition is independently verified.
+}
+
+\newcommand{\supplementarymaterial}{%
+\appendices
+
+\origsection{Operational phenotype and genomic input}
+\label{app:targets}
+The three phenotype fields were read from \texttt{REPHENOTYPES FOR IC.csv}. The operational notebook geometry maps \texttt{Y/y} to 1 and \texttt{N/n} to 0, assigns missing target values to 0, and excludes observations without an available ZeBRA score. For analyses requiring called rs35705950 genotype, 12,766 subjects remained, including 252 notebook-defined FILD/FILA positives and 2,499 \textit{MUC5B} T-allele carriers. Among stored phenotype records, 360 subjects were explicitly adjudicated FILD/FILA negative.
+
+The processed genomic matrix was constructed by matching an expanded ILD/IPF candidate-locus list against the Colorado genomic header and taking the union with the pre-existing biological-driver panel. The expanded \texttt{MORE\_LOCI.csv} file contained 3,113 candidate records, of which 148 genotype columns were matched before union and de-duplication. The processed analysis matrix contains 171 distinct variant loci represented by one-hot genotype states. The reproducibility package treats \texttt{ILD\_TOP\_DRIVERS\_DATA.csv} as the processed genomic input and documents its schema in \texttt{zebra\_comp/README.md}.
+
+\origsection{Full paired incremental-AUC summary}
+\begin{table*}[!t]
+\caption{Paired effect of adding the genomic panel to ZeBRA over 30 repeated splits.}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{8pt}
 \begin{tabular}{lrrr}
 \toprule
-Target & Mean $\Delta$AUC & Median $\Delta$AUC & 2.5--97.5\%\\
+Target & Mean $\Delta$AUC & Median $\Delta$AUC & 2.5--97.5\% range\\
 \midrule
 FILD/FILA & +0.00043 & 0.00000 & $[-0.00507,\ 0.00408]$\\
 Nonfibrotic ILD & -0.10052 & -0.08615 & $[-0.22577,\ -0.00506]$\\
 Nonfibrotic ILA & -0.03737 & -0.03667 & $[-0.07384,\ -0.00705]$\\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
-\subsection{ZeBRA does not reconstruct \textit{MUC5B} genotype}
-
-A possible explanation for weak global genomic increment would be that the clinical history has already reconstructed the major genetic signal. The data do not support that interpretation. Among 12,766 subjects with a called rs35705950 genotype, 2,499 were \textit{MUC5B} T-allele carriers (19.6\%). ZeBRA predicted carrier status at essentially chance level: raw AUC 0.5088, five-fold cross-validated linear-logistic AUC 0.5040, spline-logistic AUC 0.5021, Pearson $r=0.0107$ ($p=0.228$), and Spearman $\rho=0.0120$ ($p=0.174$).
-
-There is nevertheless an instructive pooled tail association: the top 1\% of the ZeBRA distribution showed 1.47-fold \textit{MUC5B} carrier enrichment, with a permutation-adjusted $p\approx0.009$. That apparent concordance disappears after conditioning on FILD/FILA status. Among explicitly adjudicated FILD/FILA-negative subjects, the continuous ZeBRA-to-carrier AUC was 0.485 and point-biserial $r=-0.032$ ($p=0.541$); among FILD/FILA-positive subjects the corresponding AUC was 0.482 and $r=0.013$ ($p=0.841$). Carrier prevalence itself was 39.3\% among FILD/FILA-positive subjects compared with 19.2\% among explicitly adjudicated negatives. The pooled tail signal is therefore consistent with both ZeBRA and \textit{MUC5B} tracking disease risk, rather than ZeBRA encoding genotype.
-
-This distinction is central to the information-channel interpretation: clinical history and germline susceptibility remain statistically distinct channels even when they become concordant through their common relationship to disease.
-
-\subsection{Residual genomic information is localized in ZeBRA score space}
-
-The absence of global incremental AUC does not imply zero conditional genomic information everywhere. We evaluated local FILD/FILA prediction within bands defined by ZeBRA thresholds corresponding to control FPR ranges. Table~\ref{tab:local-info} reports likelihood-ratio tests for the additional contribution of \textit{MUC5B} after ZeBRA within each band. The residual contribution is heterogeneous. In the 5--10\% FPR band, for example, the conditional \textit{MUC5B} likelihood-ratio statistic was 16.55 ($p=4.74\times10^{-5}$), and local AUC was 0.677 for \textit{MUC5B} versus 0.367 for ZeBRA. Significant conditional genomic information was also observed in the 2--5\%, 10--20\%, and 20--40\% FPR bands, although with different effect magnitudes.
-
-\begin{table}[!t]
-\caption{Local FILD/FILA information within ZeBRA-defined FPR bands. $G\mid Z$ is the likelihood-ratio test for adding \textit{MUC5B} after ZeBRA within the band.}
-\label{tab:local-info}
-\centering
-\scriptsize
-\begin{tabular}{lrrrrr}
-\toprule
-Band & $N$ & Cases & LRT $G\mid Z$ & $p$ & AUC$_G$\\
-\midrule
-2--5\% FPR & 401 & 26 & 4.44 & 0.0352 & 0.595\\
-5--10\% FPR & 652 & 26 & 16.55 & $4.74\times10^{-5}$ & 0.677\\
-10--20\% FPR & 1,281 & 30 & 4.77 & 0.0289 & 0.586\\
-20--40\% FPR & 2,540 & 37 & 13.69 & $2.15\times10^{-4}$ & 0.635\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-These local analyses provide the empirical bridge to Theorem~\ref{thm:main}: the relevant quantity is not whether genomics improves a population-wide ranking, but whether residual genomic likelihood evidence is strong enough to alter a decision for patients whose clinical evidence lies near a chosen operating boundary.
-
-\subsection{Boundary-targeted \textit{MUC5B} use improves matched-FPR sensitivity}
-
-We therefore evaluated a clinically interpretable two-threshold rule. Patients above a stringent upper ZeBRA threshold are classified directly by ZeBRA. Patients below a lower threshold remain negative. Only patients between the two thresholds are eligible for \textit{MUC5B}-based rescue. Thresholds are estimated from the training split, and the resulting rule is evaluated on held-out subjects. For comparison, a ZeBRA-only threshold is selected to match the realized FPR of the rescue rule.
-
-Across 100 repeated splits, the boundary rule consistently increased sensitivity at essentially matched overall FPR (Table~\ref{tab:boundary-matched}). With an upper threshold corresponding to 0.5\% training-control FPR and a lower threshold corresponding to 10\%, mean sensitivity increased from 0.3587 for matched-FPR ZeBRA to 0.4033 with \textit{MUC5B} rescue ($\Delta=+0.0446$), while mean FPR was 0.02335 versus 0.02310. Mean LR$+$ increased from 15.58 to 17.54 and mean LR$-$ decreased from 0.657 to 0.611. The paired sensitivity advantage was positive in 97\% of the 100 splits. A narrower 0.5--5\% boundary region produced a smaller but still substantial mean sensitivity gain of 0.0366 at essentially identical FPR.
-
-\begin{table}[!t]
-\caption{Matched-FPR boundary rescue over 100 repeated splits. ``Upper/lower'' are training-control target FPRs defining the ZeBRA decision band.}
-\label{tab:boundary-matched}
-\centering
-\scriptsize
-\begin{tabular}{lrrrrr}
-\toprule
-Upper/lower & ZeBRA sens. & Rescue sens. & $\Delta$ sens. & ZeBRA FPR & Rescue FPR\\
-\midrule
-1\% / 2\% & 0.3046 & 0.3142 & +0.0096 & 0.01227 & 0.01228\\
-1\% / 5\% & 0.3303 & 0.3528 & +0.0225 & 0.01844 & 0.01826\\
-0.5\% / 2\% & 0.2919 & 0.3101 & +0.0181 & 0.00801 & 0.00802\\
-0.5\% / 5\% & 0.3121 & 0.3487 & +0.0366 & 0.01404 & 0.01400\\
-1\% / 10\% & 0.3740 & 0.4075 & +0.0335 & 0.02753 & 0.02735\\
-0.5\% / 10\% & 0.3587 & 0.4033 & +0.0446 & 0.02335 & 0.02310\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-This result is stronger than asking whether a global combined model has higher AUC. It demonstrates that germline information can improve an operating decision precisely where the clinical score is ambiguous, while providing little or no benefit to the global ranking. It is therefore the empirical pattern predicted by boundary localization.
-
-\subsection{ROC-envelope analysis as supporting geometry}
-
-A separate five-fold out-of-fold analysis compared ZeBRA with an exploratory fixed-region \textit{MUC5B} hybrid and the upper convex hull of the union of their ROC points. Empirical/interpolated AUC was 0.8142 for ZeBRA and 0.8095 for the hybrid; the convex hull of the union had AUC 0.8260. This hull is not a third scalar classifier and should not be interpreted as a directly deployable model. Rather, it is a geometric diagnostic showing that the two information channels attain different favorable operating regions: the hybrid exceeds ZeBRA over some FPR intervals even though its overall AUC is lower. We therefore treat the ROC hull as supporting evidence for regime-dependent complementarity, not as the principal performance result.
-
-\subsection{Empirical interpretation and limitations}
-
-Taken together, the current analyses support four statements. First, a near-term longitudinal clinical-history score substantially outperforms the selected genomic panel as a global predictor. Second, explicitly paired regularized modeling provides essentially no global FILD/FILA AUC increment from adding the complete genomic panel to ZeBRA, and proper scoring rules do not improve. Third, this is not because ZeBRA reconstructs \textit{MUC5B} genotype: global genotype prediction is at chance, and the apparent pooled tail association disappears within disease strata. Fourth, residual \textit{MUC5B} information remains locally useful and can improve held-out sensitivity when applied selectively near a ZeBRA operating boundary at matched overall FPR.
-
-Several limitations prevent stronger causal or universal claims. The genomic panel is selected rather than a complete externally weighted IPF polygenic score. The local bands and threshold pairs are evaluated in the same Colorado resource and require independent replication or prospective prespecification. Repeated train/test splits share subjects and therefore should not be treated as independent biological replicates; split-wise quantiles summarize robustness to data partitioning rather than provide classical independent-sample confidence intervals. Most importantly, the notebook target construction assigns missing adjudication fields to 0. Accordingly, overall FPR refers to that operational target definition and should not be conflated with the FPR among explicitly adjudicated negatives. External validation with fully specified case and control ascertainment is required.
-
-The empirical claim is therefore deliberately narrower than ``genomics does not matter.'' The evidence supports a regime-dependent statement: broad genomic augmentation adds little to global near-term prediction once the clinical history is highly informative, while specific genomic information can retain decision value in restricted boundary-adjacent regions.
-}
-
-\newcommand{\supplementarymaterial}{%
-\appendices
-
-\origsection{Operational phenotype definitions and cohort counts}
-\label{app:targets}
-The three phenotype fields are read from \texttt{REPHENOTYPES FOR IC.csv}. Under the current notebook-32 geometry, \texttt{Y/y} is mapped to 1, \texttt{N/n} to 0, values are converted to numeric, missing target values are assigned 0, and subjects without an available \texttt{predicted\_risk} are excluded. The resulting operational cohort contains 12,825 subjects for each target before restricting to called \textit{MUC5B} genotype.
-
+\origsection{Local-information details}
 \begin{table*}[!t]
-\caption{Operational clinical prediction targets used by the current repeated-split analysis.}
-\label{tab:supp-targets}
+\caption{Local FILD/FILA information within ZeBRA-defined control-FPR bands.}
 \centering
-\small
-\begin{tabular}{p{0.42\textwidth}rr}
+\scriptsize
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{lrrrrrr}
 \toprule
-Stored target label & $N$ & Positives\\
+Band & $N$ & Cases & LRT $G\mid Z$ & $p$ & AUC ZeBRA & AUC \textit{MUC5B}\\
 \midrule
-\texttt{FILD or FILA ADJUDICATED} & 12,825 & 254\\
-\texttt{NONFIBROTIC ILD ADJUDICATED} & 12,825 & 27\\
-\texttt{NON FIBROTIC ILA ADJUDICATED} & 12,825 & 74\\
+2--5\% & 401 & 26 & 4.44 & 0.0352 & 0.577 & 0.595\\
+5--10\% & 652 & 26 & 16.55 & $4.74\times10^{-5}$ & 0.367 & 0.677\\
+10--20\% & 1,281 & 30 & 4.77 & 0.0289 & 0.558 & 0.586\\
+20--40\% & 2,540 & 37 & 13.69 & $2.15\times10^{-4}$ & 0.516 & 0.635\\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-For analyses requiring called rs35705950 genotype, 12,766 subjects remained, including 252 notebook-defined FILD/FILA positives and 2,499 \textit{MUC5B} T-allele carriers. Among the stored phenotype records, 360 subjects were explicitly adjudicated FILD/FILA negative; the remaining notebook-defined target-zero observations include subjects with missing adjudication values mapped to 0 by the legacy target construction.
-
-\origsection{Genomic panel construction}
-\label{app:genomics}
-The processed genomic matrix was constructed by matching an expanded ILD/IPF candidate-locus list against the Colorado genomic header and taking the union with the pre-existing biological-driver panel. The expanded \texttt{MORE\_LOCI.csv} file contained 3,113 candidate records, of which 148 genotype columns were matched to the available genomic data before union and de-duplication. The processed analysis matrix contains 171 distinct variant loci represented by one-hot genotype states. The current reproducibility package treats \texttt{ILD\_TOP\_DRIVERS\_DATA.csv} as the processed genomic input and documents its required schema in \texttt{zebra\_comp/README.md}.
-
-\origsection{Additional paired FILD/FILA scoring-rule results}
-\label{app:paired}
-For FILD/FILA, adding the complete genomic panel to ZeBRA in the elastic-net analysis changed average precision by $-0.0311$ on average (median $-0.0156$). Mean Brier score increased by $3.12\times10^{-4}$ and mean log loss increased by 0.00468; both were worse in all 30 repeated splits. These proper-scoring-rule results are consistent with the absence of meaningful global incremental information.
-
-\origsection{Matched-FPR likelihood-ratio results}
-\label{app:boundary}
-At the 0.5\%/10\% upper/lower threshold pair, mean LR$+$ was 15.58 for matched-FPR ZeBRA and 17.54 for the \textit{MUC5B} rescue rule; mean LR$-$ was 0.657 and 0.611, respectively. The rescue rule recovered approximately 15.9\% of baseline false negatives on average. These quantities are operating-point summaries under the notebook-defined target and should be interpreted together with the ascertainment qualification in Appendix~\ref{app:targets}.
+\origsection{Full matched-FPR boundary-rescue summary}
+\begin{table*}[!t]
+\caption{Matched-FPR boundary rescue over 100 repeated splits. ``Upper/lower'' are training-control target FPRs defining the ZeBRA decision band.}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lrrrrrrr}
+\toprule
+Upper/lower & ZeBRA sens. & Rescue sens. & $\Delta$ sens. & ZeBRA FPR & Rescue FPR & ZeBRA LR$+$ & Rescue LR$+$\\
+\midrule
+1\% / 2\% & 0.3046 & 0.3142 & +0.0096 & 0.01227 & 0.01228 & 25.43 & 26.03\\
+1\% / 5\% & 0.3303 & 0.3528 & +0.0225 & 0.01844 & 0.01826 & 18.19 & 19.52\\
+0.5\% / 2\% & 0.2919 & 0.3101 & +0.0181 & 0.00801 & 0.00802 & 38.16 & 39.67\\
+0.5\% / 5\% & 0.3121 & 0.3487 & +0.0366 & 0.01404 & 0.01400 & 22.74 & 25.21\\
+1\% / 10\% & 0.3740 & 0.4075 & +0.0335 & 0.02753 & 0.02735 & 13.75 & 14.95\\
+0.5\% / 10\% & 0.3587 & 0.4033 & +0.0446 & 0.02335 & 0.02310 & 15.58 & 17.54\\
+\bottomrule
+\end{tabular}
+\end{table*}
 }
 
 \begin{document}
