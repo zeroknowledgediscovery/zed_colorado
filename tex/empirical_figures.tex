@@ -11,10 +11,11 @@
 \pgfplotstableread[col sep=comma]{\resultroot/033_INCREMENTAL_LOGISTIC_32_COHORT/paired_incremental_summary.csv}\incremental
 \pgfplotstableread[col sep=comma]{\resultroot/MUC5B_STRATIFIED_BY_FILD/MUC5B_ZEBRA_STRATIFIED_SUMMARY.csv}\mucfive
 \pgfplotstableread[col sep=comma]{\resultroot/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/FPR_DEFINED_LOCAL_INFORMATION_BANDS.csv}\localbands
+\pgfplotstableread[col sep=comma]{\resultroot/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/LOCAL_ZEBRA_MUC5B_INFORMATION_WINDOWS.csv}\localwindows
 \pgfplotstableread[col sep=comma]{\resultroot/MUC5B_ZEBRA_RESCUE_RULE/REPEATED_SPLIT_MUC5B_RESCUE_SUMMARY.csv}\rescuedata
 \pgfplotstableread[col sep=comma]{\resultroot/032_REPEATED_SPLITS_03_TARGET_LOGIC/zedstat_operating_points_summary.csv}\operatingpoints
 
-% FILD/FILA zedstat rows for LR+ at requested FPR 0.5,1,2,5,10%.
+% FILD/FILA zedstat rows for LR+ and sensitivity at requested FPR 0.5,1,2,5,10%.
 \newcommand{\OperatingMean}[2]{%
   \pgfplotstablegetelem{#1}{mean}\of\operatingpoints%
   \expandafter\xdef\csname #2\endcsname{\pgfplotsretval}%
@@ -22,6 +23,9 @@
 \OperatingMean{428}{zlrA}\OperatingMean{462}{zlrB}\OperatingMean{496}{zlrC}\OperatingMean{530}{zlrD}\OperatingMean{564}{zlrE}
 \OperatingMean{230}{glrA}\OperatingMean{264}{glrB}\OperatingMean{298}{glrC}\OperatingMean{332}{glrD}\OperatingMean{366}{glrE}
 \OperatingMean{32}{clrA}\OperatingMean{66}{clrB}\OperatingMean{100}{clrC}\OperatingMean{134}{clrD}\OperatingMean{168}{clrE}
+\OperatingMean{424}{zsnA}\OperatingMean{458}{zsnB}\OperatingMean{492}{zsnC}\OperatingMean{526}{zsnD}\OperatingMean{560}{zsnE}
+\OperatingMean{226}{gsnA}\OperatingMean{260}{gsnB}\OperatingMean{294}{gsnC}\OperatingMean{328}{gsnD}\OperatingMean{362}{gsnE}
+\OperatingMean{28}{csnA}\OperatingMean{62}{csnB}\OperatingMean{96}{csnC}\OperatingMean{130}{csnD}\OperatingMean{164}{csnE}
 
 \newcommand{\figGlobalRepeatedSplits}{%
 \begin{figure*}[!t]
@@ -132,26 +136,70 @@
 \centering
 \begin{tikzpicture}
 \begin{groupplot}[
- group style={group size=2 by 1,horizontal sep=1.65cm},
- width=0.40\textwidth,height=0.27\textwidth,
- tick label style={font=\footnotesize},label style={font=\footnotesize},
- ymajorgrids=true,major grid style={dotted}]
+ group style={group size=2 by 2,horizontal sep=1.35cm,vertical sep=1.10cm},
+ width=0.405\textwidth,height=0.245\textwidth,
+ tick label style={font=\scriptsize},label style={font=\footnotesize},
+ title style={font=\footnotesize},
+ xmajorgrids=true,ymajorgrids=true,major grid style={dotted}]
+
 \nextgroupplot[
- ylabel={Conditional LRT statistic},ymin=0,ymax=18,
- xtick={0,1,2,3},xticklabels={2--5,5--10,10--20,20--40},
- xlabel={ZeBRA control-FPR band (\%)}]
-\addplot+[ybar,bar width=10pt] table[x expr=\coordindex,y=LRT_G_given_Z]{\localbands};
-\nextgroupplot[
- ylabel={Within-band AUC},ymin=0.30,ymax=0.72,
+ title={A. Conditional information in operating bands},
+ ylabel={Partial LRT statistic},ymin=0,ymax=19,
  xtick={0,1,2,3},xticklabels={2--5,5--10,10--20,20--40},
  xlabel={ZeBRA control-FPR band (\%)},
- legend style={at={(0.5,1.04)},anchor=south,legend columns=2,draw=none,font=\scriptsize}]
-\addplot+[mark=*,thick] table[x expr=\coordindex,y=AUC_Z]{\localbands};\addlegendentry{ZeBRA}
-\addplot+[mark=square*,thick] table[x expr=\coordindex,y=AUC_MUC5B]{\localbands};\addlegendentry{MUC5B}
-\addplot+[dashed,no marks] coordinates {(-0.4,0.5) (3.4,0.5)};
+ legend style={at={(0.5,1.01)},anchor=south,legend columns=2,draw=none,font=\scriptsize}]
+\addplot+[ybar,bar width=7pt,bar shift=-4pt]
+ table[x expr=\coordindex,y=LRT_Z_given_G]{\localbands};
+\addlegendentry{ZeBRA given MUC5B}
+\addplot+[ybar,bar width=7pt,bar shift=4pt]
+ table[x expr=\coordindex,y=LRT_G_given_Z]{\localbands};
+\addlegendentry{MUC5B given ZeBRA}
+\addplot+[dashed,no marks] coordinates {(-0.5,3.84) (3.5,3.84)};
+
+\nextgroupplot[
+ title={B. Moving-window conditional information},
+ xlabel={ZeBRA risk percentile},ylabel={Partial LRT statistic},
+ xmin=23,xmax=100,ymin=0,ymax=72,
+ xtick={25,40,55,70,85,100},
+ legend style={at={(0.02,0.98)},anchor=north west,draw=none,font=\scriptsize}]
+\addplot+[mark=*,mark size=1.5pt,thick]
+ table[x=window_center_percentile,y=LRT_Z_given_G]{\localwindows};
+\addlegendentry{ZeBRA given MUC5B}
+\addplot+[mark=square*,mark size=1.5pt,thick]
+ table[x=window_center_percentile,y=LRT_G_given_Z]{\localwindows};
+\addlegendentry{MUC5B given ZeBRA}
+\addplot+[dashed,no marks] coordinates {(23,3.84) (100,3.84)};
+
+\nextgroupplot[
+ title={C. Disease prevalence by MUC5B status},
+ xlabel={ZeBRA risk percentile},ylabel={FILD/FILA prevalence},
+ xmin=23,xmax=100,ymin=0,ymax=0.22,
+ xtick={25,40,55,70,85,100},
+ legend style={at={(0.02,0.98)},anchor=north west,draw=none,font=\scriptsize}]
+\addplot+[mark=*,mark size=1.5pt,thick]
+ table[x=window_center_percentile,y=case_prevalence_MUC5B_noncarrier]{\localwindows};
+\addlegendentry{MUC5B non-carrier}
+\addplot+[mark=square*,mark size=1.5pt,thick]
+ table[x=window_center_percentile,y=case_prevalence_MUC5B_carrier]{\localwindows};
+\addlegendentry{MUC5B T-carrier}
+
+\nextgroupplot[
+ title={D. Local disease association},
+ xlabel={ZeBRA risk percentile},ylabel={Adjusted odds ratio},
+ xmin=23,xmax=100,ymin=0.5,ymax=6.0,
+ xtick={25,40,55,70,85,100},
+ legend style={at={(0.02,0.98)},anchor=north west,draw=none,font=\scriptsize}]
+\addplot+[mark=*,mark size=1.5pt,thick]
+ table[x=window_center_percentile,y=OR_Z_per_local_SD]{\localwindows};
+\addlegendentry{ZeBRA per local SD}
+\addplot+[mark=square*,mark size=1.5pt,thick]
+ table[x=window_center_percentile,y=OR_MUC5B_carrier]{\localwindows};
+\addlegendentry{MUC5B carrier}
+\addplot+[dashed,no marks] coordinates {(23,1) (100,1)};
+
 \end{groupplot}
 \end{tikzpicture}
-\caption{\textbf{Residual genomic information is heterogeneous across ZeBRA score space.} Left: likelihood-ratio statistic for adding \textit{MUC5B} after ZeBRA within FPR-defined bands. Right: within-band discrimination of ZeBRA and \textit{MUC5B}. The 5--10\% ZeBRA AUC of 0.367 is read directly from the canonical result CSV and is a genuine within-band reversal, not a transcription artifact.}
+\caption{\textbf{Localized complementarity across the ZeBRA risk axis.} All four panels are regenerated natively in PGFPlots from \texttt{FPR\_DEFINED\_LOCAL\_INFORMATION\_BANDS.csv} and \texttt{LOCAL\_ZEBRA\_MUC5B\_INFORMATION\_WINDOWS.csv} in \texttt{zebra\_comp/RESULTS}. (A) In clinically relevant FPR bands, residual \textit{MUC5B} information after ZeBRA exceeds the converse conditional contribution, especially in the 5--10\% and 20--40\% bands. (B) Overlapping moving windows show the same spatial heterogeneity continuously: residual genomic information is substantial through intermediate/high ZeBRA percentiles, whereas residual ZeBRA information rises sharply in the extreme clinical-risk tail. (C) The same phenomenon is visible epidemiologically: within ZeBRA strata, T-carriers have higher observed FILD/FILA prevalence than non-carriers. (D) Local odds ratios provide an effect-size view, with persistent \textit{MUC5B} association across much of the axis and a marked increase in ZeBRA association at the extreme tail. The moving windows overlap and are used for descriptive localization rather than as independent confirmatory tests.}
 \label{fig:local-information}
 \end{figure*}%
 }
@@ -187,12 +235,16 @@
  xmin=1.5,xmax=10.5,xtick={2,5,10},scaled y ticks=false,
  ymin=-0.035,ymax=0.008,
  yticklabel style={/pgf/number format/fixed,/pgf/number format/precision=3}]
-\addplot+[mark=*,thick] table[x expr=100*\thisrow{lower_target_fpr},y expr=100*\thisrow{rescue_minus_matched_FPR_mean},restrict expr to domain={\thisrow{main_target_fpr}}{0.0049:0.0051}]{\rescuedata};
-\addplot+[mark=square*,thick] table[x expr=100*\thisrow{lower_target_fpr},y expr=100*\thisrow{rescue_minus_matched_FPR_mean},restrict expr to domain={\thisrow{main_target_fpr}}{0.0099:0.0101}]{\rescuedata};
+\addplot+[mark=*,thick]
+ table[x expr=100*\thisrow{lower_target_fpr},y expr=100*\thisrow{rescue_minus_matched_FPR_mean},
+ restrict expr to domain={\thisrow{main_target_fpr}}{0.0049:0.0051}]{\rescuedata};
+\addplot+[mark=square*,thick]
+ table[x expr=100*\thisrow{lower_target_fpr},y expr=100*\thisrow{rescue_minus_matched_FPR_mean},
+ restrict expr to domain={\thisrow{main_target_fpr}}{0.0099:0.0101}]{\rescuedata};
 \addplot+[dashed,no marks] coordinates {(1.5,0) (10.5,0)};
 \end{groupplot}
 \end{tikzpicture}
-\caption{\textbf{Boundary-targeted \textit{MUC5B} rescue.} Left: paired held-out sensitivity gain over the matched-ZeBRA comparator, in percentage points, with split-wise 2.5th--97.5th percentile ranges. Right: operational FPR difference remains close to zero. Data are read directly from \texttt{REPEATED\_SPLIT\_MUC5B\_RESCUE\_SUMMARY.csv}.}
+\caption{\textbf{Boundary-targeted MUC5B rescue.} Left: paired held-out sensitivity gain over a ZeBRA-only comparator matched to the rescue rule's training-set FPR, with split-wise 2.5th--97.5th percentile ranges. Right: rescue-minus-matched-ZeBRA operational FPR difference remains near zero across the six evaluated threshold pairs. Data are read directly from \texttt{REPEATED\_SPLIT\_MUC5B\_RESCUE\_SUMMARY.csv}.}
 \label{fig:boundary-rescue}
 \end{figure*}%
 }
@@ -202,30 +254,28 @@
 \centering
 \begin{tikzpicture}
 \begin{groupplot}[
- group style={group size=2 by 1,horizontal sep=1.6cm},
- width=0.405\textwidth,height=0.275\textwidth,
+ group style={group size=2 by 1,horizontal sep=1.55cm},
+ width=0.41\textwidth,height=0.27\textwidth,
  tick label style={font=\footnotesize},label style={font=\footnotesize},
  xmajorgrids=true,ymajorgrids=true,major grid style={dotted}]
 \nextgroupplot[
- xlabel={False-positive rate},ylabel={Sensitivity},
- xmin=0,xmax=0.05,ymin=0,ymax=0.65,
- legend style={at={(0.5,1.04)},anchor=south,legend columns=3,draw=none,font=\scriptsize}]
-\addplot+[thick,no marks] table[col sep=comma,x=fpr,y=tpr,restrict x to domain=0:0.05]{\resultroot/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_ZEBRA.csv};
-\addlegendentry{ZeBRA}
-\addplot+[thick,no marks] table[col sep=comma,x=fpr,y=tpr,restrict x to domain=0:0.05]{\resultroot/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_HYBRID.csv};
-\addlegendentry{Hybrid}
-\addplot+[very thick,dashed,no marks] table[col sep=comma,x=fpr,y=tpr,restrict x to domain=0:0.05]{\resultroot/ZEBRA_HYBRID_ROC_CONVEX_HULL/ROC_UNION_ZEDSTAT_CONVEX_HULL.csv};
-\addlegendentry{Union hull}
-\nextgroupplot[
  xlabel={Requested FPR (\%)},ylabel={Held-out LR$+$},xmode=log,
  xmin=0.4,xmax=12,xtick={0.5,1,2,5,10},xticklabels={0.5,1,2,5,10},
- ymin=0,ymax=65]
-\addplot+[mark=*,thick] coordinates {(0.5,\zlrA) (1,\zlrB) (2,\zlrC) (5,\zlrD) (10,\zlrE)};
-\addplot+[mark=square*,thick] coordinates {(0.5,\glrA) (1,\glrB) (2,\glrC) (5,\glrD) (10,\glrE)};
-\addplot+[mark=triangle*,thick] coordinates {(0.5,\clrA) (1,\clrB) (2,\clrC) (5,\clrD) (10,\clrE)};
+ ymin=0,ymax=65,
+ legend style={at={(0.5,1.04)},anchor=south,legend columns=3,draw=none,font=\scriptsize}]
+\addplot+[mark=*,thick] coordinates {(0.5,\zlrA) (1,\zlrB) (2,\zlrC) (5,\zlrD) (10,\zlrE)};\addlegendentry{ZeBRA}
+\addplot+[mark=square*,thick] coordinates {(0.5,\glrA) (1,\glrB) (2,\glrC) (5,\glrD) (10,\glrE)};\addlegendentry{Genomic}
+\addplot+[mark=triangle*,thick] coordinates {(0.5,\clrA) (1,\clrB) (2,\clrC) (5,\clrD) (10,\clrE)};\addlegendentry{Combined}
+\nextgroupplot[
+ xlabel={Requested FPR (\%)},ylabel={Held-out sensitivity},xmode=log,
+ xmin=0.4,xmax=12,xtick={0.5,1,2,5,10},xticklabels={0.5,1,2,5,10},
+ ymin=0,ymax=0.60]
+\addplot+[mark=*,thick] coordinates {(0.5,\zsnA) (1,\zsnB) (2,\zsnC) (5,\zsnD) (10,\zsnE)};
+\addplot+[mark=square*,thick] coordinates {(0.5,\gsnA) (1,\gsnB) (2,\gsnC) (5,\gsnD) (10,\gsnE)};
+\addplot+[mark=triangle*,thick] coordinates {(0.5,\csnA) (1,\csnB) (2,\csnC) (5,\csnD) (10,\csnE)};
 \end{groupplot}
 \end{tikzpicture}
-\caption{\textbf{Low-FPR geometry and stringent-tail likelihood ratios.} Left: out-of-fold ZeBRA and exploratory hybrid ROC curves with the union convex envelope, restricted to the high-specificity region. Right: held-out LR$+$ for ZeBRA, genomic-only, and combined models at stringent requested FPRs. The ROC envelope is descriptive, whereas the LR$+$ values are held-out operating-point summaries. All data are read directly from \texttt{zebra\_comp/RESULTS}.}
+\caption{\textbf{Stringent operating-point behavior.} Left: held-out LR$+$ at requested FPRs. Right: corresponding held-out sensitivity. ZeBRA substantially exceeds the genomic-only model in the stringent tail. Both panels are read directly from \texttt{zedstat\_operating\_points\_summary.csv}.}
 \label{fig:low-fpr-geometry}
 \end{figure*}%
 }
