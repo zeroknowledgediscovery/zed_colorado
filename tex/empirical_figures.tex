@@ -136,45 +136,46 @@
 \centering
 \begin{tikzpicture}
 \begin{groupplot}[
- group style={group size=2 by 2,horizontal sep=1.35cm,vertical sep=1.10cm},
- width=0.405\textwidth,height=0.245\textwidth,
+ group style={group size=2 by 2,horizontal sep=1.45cm,vertical sep=1.65cm},
+ width=0.405\textwidth,height=0.22\textwidth,
  tick label style={font=\scriptsize},label style={font=\footnotesize},
  title style={font=\footnotesize},
  xmajorgrids=true,ymajorgrids=true,major grid style={dotted}]
 
 \nextgroupplot[
- title={A. Conditional information in operating bands},
+ title={A. FPR-defined conditional information},
  ylabel={Partial LRT statistic},ymin=0,ymax=19,
  xtick={0,1,2,3},xticklabels={2--5,5--10,10--20,20--40},
  xlabel={ZeBRA control-FPR band (\%)},
- legend style={at={(0.5,1.01)},anchor=south,legend columns=2,draw=none,font=\scriptsize}]
+ legend style={at={(0.02,0.98)},anchor=north west,legend columns=1,draw=none,font=\scriptsize}]
 \addplot+[ybar,bar width=7pt,bar shift=-4pt]
  table[x expr=\coordindex,y=LRT_Z_given_G]{\localbands};
-\addlegendentry{ZeBRA given MUC5B}
+\addlegendentry{ZeBRA $|$ MUC5B}
 \addplot+[ybar,bar width=7pt,bar shift=4pt]
  table[x expr=\coordindex,y=LRT_G_given_Z]{\localbands};
-\addlegendentry{MUC5B given ZeBRA}
+\addlegendentry{MUC5B $|$ ZeBRA}
 \addplot+[dashed,no marks] coordinates {(-0.5,3.84) (3.5,3.84)};
 
 \nextgroupplot[
- title={B. Moving-window conditional information},
+ title={B. Conditional information across risk axis},
  xlabel={ZeBRA risk percentile},ylabel={Partial LRT statistic},
  xmin=23,xmax=100,ymin=0,ymax=72,
  xtick={25,40,55,70,85,100},
  legend style={at={(0.02,0.98)},anchor=north west,draw=none,font=\scriptsize}]
 \addplot+[mark=*,mark size=1.5pt,thick]
  table[x=window_center_percentile,y=LRT_Z_given_G]{\localwindows};
-\addlegendentry{ZeBRA given MUC5B}
+\addlegendentry{ZeBRA $|$ MUC5B}
 \addplot+[mark=square*,mark size=1.5pt,thick]
  table[x=window_center_percentile,y=LRT_G_given_Z]{\localwindows};
-\addlegendentry{MUC5B given ZeBRA}
+\addlegendentry{MUC5B $|$ ZeBRA}
 \addplot+[dashed,no marks] coordinates {(23,3.84) (100,3.84)};
 
 \nextgroupplot[
- title={C. Disease prevalence by MUC5B status},
+ title={C. Disease prevalence by MUC5B},
  xlabel={ZeBRA risk percentile},ylabel={FILD/FILA prevalence},
  xmin=23,xmax=100,ymin=0,ymax=0.22,
- xtick={25,40,55,70,85,100},
+ xtick={25,40,55,70,85,100},ytick={0,0.05,0.10,0.15,0.20},
+ yticklabels={0,0.05,0.10,0.15,0.20},scaled y ticks=false,
  legend style={at={(0.02,0.98)},anchor=north west,draw=none,font=\scriptsize}]
 \addplot+[mark=*,mark size=1.5pt,thick]
  table[x=window_center_percentile,y=case_prevalence_MUC5B_noncarrier]{\localwindows};
@@ -184,7 +185,7 @@
 \addlegendentry{MUC5B T-carrier}
 
 \nextgroupplot[
- title={D. Local disease association},
+ title={D. Local odds ratios},
  xlabel={ZeBRA risk percentile},ylabel={Adjusted odds ratio},
  xmin=23,xmax=100,ymin=0.5,ymax=6.0,
  xtick={25,40,55,70,85,100},
