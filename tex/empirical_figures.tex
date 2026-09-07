@@ -137,65 +137,54 @@
 \begin{tikzpicture}
 \begin{groupplot}[
  group style={group size=2 by 2,horizontal sep=1.45cm,vertical sep=1.65cm},
- width=0.405\textwidth,height=0.22\textwidth,
+ width=0.405\textwidth,height=0.21\textwidth,
  tick label style={font=\scriptsize},label style={font=\footnotesize},
  title style={font=\footnotesize},
  xmajorgrids=true,ymajorgrids=true,major grid style={dotted}]
 \nextgroupplot[
- title={A. FPR-defined conditional information},
+ title={A. FPR-band conditional LRTs},
  ylabel={Partial LRT statistic},ymin=0,ymax=19,
  xtick={0,1,2,3},xticklabels={2--5,5--10,10--20,20--40},
  xlabel={ZeBRA control-FPR band (\%)},
  legend style={at={(0.02,0.98)},anchor=north west,legend columns=1,draw=none,font=\scriptsize}]
-\addplot+[ybar,bar width=7pt,bar shift=-4pt]
- table[x expr=\coordindex,y=LRT_Z_given_G]{\localbands};
+\addplot+[ybar,bar width=7pt,bar shift=-4pt] table[x expr=\coordindex,y=LRT_Z_given_G]{\localbands};
 \addlegendentry{ZeBRA $|$ MUC5B}
-\addplot+[ybar,bar width=7pt,bar shift=4pt]
- table[x expr=\coordindex,y=LRT_G_given_Z]{\localbands};
+\addplot+[ybar,bar width=7pt,bar shift=4pt] table[x expr=\coordindex,y=LRT_G_given_Z]{\localbands};
 \addlegendentry{MUC5B $|$ ZeBRA}
 \addplot+[dashed,no marks] coordinates {(-0.5,3.84) (3.5,3.84)};
 \nextgroupplot[
- title={B. Conditional information across risk axis},
+ title={B. Conditional LRTs across risk axis},
  xlabel={ZeBRA risk percentile},ylabel={Partial LRT statistic},
- xmin=23,xmax=100,ymin=0,ymax=72,
- xtick={25,40,55,70,85,100},
+ xmin=23,xmax=100,ymin=0,ymax=72,xtick={25,40,55,70,85,100},
  legend style={at={(0.02,0.98)},anchor=north west,draw=none,font=\scriptsize}]
-\addplot+[mark=*,mark size=1.5pt,thick]
- table[x=window_center_percentile,y=LRT_Z_given_G]{\localwindows};
+\addplot+[mark=*,mark size=1.5pt,thick] table[x=window_center_percentile,y=LRT_Z_given_G]{\localwindows};
 \addlegendentry{ZeBRA $|$ MUC5B}
-\addplot+[mark=square*,mark size=1.5pt,thick]
- table[x=window_center_percentile,y=LRT_G_given_Z]{\localwindows};
+\addplot+[mark=square*,mark size=1.5pt,thick] table[x=window_center_percentile,y=LRT_G_given_Z]{\localwindows};
 \addlegendentry{MUC5B $|$ ZeBRA}
 \addplot+[dashed,no marks] coordinates {(23,3.84) (100,3.84)};
 \nextgroupplot[
  title={C. Disease prevalence by MUC5B},
  xlabel={ZeBRA risk percentile},ylabel={FILD/FILA prevalence},
- xmin=23,xmax=100,ymin=0,ymax=0.22,
- xtick={25,40,55,70,85,100},ytick={0,0.05,0.10,0.15,0.20},
+ xmin=23,xmax=100,ymin=0,ymax=0.22,xtick={25,40,55,70,85,100},ytick={0,0.05,0.10,0.15,0.20},
  yticklabels={0,0.05,0.10,0.15,0.20},scaled y ticks=false,
  legend style={at={(0.02,0.98)},anchor=north west,draw=none,font=\scriptsize}]
-\addplot+[mark=*,mark size=1.5pt,thick]
- table[x=window_center_percentile,y=case_prevalence_MUC5B_noncarrier]{\localwindows};
+\addplot+[mark=*,mark size=1.5pt,thick] table[x=window_center_percentile,y=case_prevalence_MUC5B_noncarrier]{\localwindows};
 \addlegendentry{MUC5B non-carrier}
-\addplot+[mark=square*,mark size=1.5pt,thick]
- table[x=window_center_percentile,y=case_prevalence_MUC5B_carrier]{\localwindows};
+\addplot+[mark=square*,mark size=1.5pt,thick] table[x=window_center_percentile,y=case_prevalence_MUC5B_carrier]{\localwindows};
 \addlegendentry{MUC5B T-carrier}
 \nextgroupplot[
  title={D. Local odds ratios},
  xlabel={ZeBRA risk percentile},ylabel={Adjusted odds ratio},
- xmin=23,xmax=100,ymin=0.5,ymax=6.0,
- xtick={25,40,55,70,85,100},
+ xmin=23,xmax=100,ymin=0.5,ymax=6.0,xtick={25,40,55,70,85,100},
  legend style={at={(0.02,0.98)},anchor=north west,draw=none,font=\scriptsize}]
-\addplot+[mark=*,mark size=1.5pt,thick]
- table[x=window_center_percentile,y=OR_Z_per_local_SD]{\localwindows};
+\addplot+[mark=*,mark size=1.5pt,thick] table[x=window_center_percentile,y=OR_Z_per_local_SD]{\localwindows};
 \addlegendentry{ZeBRA per local SD}
-\addplot+[mark=square*,mark size=1.5pt,thick]
- table[x=window_center_percentile,y=OR_MUC5B_carrier]{\localwindows};
+\addplot+[mark=square*,mark size=1.5pt,thick] table[x=window_center_percentile,y=OR_MUC5B_carrier]{\localwindows};
 \addlegendentry{MUC5B carrier}
 \addplot+[dashed,no marks] coordinates {(23,1) (100,1)};
 \end{groupplot}
 \end{tikzpicture}
-\caption{\textbf{Localized complementarity across the ZeBRA risk axis.} All four panels are regenerated natively in PGFPlots from \texttt{FPR\_DEFINED\_LOCAL\_INFORMATION\_BANDS.csv} and \texttt{LOCAL\_ZEBRA\_MUC5B\_INFORMATION\_WINDOWS.csv} in \texttt{zebra\_comp/RESULTS}. (A) In clinically relevant FPR bands, residual \textit{MUC5B} information after ZeBRA exceeds the converse conditional contribution, especially in the 5--10\% and 20--40\% bands. (B) Overlapping moving windows show the same spatial heterogeneity continuously: residual genomic information is substantial through intermediate/high ZeBRA percentiles, whereas residual ZeBRA information rises sharply in the extreme clinical-risk tail. (C) The same phenomenon is visible epidemiologically: within ZeBRA strata, T-carriers have higher observed FILD/FILA prevalence than non-carriers. (D) Local odds ratios provide an effect-size view, with persistent \textit{MUC5B} association across much of the axis and a marked increase in ZeBRA association at the extreme tail. The moving windows overlap and are used for descriptive localization rather than as independent confirmatory tests.}
+\caption{\textbf{Localized complementarity across the ZeBRA risk axis.} All four panels are regenerated natively in PGFPlots from \texttt{FPR\_DEFINED\_LOCAL\_INFORMATION\_BANDS.csv} and \texttt{LOCAL\_ZEBRA\_MUC5B\_INFORMATION\_WINDOWS.csv} in \texttt{zebra\_comp/RESULTS}. (A) In clinically relevant FPR bands, the nested-model LRT for adding \textit{MUC5B} after ZeBRA exceeds the converse conditional contribution, especially in the 5--10\% and 20--40\% bands. (B) Overlapping moving windows show the same spatial heterogeneity continuously: the conditional genomic LRT is substantial through intermediate/high ZeBRA percentiles, whereas the conditional ZeBRA LRT rises sharply in the extreme clinical-risk tail. These empirical LRT statistics measure local nested-model contribution; they are not direct estimates of the individual-level likelihood-ratio factors in Theorem~\ref{thm:main}. (C) The same phenomenon is visible epidemiologically: within ZeBRA strata, T-carriers have higher observed FILD/FILA prevalence than non-carriers. (D) Local odds ratios provide an effect-size view, with persistent \textit{MUC5B} association across much of the axis and a marked increase in ZeBRA association at the extreme tail. The moving windows overlap and are used for descriptive localization rather than as independent confirmatory tests.}
 \label{fig:local-information}
 \end{figure*}%
 }
@@ -228,15 +217,10 @@
 \addplot+[dashed,no marks] coordinates {(1.5,0) (10.5,0)};
 \nextgroupplot[
  xlabel={Lower target FPR (\%)},ylabel={FPR difference (pp)},
- xmin=1.5,xmax=10.5,xtick={2,5,10},scaled y ticks=false,
- ymin=-0.035,ymax=0.008,
+ xmin=1.5,xmax=10.5,xtick={2,5,10},scaled y ticks=false,ymin=-0.035,ymax=0.008,
  yticklabel style={/pgf/number format/fixed,/pgf/number format/precision=3}]
-\addplot+[mark=*,thick]
- table[x expr=100*\thisrow{lower_target_fpr},y expr=100*\thisrow{rescue_minus_matched_FPR_mean},
- restrict expr to domain={\thisrow{main_target_fpr}}{0.0049:0.0051}]{\rescuedata};
-\addplot+[mark=square*,thick]
- table[x expr=100*\thisrow{lower_target_fpr},y expr=100*\thisrow{rescue_minus_matched_FPR_mean},
- restrict expr to domain={\thisrow{main_target_fpr}}{0.0099:0.0101}]{\rescuedata};
+\addplot+[mark=*,thick] table[x expr=100*\thisrow{lower_target_fpr},y expr=100*\thisrow{rescue_minus_matched_FPR_mean},restrict expr to domain={\thisrow{main_target_fpr}}{0.0049:0.0051}]{\rescuedata};
+\addplot+[mark=square*,thick] table[x expr=100*\thisrow{lower_target_fpr},y expr=100*\thisrow{rescue_minus_matched_FPR_mean},restrict expr to domain={\thisrow{main_target_fpr}}{0.0099:0.0101}]{\rescuedata};
 \addplot+[dashed,no marks] coordinates {(1.5,0) (10.5,0)};
 \end{groupplot}
 \end{tikzpicture}
@@ -256,16 +240,14 @@
  xmajorgrids=true,ymajorgrids=true,major grid style={dotted}]
 \nextgroupplot[
  xlabel={Requested FPR (\%)},ylabel={Held-out LR$+$},xmode=log,
- xmin=0.4,xmax=12,xtick={0.5,1,2,5,10},xticklabels={0.5,1,2,5,10},
- ymin=0,ymax=65,
+ xmin=0.4,xmax=12,xtick={0.5,1,2,5,10},xticklabels={0.5,1,2,5,10},ymin=0,ymax=65,
  legend style={at={(0.5,1.04)},anchor=south,legend columns=3,draw=none,font=\scriptsize}]
 \addplot+[mark=*,thick] coordinates {(0.5,\zlrA) (1,\zlrB) (2,\zlrC) (5,\zlrD) (10,\zlrE)};\addlegendentry{ZeBRA}
 \addplot+[mark=square*,thick] coordinates {(0.5,\glrA) (1,\glrB) (2,\glrC) (5,\glrD) (10,\glrE)};\addlegendentry{Genomic}
 \addplot+[mark=triangle*,thick] coordinates {(0.5,\clrA) (1,\clrB) (2,\clrC) (5,\clrD) (10,\clrE)};\addlegendentry{Combined}
 \nextgroupplot[
  xlabel={Requested FPR (\%)},ylabel={Held-out sensitivity},xmode=log,
- xmin=0.4,xmax=12,xtick={0.5,1,2,5,10},xticklabels={0.5,1,2,5,10},
- ymin=0,ymax=0.60]
+ xmin=0.4,xmax=12,xtick={0.5,1,2,5,10},xticklabels={0.5,1,2,5,10},ymin=0,ymax=0.60]
 \addplot+[mark=*,thick] coordinates {(0.5,\zsnA) (1,\zsnB) (2,\zsnC) (5,\zsnD) (10,\zsnE)};
 \addplot+[mark=square*,thick] coordinates {(0.5,\gsnA) (1,\gsnB) (2,\gsnC) (5,\gsnD) (10,\gsnE)};
 \addplot+[mark=triangle*,thick] coordinates {(0.5,\csnA) (1,\csnB) (2,\csnC) (5,\csnD) (10,\csnE)};
@@ -276,6 +258,5 @@
 \end{figure*}%
 }
 
-% The master manuscript defines \empiricalsection after this file is read.
-% Load the revised empirical section at \begin{document}, when that macro exists.
+% Load the current empirical-section macro only after the master has defined it.
 \AtBeginDocument{\InputIfFileExists{empirical_section_update.tex}{}{}}
