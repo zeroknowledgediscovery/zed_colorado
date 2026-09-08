@@ -3,6 +3,11 @@
 % full-width 3x2 supplementary figure. Numerical values are read from
 % empirical_figures_data.tex, except the explicitly documented SHAP recurrence
 % and ROC-hull summary values.
+%
+% Layout rule: each panel reserves two distinct header bands. Legends sit just
+% above the plotting rectangle; panel letters sit higher still. This prevents
+% legend/panel-label collisions even for the three-entry legends. Bar-series
+% plots explicitly use PGFPlots' ybar legend handler and never use markers.
 
 % -----------------------------------------------------------------------------
 % Main Figure 1: selected nine-panel FILD/FILA evidence matrix
@@ -13,8 +18,8 @@
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}
 \begin{groupplot}[
- group style={group name=fildIntegrated,group size=3 by 3,horizontal sep=0.95cm,vertical sep=1.95cm},
- width=0.270\textwidth,height=0.215\textwidth,
+ group style={group name=fildIntegrated,group size=3 by 3,horizontal sep=1.05cm,vertical sep=2.35cm},
+ width=0.265\textwidth,height=0.205\textwidth,
  tick label style={font=\scriptsize},
  label style={font=\scriptsize},
  ymajorgrids=true,major grid style={dotted},
@@ -38,19 +43,22 @@
  xtick={0,1,2,3,4,5},
  xticklabels={ZeBRA,\textit{MUC5B},DOCK2,rs2726049,rs302837,TERT},
  xticklabel style={font=\scriptsize,rotate=40,anchor=east}]
-\addplot+[ybar,bar width=7pt] coordinates {(0,30) (1,28) (2,15) (3,14) (4,13) (5,11)};
+\addplot+[ybar,ybar legend,mark=none,bar width=7pt]
+ coordinates {(0,30) (1,28) (2,15) (3,14) (4,13) (5,11)};
 
-% (c) Local directional contribution.
+% (c) Local directional contribution. Bar-series legend glyphs are bars, not markers.
 \nextgroupplot[
  ylabel={Nested-model LR statistic},ymin=0,ymax=19,
  xmin=-0.45,xmax=3.45,
  xtick={0,1,2,3},xticklabels={2--5,5--10,10--20,20--40},
  xlabel={Control-FPR band (\%)},
- legend style={at={(0.5,1.13)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
+ legend style={at={(0.5,1.09)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
  /tikz/every even column/.append style={column sep=5pt}}]
-\addplot+[ybar,bar width=5pt,bar shift=-3pt] table[x expr=\coordindex,y=LRT_Z_given_G]{\localbands};
+\addplot+[ybar,ybar legend,mark=none,bar width=5pt,bar shift=-3pt]
+ table[x expr=\coordindex,y=LRT_Z_given_G]{\localbands};
 \addlegendentry{$Z|G$}
-\addplot+[ybar,bar width=5pt,bar shift=3pt] table[x expr=\coordindex,y=LRT_G_given_Z]{\localbands};
+\addplot+[ybar,ybar legend,mark=none,bar width=5pt,bar shift=3pt]
+ table[x expr=\coordindex,y=LRT_G_given_Z]{\localbands};
 \addlegendentry{$G|Z$}
 
 % (d) Actual cross-fitted evidence channels.
@@ -58,7 +66,7 @@
  xlabel={ZeBRA risk percentile},ylabel={Cross-fitted log-LR},
  xmin=23,xmax=99,ymin=-1.8,ymax=4.2,
  xtick={25,50,75,97.5},
- legend style={at={(0.5,1.13)},anchor=south,legend columns=3,draw=none,font=\scriptsize,
+ legend style={at={(0.5,1.09)},anchor=south,legend columns=3,draw=none,font=\scriptsize,
  /tikz/every even column/.append style={column sep=3pt}}]
 \addplot+[thick,mark=*,mark size=0.9pt] table[x=window_center_percentile,y=median_log_LR_Z]{\lrmoving};
 \addlegendentry{$\widehat\Lambda_Z$}
@@ -73,7 +81,7 @@
  xlabel={ZeBRA risk percentile},ylabel={Adjusted odds ratio},
  xmin=23,xmax=100,ymin=0.5,ymax=6.0,
  xtick={25,50,75,100},
- legend style={at={(0.5,1.13)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
+ legend style={at={(0.5,1.09)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
  /tikz/every even column/.append style={column sep=5pt}}]
 \addplot+[mark=*,mark size=0.9pt,thick] table[x=window_center_percentile,y=OR_Z_per_local_SD]{\localwindows};
 \addlegendentry{ZeBRA / local SD}
@@ -85,7 +93,7 @@
 \nextgroupplot[
  xlabel={Lower target FPR (\%)},ylabel={$\Delta$ sensitivity},
  xmin=1.5,xmax=10.5,xtick={2,5,10},ymin=0,ymax=0.055,
- legend style={at={(0.5,1.13)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
+ legend style={at={(0.5,1.09)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
  /tikz/every even column/.append style={column sep=5pt}}]
 \addplot+[mark=*,mark size=1.7pt,thick] table[x expr=100*\thisrow{lower_target_fpr},y=rescue_minus_matched_sensitivity_mean,restrict expr to domain={\thisrow{main_target_fpr}}{0.0049:0.0051}]{\rescuedata};
 \addlegendentry{Upper 0.5\%}
@@ -97,7 +105,7 @@
  xlabel={Requested FPR (\%)},ylabel={Held-out LR$+$},xmode=log,log basis x=10,
  xmin=0.4,xmax=12,xtick={0.5,1,2,5,10},xticklabels={0.5,1,2,5,10},
  ymin=0,ymax=65,
- legend style={at={(0.5,1.13)},anchor=south,legend columns=3,draw=none,font=\scriptsize,
+ legend style={at={(0.5,1.09)},anchor=south,legend columns=3,draw=none,font=\scriptsize,
  /tikz/every even column/.append style={column sep=3pt}}]
 \addplot+[mark=*,mark size=1.6pt,thick] coordinates {(0.5,\zlrA) (1,\zlrB) (2,\zlrC) (5,\zlrD) (10,\zlrE)};\addlegendentry{ZeBRA}
 \addplot+[mark=square*,mark size=1.6pt,thick] coordinates {(0.5,\glrA) (1,\glrB) (2,\glrC) (5,\glrD) (10,\glrE)};\addlegendentry{Genomic}
@@ -131,14 +139,14 @@
  xtick={0,1,2,3,4},
  xticklabels={ZeBRA,Hybrid,Pointwise,Hull Z,Hull union},
  xticklabel style={font=\scriptsize,rotate=35,anchor=east}]
-\addplot+[ybar,bar width=7pt] coordinates {(0,0.8142) (1,0.8095) (2,0.8196) (3,0.8219) (4,0.8260)};
+\addplot+[ybar,ybar legend,mark=none,bar width=7pt]
+ coordinates {(0,0.8142) (1,0.8095) (2,0.8196) (3,0.8219) (4,0.8260)};
 
 \end{groupplot}
-% Panel letters are deliberately outside the plotting rectangles, with a small
-% inset from the neighboring y-label clearance zone.
+% Panel letters use a dedicated band above the legend band.
 \foreach \p/\lab in {c1r1/a,c2r1/b,c3r1/c,c1r2/d,c2r2/e,c3r2/f,c1r3/g,c2r3/h,c3r3/i}{%
   \node[anchor=south west,font=\footnotesize\bfseries]
-    at ([xshift=-6pt,yshift=10pt]fildIntegrated \p.north west) {(\lab)};%
+    at ([xshift=-7pt,yshift=29pt]fildIntegrated \p.north west) {(\lab)};%
 }
 \end{tikzpicture}%
 }
@@ -157,8 +165,8 @@
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}
 \begin{groupplot}[
- group style={group name=suppIntegrated,group size=3 by 2,horizontal sep=0.95cm,vertical sep=1.95cm},
- width=0.270\textwidth,height=0.220\textwidth,
+ group style={group name=suppIntegrated,group size=3 by 2,horizontal sep=1.05cm,vertical sep=2.35cm},
+ width=0.265\textwidth,height=0.210\textwidth,
  tick label style={font=\scriptsize},
  label style={font=\scriptsize},
  ymajorgrids=true,major grid style={dotted},
@@ -172,9 +180,12 @@
  xmin=0,xmax=1,
  xtick={0.20,0.50,0.80},xticklabels={Pooled,Adj. neg.,FILD+},
  xticklabel style={font=\scriptsize}]
-\addplot+[ybar,bar width=10pt] table[x expr=0.20,y=continuous_auc,restrict expr to domain={\coordindex}{0:0}]{\mucfive};
-\addplot+[ybar,bar width=10pt] table[x expr=0.50,y=continuous_auc,restrict expr to domain={\coordindex}{2:2}]{\mucfive};
-\addplot+[ybar,bar width=10pt] table[x expr=0.80,y=continuous_auc,restrict expr to domain={\coordindex}{3:3}]{\mucfive};
+\addplot+[ybar,ybar legend,mark=none,bar width=10pt]
+ table[x expr=0.20,y=continuous_auc,restrict expr to domain={\coordindex}{0:0}]{\mucfive};
+\addplot+[ybar,ybar legend,mark=none,bar width=10pt]
+ table[x expr=0.50,y=continuous_auc,restrict expr to domain={\coordindex}{2:2}]{\mucfive};
+\addplot+[ybar,ybar legend,mark=none,bar width=10pt]
+ table[x expr=0.80,y=continuous_auc,restrict expr to domain={\coordindex}{3:3}]{\mucfive};
 \addplot+[dashed,no marks] coordinates {(0.04,0.5) (0.96,0.5)};
 
 % (b) Empirical residual-genomic scales.
@@ -195,7 +206,7 @@
  xmode=log,log basis x=10,xmin=0.4,xmax=12,
  xtick={0.5,1,2,5,10},xticklabels={0.5,1,2,5,10},
  ymin=0,ymax=1.05,
- legend style={at={(0.5,1.13)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
+ legend style={at={(0.5,1.09)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
  /tikz/every even column/.append style={column sep=5pt}}]
 \addplot+[mark=*,mark size=1.7pt,thick] coordinates {(0.5,\flipMedA) (1,\flipMedB) (2,\flipMedC) (5,\flipMedD) (10,\flipMedE)};\addlegendentry{Median}
 \addplot+[mark=square*,mark size=1.7pt,thick] coordinates {(0.5,\flipQMaxA) (1,\flipQMaxB) (2,\flipQMaxC) (5,\flipQMaxD) (10,\flipQMaxE)};\addlegendentry{Max. 95th pct.}
@@ -207,7 +218,7 @@
  ymin=-0.00035,ymax=0.00008,
  ytick={-0.0003,-0.0002,-0.0001,0},
  yticklabel style={font=\scriptsize,/pgf/number format/fixed,/pgf/number format/precision=4},
- legend style={at={(0.5,1.13)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
+ legend style={at={(0.5,1.09)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
  /tikz/every even column/.append style={column sep=5pt}}]
 \addplot+[mark=*,mark size=1.7pt,thick] table[x expr=100*\thisrow{lower_target_fpr},y=rescue_minus_matched_FPR_mean,restrict expr to domain={\thisrow{main_target_fpr}}{0.0049:0.0051}]{\rescuedata};
 \addlegendentry{Upper 0.5\%}
@@ -220,7 +231,7 @@
  xlabel={Requested FPR (\%)},ylabel={Held-out sensitivity},xmode=log,log basis x=10,
  xmin=0.4,xmax=12,xtick={0.5,1,2,5,10},xticklabels={0.5,1,2,5,10},
  ymin=0,ymax=0.55,
- legend style={at={(0.5,1.13)},anchor=south,legend columns=3,draw=none,font=\scriptsize,
+ legend style={at={(0.5,1.09)},anchor=south,legend columns=3,draw=none,font=\scriptsize,
  /tikz/every even column/.append style={column sep=3pt}}]
 \addplot+[mark=*,mark size=1.6pt,thick] coordinates {(0.5,\zsnA) (1,\zsnB) (2,\zsnC) (5,\zsnD) (10,\zsnE)};\addlegendentry{ZeBRA}
 \addplot+[mark=square*,mark size=1.6pt,thick] coordinates {(0.5,\gsnA) (1,\gsnB) (2,\gsnC) (5,\gsnD) (10,\gsnE)};\addlegendentry{Genomic}
@@ -230,7 +241,7 @@
 \nextgroupplot[
  xlabel={Lower target FPR (\%)},ylabel={Adj.-negative $\Delta$FPR},
  xmin=1.5,xmax=10.5,xtick={2,5,10},ymin=-0.025,ymax=0.005,
- legend style={at={(0.5,1.13)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
+ legend style={at={(0.5,1.09)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
  /tikz/every even column/.append style={column sep=5pt}}]
 \addplot+[mark=*,mark size=1.7pt,thick] table[x expr=100*\thisrow{lower_target_fpr},y=rescue_minus_matched_explicit_negative_FPR_mean,restrict expr to domain={\thisrow{main_target_fpr}}{0.0049:0.0051}]{\adjudrescue};
 \addlegendentry{Upper 0.5\%}
@@ -239,10 +250,10 @@
 \addplot+[dashed,no marks] coordinates {(1.5,0) (10.5,0)};
 
 \end{groupplot}
-% Keep labels clear of y-axis text and neighboring panels.
+% Panel letters use a dedicated band above the legend band.
 \foreach \p/\lab in {c1r1/a,c2r1/b,c3r1/c,c1r2/d,c2r2/e,c3r2/f}{%
   \node[anchor=south west,font=\footnotesize\bfseries]
-    at ([xshift=-6pt,yshift=10pt]suppIntegrated \p.north west) {(\lab)};%
+    at ([xshift=-7pt,yshift=29pt]suppIntegrated \p.north west) {(\lab)};%
 }
 \end{tikzpicture}%
 }
