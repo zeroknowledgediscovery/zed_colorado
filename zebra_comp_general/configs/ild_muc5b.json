@@ -1,0 +1,52 @@
+{
+  "analysis_name": "ild_muc5b",
+  "results_root": "../RESULTS",
+  "canonical_id": "patient_id",
+  "inputs": {
+    "genomics": {
+      "path": "../../zebra_comp/ILD_TOP_DRIVERS_DATA.csv",
+      "id_column": "patient_id"
+    },
+    "phenotypes": {
+      "path": "../../zebra_comp/REPHENOTYPES FOR IC.csv",
+      "id_column": "arb_person_id"
+    },
+    "zebra": {
+      "path": "../../zebra_comp/PREDICTIONS_104W_PRED_WINDOW.parquet",
+      "id_column": "patient_id",
+      "score_column": "predicted_risk",
+      "duplicate_policy": "identical"
+    }
+  },
+  "phenotypes": [
+    {
+      "name": "FILD_FILA",
+      "column": "FILD or FILA ADJUDICATED",
+      "positive_values": ["Y", "y", 1, "1"],
+      "negative_values": ["N", "n", 0, "0"],
+      "missing": "negative"
+    }
+  ],
+  "primary_phenotype": "FILD_FILA",
+  "score_range": [0, 1],
+  "genomic_features": {
+    "type": "all",
+    "exclude_columns": ["target"]
+  },
+  "gene_signal": {
+    "enabled": true,
+    "name": "MUC5B_T_carrier",
+    "type": "onehot_any",
+    "called_columns": ["rs35705950.1_G_2", "rs35705950.1_G_1", "rs35705950.1_G_0"],
+    "positive_columns": ["rs35705950.1_G_1", "rs35705950.1_G_0"],
+    "require_exactly_one": true
+  },
+  "analysis": {
+    "operating_fprs": [0.005, 0.01, 0.02, 0.05, 0.10],
+    "control_fpr_bands": [[0.02, 0.05], [0.05, 0.10], [0.10, 0.20], [0.20, 0.40]],
+    "local_window_half_width_percentile": 5.0,
+    "tail_percentiles": [95, 97.5, 99],
+    "lr_deltas": [0.10, 0.05, 0.025, 0.01, 0.005],
+    "rescue_fpr_pairs": [[0.005, 0.02], [0.005, 0.05], [0.005, 0.10], [0.01, 0.02], [0.01, 0.05], [0.01, 0.10]]
+  }
+}
