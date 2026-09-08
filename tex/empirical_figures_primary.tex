@@ -198,8 +198,8 @@
 \centering
 \begin{tikzpicture}
 \begin{groupplot}[
- group style={group name=decisionPanels,group size=3 by 2,horizontal sep=1.10cm,vertical sep=2.25cm},
- width=0.255\textwidth,height=0.175\textwidth,
+ group style={group name=decisionPanels,group size=3 by 2,horizontal sep=1.55cm,vertical sep=2.70cm},
+ width=0.245\textwidth,height=0.170\textwidth,
  tick label style={font=\scriptsize},label style={font=\scriptsize},
  xmajorgrids=true,ymajorgrids=true,major grid style={dotted},clip=false]
 
@@ -227,7 +227,8 @@
  xlabel={Lower target FPR (\%)},ylabel={$\Delta$ operational FPR (pp)},
  xmin=1.5,xmax=10.5,xtick={2,5,10},scaled y ticks=false,
  ymin=-0.035,ymax=0.008,
- yticklabel style={font=\scriptsize,/pgf/number format/fixed,/pgf/number format/precision=3}]
+ ytick={-0.03,-0.02,-0.01,0},yticklabels={$-0.03$,$-0.02$,$-0.01$,0},
+ yticklabel style={font=\scriptsize}]
 \addplot+[mark=*,thick] table[x expr=100*\thisrow{lower_target_fpr},y expr=100*\thisrow{rescue_minus_matched_FPR_mean},restrict expr to domain={\thisrow{main_target_fpr}}{0.0049:0.0051}]{\rescuedata};
 \addplot+[mark=square*,thick] table[x expr=100*\thisrow{lower_target_fpr},y expr=100*\thisrow{rescue_minus_matched_FPR_mean},restrict expr to domain={\thisrow{main_target_fpr}}{0.0099:0.0101}]{\rescuedata};
 \addplot+[dashed,no marks] coordinates {(1.5,0) (10.5,0)};
@@ -267,7 +268,6 @@
 \addplot+[mark=*,thick] coordinates {(0.5,\zlrA) (1,\zlrB) (2,\zlrC) (5,\zlrD) (10,\zlrE)};\addlegendentry{ZeBRA}
 \addplot+[mark=square*,thick] coordinates {(0.5,\glrA) (1,\glrB) (2,\glrC) (5,\glrD) (10,\glrE)};\addlegendentry{Genomic}
 \addplot+[mark=triangle*,thick] coordinates {(0.5,\clrA) (1,\clrB) (2,\clrC) (5,\clrD) (10,\clrE)};\addlegendentry{Combined}
-
 % (f) stringent sensitivity
 \nextgroupplot[
  xlabel={Requested FPR (\%)},ylabel={Held-out sensitivity},xmode=log,log basis x=10,
