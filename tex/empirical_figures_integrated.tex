@@ -149,10 +149,21 @@
  ylabel={Fraction clinical log-LR $>$ genomic scale},
  ymin=0.75,ymax=1.02,xmin=-0.45,xmax=2.45,
  xtick={0,1,2},xticklabels={95,97.5,99},xlabel={ZeBRA percentile threshold}]
-\addplot+[only marks,mark=*,mark size=2.4pt,error bars/.cd,y dir=both,y explicit] coordinates
- {(0,\fracMedA) +-(0,{\fracMedA-\fracMinA},{\fracMaxA-\fracMedA})
-  (1,\fracMedB) +-(0,{\fracMedB-\fracMinB},{\fracMaxB-\fracMedB})
-  (2,\fracMedC) +-(0,{\fracMedC-\fracMinC},{\fracMaxC-\fracMedC})};
+\addplot+[only marks,mark=*,mark size=2.4pt,error bars/.cd,y dir=both,y explicit]
+ table[x expr=0,y=median_across_9_specs,
+ y error plus expr=\thisrow{max_across_9_specs}-\thisrow{median_across_9_specs},
+ y error minus expr=\thisrow{median_across_9_specs}-\thisrow{min_across_9_specs},
+ restrict expr to domain={\coordindex}{5:5}]{\rangesum};
+\addplot+[only marks,mark=*,mark size=2.4pt,error bars/.cd,y dir=both,y explicit]
+ table[x expr=1,y=median_across_9_specs,
+ y error plus expr=\thisrow{max_across_9_specs}-\thisrow{median_across_9_specs},
+ y error minus expr=\thisrow{median_across_9_specs}-\thisrow{min_across_9_specs},
+ restrict expr to domain={\coordindex}{8:8}]{\rangesum};
+\addplot+[only marks,mark=*,mark size=2.4pt,error bars/.cd,y dir=both,y explicit]
+ table[x expr=2,y=median_across_9_specs,
+ y error plus expr=\thisrow{max_across_9_specs}-\thisrow{median_across_9_specs},
+ y error minus expr=\thisrow{median_across_9_specs}-\thisrow{min_across_9_specs},
+ restrict expr to domain={\coordindex}{11:11}]{\rangesum};
 
 % (c) Rescue sensitivity gain.
 \nextgroupplot[
