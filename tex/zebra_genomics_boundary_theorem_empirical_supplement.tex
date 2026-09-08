@@ -19,6 +19,9 @@ All empirical manuscript figures are generated at compilation time with PGFPlots
 \end{center}
 so re-running the analyses and recompiling the manuscript updates plotted values without creating a separate manuscript-side data directory.
 
+\section*{Theory notation used in the main text}
+The main theorem distinguishes two residual-genomic scales. $b_{\delta,n}$ is the finite-stage $(1-\delta)$ control quantile of $|R_{G,n}|$ at a particular clinical-history stage $n$. The symbol $b_\delta$ is reserved for an $n$-independent bound that exists only under the stronger uniform-tightness condition A1-U. The empirical score-level analysis estimates an analogue of the former, not the latter.
+
 \section*{Primary source mapping}
 \begin{tabular}{p{0.30\textwidth}p{0.64\textwidth}}
 \toprule
@@ -69,29 +72,17 @@ Fraction with $\log\Lambda_Z$ exceeding genomic scale above 99th percentile & 1.
 \end{tabular}
 \end{table}
 
-\section*{Exploratory local likelihood-ratio statistics}
-The local FPR-band analyses are used descriptively in the main manuscript because multiple regions are examined within the same cohort. For reproducibility, the nominal one-degree-of-freedom likelihood-ratio-test p-values are recorded here but are not treated as multiplicity-adjusted confirmatory inference.
-\begin{center}
-\begin{tabular}{lrr}
-\toprule
-ZeBRA control-FPR band & LRT for adding \textit{MUC5B} after ZeBRA & Nominal $p$\\
-\midrule
-2--5\% & 4.44 & 0.0352\\
-5--10\% & 16.55 & $4.74\times10^{-5}$\\
-10--20\% & 4.77 & 0.0289\\
-20--40\% & 13.69 & $2.15\times10^{-4}$\\
-\bottomrule
-\end{tabular}
-\end{center}
-
 \section*{Theory--data scope}
 The empirical residual-genomic quantiles are fixed-score quantities for the observed ZeBRA representation and \textit{MUC5B}. They correspond to the finite-stage $b_{\delta,n}$ construction in Theorem~1(ii), not to the optional uniform-tightness condition A1-U over all clinical-history lengths. Likewise, the observed high-ZeBRA likelihood-ratio tail does not establish the mathematical unboundedness assumption A2.
+
+\section*{Exploratory local likelihood-ratio tests}
+The main manuscript reports the local nested-model likelihood-ratio statistics as descriptive localization summaries and omits nominal p-values because multiple regions and overlapping windows are examined in the same cohort. For reproducibility, the nominal one-degree-of-freedom p-values for the four non-overlapping control-FPR bands are: 2--5\%: 0.0352; 5--10\%: $4.74\times10^{-5}$; 10--20\%: 0.0289; and 20--40\%: $2.15\times10^{-4}$. These values are not multiplicity-adjusted and are not used as confirmatory evidence.
 
 \section*{Calibration summary}
 The raw ZeBRA score is not an absolute calibrated FILD/FILA probability in this cohort. Across repeated held-out splits, the mean calibration slope is 0.180 for ZeBRA, 0.241 for the genomic model, and 1.140 for the combined model; corresponding expected calibration errors are 0.570, 0.115, and 0.121. The main manuscript therefore treats ZeBRA as an ordinal clinical-history score unless an explicit score-level likelihood-ratio transformation is estimated.
 
 \section*{Supporting ROC-hull summary}
-The descriptive ROC-hull analysis is retained as a supporting result rather than a primary predictive comparison. The empirical/interpolated AUCs are 0.8142 for ZeBRA and 0.8095 for the hybrid model; the convex hulls of the individual curves have AUCs 0.8219 and 0.8182, respectively; the pointwise maximum has AUC 0.8196; and the convex hull of the concatenated ZeBRA and hybrid ROC points has AUC 0.8260. These hull quantities are attainable geometric envelopes and are not held-out performance estimates from a separately fitted classifier.
+The descriptive ROC-hull analysis is retained as a supporting result rather than a primary predictive comparison. The empirical/interpolated AUCs are 0.8142 for ZeBRA and 0.8095 for the hybrid model; the convex hulls of the individual curves have AUCs 0.8219 and 0.8182, respectively; the pointwise maximum has AUC 0.8196; and the convex hull of the concatenated ZeBRA and hybrid ROC points has AUC 0.8260. These hull quantities are geometric envelopes over the evaluated ROC point sets and are not held-out performance estimates from a separately fitted classifier. The concatenated hull is included to illustrate the best randomized operating trade-off available from the observed ZeBRA and hybrid points; it is neither a universal theoretical maximum nor evidence that a classifier with AUC 0.8260 has been prospectively validated.
 
 \section*{Authoritative manuscript sources}
 The canonical manuscript master is \path{zebra_genomics_boundary_theorem_empirical.tex}. The scientific narrative is split across \path{manuscript_body_intro.tex}, \path{manuscript_body_theory.tex}, \path{manuscript_body_interpretation.tex}, \path{manuscript_body_empirical_a.tex}, \path{manuscript_body_empirical_b.tex}, and \path{manuscript_body_end.tex}. Figure definitions are assembled by \path{empirical_figures.tex} from \path{empirical_figures_data.tex}, \path{empirical_figures_primary.tex}, and \path{empirical_figures_lr.tex}. These figure-source files are the authoritative mapping between manuscript plots and analysis-result tables.
