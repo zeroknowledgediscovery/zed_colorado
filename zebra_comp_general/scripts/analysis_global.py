@@ -10,7 +10,8 @@ import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import average_precision_score, brier_score_loss, log_loss, roc_auc_score
-from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.model_selection import GridSearchCV, StratifiedKFold, StratifiedShuffleSplit
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 from common import metric_summary
@@ -29,8 +30,7 @@ def safe_ap(y: np.ndarray, score: np.ndarray) -> float:
     return float(average_precision_score(y, score)) if np.unique(y).size == 2 else np.nan
 
 
-def probs_metrics(y: np.ndarray, p: np.ndarray) -> dict[str, float]:
-    eps = 1e-12
+def probs_metrics(y: np.ndarray, p: np.ndarray, eps: float = 1e-12) -> dict[str, float]:
     p = np.clip(np.asarray(p, float), eps, 1 - eps)
     return {
         "auc": safe_auc(y, p),
@@ -158,22 +158,76 @@ def run_global_comparison(d: pd.DataFrame, feature_cols: list[str], outroot: Pat
     op_summary.to_csv(out / "operating_points_summary.csv", index=False)
 
 
+def _incremental_baseline(seed: int) -> Pipeline:
+    # Frozen notebook 33 baseline: nearly unregularized logistic calibration of ZeBRA.
+    return Pipeline([
+        ("imp", SimpleImputer(strategy="median")),
+        ("sc", StandardScaler()),
+        ("lr", LogisticRegression(C=1e6, solver="lbfgs", max_iter=5000, random_state=seed)),
+    ])
+
+
+def _incremental_nested_elastic(X: pd.DataFrame, y: np.ndarray, seed: int, inner_folds: int = 3) -> Pipeline:
+    y = np.asarray(y, int)
+    min_class = int(np.bincount(y, minlength=2).min())
+    k = min(int(inner_folds), min_class)
+    if k < 2:
+        raise ValueError("Too few minority-class observations for incremental inner CV")
+    cv = StratifiedKFold(k, shuffle=True, random_state=seed)
+    pipe = Pipeline([
+        ("imp", SimpleImputer(strategy="most_frequent")),
+        ("sc", StandardScaler()),
+        ("lr", LogisticRegression(
+            penalty="elasticnet",
+            solver="saga",
+            max_iter=20000,
+            tol=1e-4,
+            random_state=seed,
+        )),
+    ])
+    grid = {
+        "lr__C": [0.001, 0.01, 0.1],
+        "lr__l1_ratio": [0.0, 0.5, 1.0],
+    }
+    search = GridSearchCV(pipe, grid, scoring="roc_auc", cv=cv, n_jobs=-1, refit=True)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        search.fit(X, y)
+    return search.best_estimator_
+
+
 def run_incremental_logistic(d: pd.DataFrame, feature_cols: list[str], outroot: Path, params: dict[str, Any]) -> None:
+    """Paired incremental analysis matching the frozen notebook-33 model design.
+
+    Outer splits are deterministic here for reproducibility; the historical notebook
+    used random split seeds. Therefore aggregate metrics should agree within sampling
+    tolerance rather than row-for-row. Model definitions, preprocessing, and nested
+    hyperparameter search match the frozen analysis.
+    """
     out = ensure_dir(outroot / "02_INCREMENTAL_LOGISTIC")
     nrep = int(params["incremental_repeats"])
     train_size = float(params["train_size"])
     seed = int(params["random_state"])
+    inner_folds = int(params.get("incremental_inner_cv_folds", 3))
     y = d.target.to_numpy(int)
-    Xz = d[["zebra_score"]]
-    Xzg = pd.concat([Xz, d[feature_cols]], axis=1)
+    Xz = d[["zebra_score"]].apply(pd.to_numeric, errors="coerce")
+    Xzg = pd.concat([Xz, d[feature_cols]], axis=1).apply(pd.to_numeric, errors="coerce")
     splitter = StratifiedShuffleSplit(n_splits=nrep, train_size=train_size, random_state=seed + 101)
     rows = []
     for r, (tr, te) in enumerate(splitter.split(np.zeros(len(y)), y)):
         yt, ye = y[tr], y[te]
-        pz = _fit_predict_matrix(Xz.iloc[tr], yt, Xz.iloc[te], seed + r, nonlinear=False)
-        pc = _fit_predict_matrix(Xzg.iloc[tr], yt, Xzg.iloc[te], seed + 5000 + r, nonlinear=False)
-        a = probs_metrics(ye, pz)
-        b = probs_metrics(ye, pc)
+        baseline = _incremental_baseline(seed + r)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            baseline.fit(Xz.iloc[tr], yt)
+        pz = baseline.predict_proba(Xz.iloc[te])[:, 1]
+
+        combined = _incremental_nested_elastic(Xzg.iloc[tr], yt, seed + 5000 + r, inner_folds)
+        pc = combined.predict_proba(Xzg.iloc[te])[:, 1]
+
+        # Frozen notebook clips to 1e-8 for Brier/log-loss diagnostics.
+        a = probs_metrics(ye, pz, eps=1e-8)
+        b = probs_metrics(ye, pc, eps=1e-8)
         rows.append({
             "split": r,
             **{f"zebra_{k}": v for k, v in a.items()},
