@@ -1,8 +1,8 @@
 \section{Consequences and scope of the theory}
 
-Theorem~\ref{thm:main} is the central result of the paper. It is finite-stage, requires only a finite control-side residual-genomic quantile $b_{\delta,n}$ at the clinical stage being analyzed, and is the part most directly instantiated by the Colorado data. The stronger sequential result, Theorem~\ref{thm:tail-extension}, is deliberately separate: it asks what would follow if the residual genomic scale remained uniformly tight as clinical history lengthened and if arbitrarily strong positive clinical evidence were attainable.
+Theorem~\ref{thm:main} is the central result of the paper. It is finite-stage, requires only a finite control-side residual-genomic quantile $b_{\delta,n}$ at the clinical stage being analyzed, and is the part directly instantiated by the Colorado data.
 
-\subsection{Clinical evidence may accumulate, but A2 is a separate assumption}
+\subsection{Clinical evidence accumulates sequentially}
 
 For a sequential history $C_n=(X_1,\ldots,X_n)$, the clinical likelihood ratio factorizes exactly as
 \begin{equation}
@@ -21,9 +21,7 @@ so that
      {p(X_k\mid Y=0,X_{<k})}.
 \label{eq:sequentiallogLR}
 \end{equation}
-This is the standard likelihood-ratio accumulation underlying sequential testing and information accumulation \cite{Wald1945,CoverThomas2006}. It shows how additional clinical observations can add evidence. It does \emph{not} imply that the positive clinical log-LR is mathematically unbounded. The conditional sequential extension additionally assumes A2: arbitrarily strong positive clinical evidence must be attainable on some rare trajectories. The Colorado data can show a strong observed tail over the measured range and can be consistent with the geometry predicted under A2, but they cannot prove unboundedness.
-
-Likewise, A1-U is not a consequence of finite-stage behavior. Theorem~\ref{thm:main}(ii) uses the stage-specific scale $b_{\delta,n}$ and needs no common bound across $n$. A1-U is only the stronger requirement that one finite residual-genomic scale remain valid uniformly as clinical history accumulates. The empirical analysis estimates a score-level analogue of $b_{\delta,n}$ for \textit{MUC5B}; it does not establish A1-U.
+This is the standard likelihood-ratio accumulation underlying sequential testing and information accumulation \cite{Wald1945,CoverThomas2006}. It shows how additional clinical observations can add evidence. The manuscript makes no asymptotic claim that clinical log-likelihood ratios become mathematically unbounded as history lengthens; the sequential factorization is motivation for longitudinal evidence accumulation, not an additional assumption of Theorem~\ref{thm:main}.
 
 \subsection{Local decision gain need not produce global discrimination gain}
 
@@ -34,7 +32,3 @@ Weak ZeBRA--genotype association is also not evidence that residual genomic dise
 \subsection{Operating thresholds and calibrated posterior scores are special cases}
 
 The decision-relevant genomic region is defined relative to a chosen likelihood-ratio threshold. There is therefore no threshold-free universal ``useful band.'' Corollary~\ref{cor:zebra} translates this geometry into posterior-risk space only when a clinical score is calibrated so that $Z=\mathbb{P}(Y=1\mid C)$. Because raw Colorado ZeBRA is not calibrated as an absolute posterior probability, that corollary is not applied numerically. The empirical analysis instead estimates $\LR_Z$ directly from the observed ZeBRA score. This separation between discrimination and probability calibration follows standard prediction-model evaluation practice \cite{VanCalster2019}.
-
-\subsection{The sequential tail result is a conditional extension, not the empirical centerpiece}
-
-Theorem~\ref{thm:tail-extension} and Proposition~\ref{prop:genomicpower}(ii) concern an idealized extreme-specificity regime under additional assumptions. Their empirical counterparts are stringent-specificity LR$+$ behavior and the observed comparison between clinical and residual-genomic evidence in the extreme measured ZeBRA tail. These analyses can support the predicted tail geometry over the available range; they do not establish A1-U, A2, or a universal genome-wide bound. The primary empirical test of the theory remains the direct finite-stage likelihood-ratio analysis corresponding to Theorem~\ref{thm:main}(ii).
