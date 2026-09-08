@@ -14,6 +14,11 @@
 \pgfplotstableread[col sep=comma]{\resultroot/MUC5B_ZEBRA_RESCUE_RULE/REPEATED_SPLIT_ADJUDICATED_MATCHED_FPR_SUMMARY.csv}\adjudrescue
 \pgfplotstableread[col sep=comma]{\resultroot/032_REPEATED_SPLITS_03_TARGET_LOGIC/zedstat_operating_points_summary.csv}\operatingpoints
 
+% Cross-fitted score-level likelihood-ratio channel summaries from the primary
+% five-knot, C=1 estimator. These are moving-window summaries of the out-of-fold
+% subject-level LR estimates, not calibration of the raw ZeBRA score.
+\pgfplotstableread[col sep=comma]{\resultroot/EMPIRICAL_ZEBRA_MUC5B_LIKELIHOOD_RATIOS/EMPIRICAL_LR_MOVING_WINDOWS.csv}\lrmoving
+
 % FILD/FILA operating-point means at requested FPR 0.5, 1, 2, 5, and 10%.
 % These row indices correspond to the named FILD/FILA model/metric/FPR rows in
 % zedstat_operating_points_summary.csv and have been cross-checked against the
