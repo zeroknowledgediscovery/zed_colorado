@@ -1,54 +1,41 @@
 \subsection{Primary empirical test: direct score-level likelihood-ratio analysis}
 The local moving-window statistics above describe conditional predictive contribution but are not themselves estimates of the individual-level likelihood-ratio factor in the theorem. The primary empirical test therefore instantiates the likelihood-ratio factorization directly at the observed ZeBRA-score level. Let $Z$ denote the ZeBRA score and $G\in\{0,1\}$ indicate \textit{MUC5B} T-carrier status. Then, without any sufficiency assumption,
 \begin{equation}
-\LR_{Z,G}(z,g)=\LR_Z(z)\LR_{G\mid Z}(g;z),
+\Lambda_{Z,G}(z,g)=\Lambda_Z(z)\Lambda_{G\mid Z}(g;z),
 \end{equation}
 where
 \begin{align}
-\LR_Z(z)&=\frac{p(z\mid Y=1)}{p(z\mid Y=0)},\\
-\LR_{G\mid Z}(g;z)&=\frac{p(g\mid Y=1,Z=z)}{p(g\mid Y=0,Z=z)}.
+\Lambda_Z(z)&=\frac{p(z\mid Y=1)}{p(z\mid Y=0)},\\
+\Lambda_{G\mid Z}(g;z)&=\frac{p(g\mid Y=1,Z=z)}{p(g\mid Y=0,Z=z)}.
 \end{align}
 For carrier status, defining $q_y(z)=\mathbb{P}(G=1\mid Y=y,Z=z)$ gives
 \begin{equation}
-\LR_{G\mid Z}(1;z)=\frac{q_1(z)}{q_0(z)},\qquad
-\LR_{G\mid Z}(0;z)=\frac{1-q_1(z)}{1-q_0(z)}.
+\Lambda_{G\mid Z}(1;z)=\frac{q_1(z)}{q_0(z)},\qquad
+\Lambda_{G\mid Z}(0;z)=\frac{1-q_1(z)}{1-q_0(z)}.
 \end{equation}
-These quantities are estimated by five repeats of fivefold cross-fitting with cubic spline logistic models. The primary specification uses five spline knots and logistic regularization $C=1$; a prespecified sensitivity grid uses four, five, or six knots crossed with $C\in\{0.3,1,3\}$. For each control subject, the statewise residual-genomic scale is
+These quantities are estimated out of fold by five repeats of fivefold cross-fitting with cubic-spline logistic models. The primary specification uses five spline knots and logistic regularization $C=1$; a prespecified sensitivity grid crosses four, five, or six knots with $C\in\{0.3,1,3\}$.
+
+Figure~\ref{fig:direct-lr-main}a--b shows the cross-fitted evidence channels themselves, which were not visible in the earlier manuscript layout. The clinical score-level log likelihood ratio $\log\widehat\Lambda_Z$ increases monotonically over most of the ZeBRA axis and rises sharply in the extreme score tail. In contrast, the residual \textit{MUC5B} channel is state dependent and remains on a much smaller scale: T-carrier status supplies positive residual evidence over most of the observed score axis, while non-carrier status supplies negative residual evidence. For example, in the 90th-percentile moving window the median clinical log-LR is 0.288, while the median carrier and non-carrier residual genomic log-LRs are 0.830 and $-0.369$; by the 97.5th-percentile window the median clinical log-LR is 1.073 while the corresponding genomic values remain approximately 0.847 and $-0.382$. Thus the cross-fitted curves directly visualize the additive log-LR geometry underlying the theorem: clinical evidence changes strongly with the clinical state, whereas the residual genomic perturbation remains comparatively constrained over the observed range.
+
+For each control subject, define the statewise residual-genomic scale
 \begin{equation}
-B(Z)=\max_{g\in\{0,1\}}\left|\log \widehat{\LR}_{G\mid Z}(g;Z)\right|,
+B(Z)=\max_{g\in\{0,1\}}\left|\log \widehat{\Lambda}_{G\mid Z}(g;Z)\right|,
 \end{equation}
-and the empirical stochastic bound is the $(1-\delta)$ control quantile $\widehat b_\delta=Q_{1-\delta}[B(Z)\mid Y=0]$. This is a score-level empirical analogue of the finite-stage scale $b_{\delta,n}$ in Theorem~\ref{thm:main}(ii). We write $\widehat b_\delta$ without an $n$ subscript for this score-level empirical estimate, distinguishing it from the theoretical $b_{\delta,n}$, which is defined using the residual genomic likelihood ratio conditional on the full clinical history $C_n$. Here $Z=f(C_n)$ is a one-dimensional summary of the observed clinical history. The score-level factorization $\LR_{Z,G}=\LR_Z\LR_{G\mid Z}$ is exact and requires no sufficiency assumption, so the analysis is a valid theorem instance for the observed clinical channel $Z$. It does not establish A1-U, a population-wide bound for the complete clinical history $C_n$, or a bound for arbitrary genomic features beyond the measured \textit{MUC5B} channel. If $Z$ retained all disease-relevant information in $C_n$ needed for the residual genomic likelihood ratio---equivalently, if conditioning on $Z$ and on $C_n$ induced the same residual genomic law---then $\LR_{G\mid Z}$ would coincide with $\LR_{G\mid C_n}$. We neither assume nor establish that stronger sufficiency property.
+and let the empirical stochastic bound be the $(1-\delta)$ control quantile
+\begin{equation}
+\widehat b_\delta=Q_{1-\delta}[B(Z)\mid Y=0].
+\end{equation}
+This is a score-level empirical analogue of the finite-stage scale $b_{\delta,n}$ in Theorem~\ref{thm:main}(ii). We write $\widehat b_\delta$ without an $n$ subscript to distinguish the observed score-level estimate from the theoretical $b_{\delta,n}$ defined conditional on the full clinical history $C_n$. The factorization $\Lambda_{Z,G}=\Lambda_Z\Lambda_{G\mid Z}$ is exact for the observable channel $Z$ and requires no sufficiency assumption. If $Z$ retained all disease-relevant information in $C_n$ needed for the residual genomic law, then $\Lambda_{G\mid Z}$ would coincide with $\Lambda_{G\mid C_n}$; we neither assume nor establish that stronger property.
 
-In the primary 5-knot/$C{=}1$ specification, the control-side high-probability residual-genomic bounds are $\widehat b_{0.05}=0.8699$, $\widehat b_{0.01}=0.9099$, and $\widehat b_{0.005}=0.9241$ on the log-LR scale. Across all nine specifications, the corresponding ranges are 0.8441--0.9083, 0.8635--0.9617, and 0.8697--1.6100. Thus the 95\% and 99\% bounds are stable, whereas the 99.5\% bound becomes unstable only in the most flexible 6-knot fits. This pattern directly supports the finite-stage high-probability formulation of Theorem~\ref{thm:main}(ii), rather than a literal deterministic bound or any claim of uniformity over clinical-history length.
+In the primary 5-knot/$C{=}1$ specification, the control-side high-probability residual-genomic scales are $\widehat b_{0.05}=0.8699$, $\widehat b_{0.01}=0.9099$, and $\widehat b_{0.005}=0.9241$ on the log-LR scale. Across all nine prespecified specifications, the corresponding ranges are 0.8441--0.9083, 0.8635--0.9617, and 0.8697--1.6100 (Fig.~\ref{fig:direct-lr-main}c). The 95\% and 99\% scales are therefore stable, whereas the 99.5\% tail is sensitive to the most flexible estimators. This pattern supports the high-probability finite-stage formulation of Theorem~\ref{thm:main}(ii), rather than a deterministic residual bound.
 
-The direct LR analysis also provides two secondary geometric checks. First, median clinical log-LR among subjects above the 95th, 97.5th, and 99th ZeBRA percentiles is 1.5175, 2.7325, and 3.8345, while the corresponding 95th percentiles of the estimated statewise residual genomic scale are only 0.9213, 0.7758, and 0.7384. The fraction of subjects whose clinical log-LR exceeds that genomic scale is 0.9045, 0.9938, and 1.0000, respectively. This demonstrates strong observed clinical-tail dominance over the measured range, which is consistent with the geometry of Theorem~\ref{thm:tail-extension} but does not prove A1-U or A2. Second, genomic-induced decision flips remain localized near the clinical boundary: across the nine specifications, the median distance of flipped points from the clinical boundary is 0.1345--0.3039 log-LR units at requested FPR 0.5\% and 0.2292--0.4991 at requested FPR 1\%, with only 2--7 and 21--69 flipped controls, respectively.
+The most direct decision-level implication is also observed. When clinical decisions are thresholded at requested FPRs from 0.5\% to 10\%, genomic-induced decision changes remain concentrated near the clinical likelihood-ratio boundary (Fig.~\ref{fig:direct-lr-main}d). Across the nine estimator specifications, the median boundary distance of flipped subjects is 0.1345--0.3039 log-LR units at requested FPR 0.5\% and 0.2292--0.4991 at requested FPR 1\%. Thus the same analysis that estimates the residual genomic scale also shows that the decisions changed by genomics are localized where the theorem predicts they should be.
 
-\figEmpiricalLRRobustness
+The observed upper ZeBRA tail provides a separate finite-range correspondence to the stronger conditional tail extension. In the primary estimator, median clinical log-LR among subjects above the 95th, 97.5th, and 99th ZeBRA percentiles is 1.5175, 2.7325, and 3.8345, while the corresponding 95th percentiles of the estimated statewise residual genomic scale are 0.9213, 0.7758, and 0.7384. The fractions for which clinical log-LR exceeds that genomic scale are 0.9045, 0.9938, and 1.0000, respectively. These finite observations are consistent with clinical-tail dominance over the measured range but do not prove A1-U or the mathematical unboundedness required by A2. Full estimator-sensitivity and tail summaries are reported in the Supplementary Material.
 
-\subsection{Secondary operational illustration: boundary-targeted \textit{MUC5B} rescue}
-The two-threshold rescue rule is retained as an application of the localization result rather than as its primary empirical support. Upper and lower ZeBRA thresholds are derived from training negatives, \textit{MUC5B} rescue is applied only to untouched outer-test subjects between those thresholds, and a ZeBRA-only comparator is separately selected on training data to match the rescue rule's training-set FPR. Across all six evaluated threshold pairs, mean held-out sensitivity gain over this fair matched-ZeBRA comparator is positive. For the 0.5\%/10\% rule, mean sensitivity increases by 0.0446 while mean operational FPR differs from matched ZeBRA by only $-2.53\times10^{-4}$.
+\figDirectLRMain
 
-The adjudicated-negative analysis is treated as a control diagnostic rather than a primary claim. Using the already training-derived matched threshold on untouched explicitly adjudicated-negative test subjects, rescue has lower mean adjudicated-negative FPR than matched ZeBRA in five of six evaluated rules; for the 0.5\%/10\% rule the mean difference is $-0.0185$ and rescue is lower in 81\% of outer splits. Because each split contains only about 216 explicitly adjudicated negatives on average and the split-wise percentile range is broad, we do not interpret this as definitive evidence of lower adjudicated-negative FPR. Full rule-by-rule values and percentile ranges are reported in the Supplementary Methods.
+\subsection{Secondary operational consequence}
+The two-threshold \textit{MUC5B} rescue analysis is retained as an application of the localization result rather than as its primary empirical support. Upper and lower ZeBRA thresholds are learned from training negatives; \textit{MUC5B} rescue is applied only to untouched outer-test subjects between those thresholds; and a ZeBRA-only threshold is separately selected on training data to match the rescue rule's training-set FPR. Across all six evaluated threshold pairs, mean held-out sensitivity gain over this matched-ZeBRA comparator is positive. For the 0.5\%/10\% rule, mean sensitivity increases by 0.0446 while mean operational FPR differs from matched ZeBRA by only $-2.53\times10^{-4}$. Because rescue introduces additional threshold choices and the explicitly adjudicated-negative diagnostic is small, the full rescue analysis is placed in the Supplementary Material rather than given a separate main-text figure.
 
-\subsection{Stringent operating points provide finite-range correspondence to the tail extension}
-The stringent held-out operating-point analysis provides a finite-range comparison to the conditional clinical-tail results. At requested FPR 0.5\%, mean held-out LR$+$ is approximately 57.9 for ZeBRA, 4.28 for the genomic-only model, and 39.1 for the nonlinear combined model. At requested FPR 1\%, the corresponding means are 29.8, 3.62, and 26.7. Thus the evaluated clinical-history score dominates the evaluated genomic-only model at these stringent operating points. LR$+$ is the positive likelihood ratio of the induced binary decision rule and has the usual interpretation as the multiplicative change in disease odds associated with a positive result \cite{DeeksAltman2004}. Because raw ZeBRA is not calibrated onto a likelihood-ratio scale in this cohort, these LR$+$ values characterize induced held-out decision rules rather than directly identifying a threshold $K$ on $\LR_C$. They are therefore empirical correspondence over the observed range, not evidence that A2 or a universal genomic bound $M_G$ has been established.
-
-\figDecisionConsequences
-
-\subsection{Calibration diagnostics delimit the present theory--data mapping}
-The raw ZeBRA score is not calibrated as an absolute FILD/FILA probability in this cohort. Across repeated held-out splits, the score has mean calibration slope approximately 0.18 and expected calibration error approximately 0.57; its mean value is about 0.59 while operational FILD/FILA prevalence is about 0.020. Calibration and discrimination measure distinct properties of a prediction model, and probability interpretation requires explicit assessment of calibration \cite{VanCalster2019}. We therefore treat ZeBRA empirically as an ordinal clinical-history score in the current paper. Corollary~\ref{cor:zebra}, which maps a calibrated posterior probability to a likelihood ratio, remains a theoretical special case and is not numerically tested with the raw ZeBRA score. The empirical theory--data connection instead uses the directly estimated score-level likelihood ratio $\LR_Z$.
-
-\noindent\begin{minipage}{\columnwidth}
-\centering\scriptsize
-\textbf{Calibration summary for FILD/FILA}\\[2pt]
-\begin{tabular}{lrr}
-\toprule
-Model & Calibration slope & ECE\\
-\midrule
-ZeBRA & 0.180 & 0.570\\
-Genomic & 0.241 & 0.115\\
-Combined & 1.140 & 0.121\\
-\bottomrule
-\end{tabular}
-\end{minipage}
-\par\smallskip
+Stringent operating-point and calibration analyses are treated similarly. At requested FPR 0.5\%, mean held-out LR$+$ is approximately 57.9 for ZeBRA, 4.28 for the genomic-only model, and 39.1 for the nonlinear combined model; at 1\%, the corresponding means are 29.8, 3.62, and 26.7. These values provide finite-range operating evidence but are not required by the finite-stage theorem. The raw ZeBRA score is also not calibrated as an absolute FILD/FILA probability in this cohort, so the empirical theory--data connection uses the directly estimated score-level likelihood ratio $\Lambda_Z$, not a posterior-probability interpretation of the raw score. Detailed rescue, stringent-operating-point, calibration, and ROC-hull diagnostics are provided in the Supplementary Material.
