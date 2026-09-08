@@ -19,9 +19,9 @@
   },
   "gene_signal": {
     "enabled": true,
-    "name": "TTN_pathogenic_carrier",
+    "name": "TTNtv_carrier",
     "type": "binary_column",
-    "column": "TTN_pathogenic_carrier"
+    "column": "TTNtv_carrier"
   },
   "analysis": {
     "operating_fprs": [0.005, 0.01, 0.02, 0.05, 0.10],
