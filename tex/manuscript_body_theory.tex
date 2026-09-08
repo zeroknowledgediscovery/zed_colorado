@@ -1,6 +1,6 @@
 \section{Main theorem}
 
-The core result is finite-stage boundary localization. It does not require a likelihood-ratio bound that is uniform over all possible clinical-history lengths, nor does it require an unbounded clinical-evidence tail. At any fixed observed history length, the relevant quantity is simply the high-probability scale of the residual genomic log-likelihood ratio. Stronger sequential and extreme-tail statements are separated below as conditional extensions.
+The core result is finite-stage boundary localization. At any fixed observed clinical-history stage, the relevant quantity is the high-probability scale of the residual genomic log-likelihood ratio at that stage.
 
 \paragraph*{Notation.} For sequential clinical histories $C_n=(X_1,\ldots,X_n)$, write
 \begin{equation}
@@ -17,7 +17,7 @@ b_{\delta,n}
 =\inf\left\{b\ge0:\Pzero\bigl(|R_{G,n}|>b\bigr)\le\delta\right\},
 \label{eq:finite-stage-bound}
 \end{equation}
-whenever this quantile is finite. Thus $b_{\delta,n}$ is a property of the residual genomic evidence distribution at the clinical stage actually being analyzed; no uniformity over $n$ is required.
+whenever this quantile is finite. Thus $b_{\delta,n}$ is a property of the residual genomic evidence distribution at the clinical stage actually being analyzed.
 
 \begin{theorem}[Finite-stage boundary localization]
 \label{thm:main}
@@ -77,9 +77,9 @@ Equivalently,
 \boxed{-\log M\le \log \LR_C(c)-\log\lambda\le -\log m.}
 \label{eq:logboundaryband}
 \end{equation}
-The deterministic decision-relevant band has fixed width $\log(M/m)$ on the clinical log-likelihood scale. If the same $m$ and $M$ apply uniformly to every $C_n$, then the optional uniform-tightness condition introduced below holds with $b_\delta=\max\{\log M,-\log m\}$.
+The deterministic decision-relevant band has fixed width $\log(M/m)$ on the clinical log-likelihood scale.
 \end{corollary}
-The proof is given in Appendix~\ref{app:proofs}.
+The proof is given in Supplementary Material, Section S1.
 
 \begin{corollary}[Posterior-risk form for a calibrated clinical score]
 \label{cor:zebra}
@@ -94,89 +94,7 @@ Equivalently,
 \end{equation}
 This is an idealized calibrated-score corollary, not the empirical representation used in the Colorado analysis. The raw ZeBRA output is not calibrated as a posterior probability there; the empirical analysis instead estimates a score-level likelihood ratio directly.
 \end{corollary}
-The proof is given in Appendix~\ref{app:proofs}.
-
-\subsection{Conditional sequential and extreme-tail extensions}
-
-The following assumptions are \emph{not} required for Theorem~\ref{thm:main}. They are introduced only for stronger statements about what happens as clinical history lengthens or at arbitrarily extreme clinical likelihood-ratio thresholds.
-
-\textbf{A1-U (Optional uniform tightness of residual genomic evidence).} For each tolerance $\delta\in(0,1)$, suppose there exists a finite $b_\delta$, independent of $n$, such that
-\begin{equation}
-\sup_n\Pzero\bigl(|R_{G,n}|>b_\delta\bigr)\le\delta.
-\label{eq:stochasticbound}
-\end{equation}
-This is substantially stronger than finite-stage boundedness: it requires one residual-genomic scale to remain valid uniformly as the clinical record lengthens. The Colorado analysis does not test this condition.
-
-\textbf{A2 (Unbounded positive clinical-evidence tail).} Suppose that for arbitrarily large $K>0$ there exists an $n$ such that
-\begin{equation}
-\Pzero\bigl(\log \LR_{C_n}(C_n)\ge K\bigr)>0.
-\label{eq:clinicaltailassumption}
-\end{equation}
-A2 is an explicit structural assumption that arbitrarily strong positive clinical evidence is attainable on rare trajectories. Sequential factorization can explain how evidence accumulates, but it does not imply A2. Empirical data over a finite range can be consistent with this geometry but cannot prove mathematical unboundedness.
-
-\begin{center}
-\footnotesize
-\begin{tabular}{@{}lp{0.68\columnwidth}@{}}
-\toprule
-Notation & Meaning \\
-\midrule
-$b_{\delta,n}$ & Finite-stage $(1-\delta)$ residual-genomic log-LR scale at a particular clinical-history stage $n$; used in the main theorem. \\
-$b_{\delta}$ & A single $n$-independent scale available only under the stronger A1-U condition. \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\begin{theorem}[Conditional sequential clinical-tail dominance]
-\label{thm:tail-extension}
-Assume A1-U. Then for every $n$, every positive upper-tail threshold $K>0$, and every $\delta\in(0,1)$,
-\begin{equation}
-\boxed{
-\Pzero\left(
-\log\LR_{C_n}\ge K,\
-\left|
-\frac{\log\LR_{C_n,G}-\log\LR_{C_n}}
-     {\log\LR_{C_n}}
-\right|>\frac{b_\delta}{K}
-\right)\le\delta.
-}
-\label{eq:taildom-prob}
-\end{equation}
-If A2 also holds, positive-probability upper clinical-tail events exist for arbitrarily large $K$, while $b_\delta/K\to0$. Thus, conditional on A1-U and A2, residual genomic log-evidence becomes relatively negligible on sufficiently extreme positive clinical-evidence tails except on a control-side event of probability at most $\delta$.
-\end{theorem}
-The proof is given in Appendix~\ref{app:proofs}. This theorem is a conditional sequential extension of Theorem~\ref{thm:main}, not an assumption needed for finite-stage localization.
-
-\begin{proposition}[Genomic-only power bound and conditional extreme-specificity clinical superiority]
-\label{prop:genomicpower}
-Assume the marginal genomic likelihood ratio
-\begin{equation}
-\LR_G(g)=\frac{p(g\mid Y=1)}{p(g\mid Y=0)}
-\end{equation}
-is bounded above by $M_G<\infty$. Then:
-
-\emph{(i)} for any genomic-only test $\phi(G)\in[0,1]$ with false-positive rate $\alpha=\Ezero[\phi(G)]$,
-\begin{equation}
-\boxed{\Eone[\phi(G)]\le M_G\alpha.}
-\label{eq:genomicpowerbound}
-\end{equation}
-
-\emph{(ii)} if A2 holds, then for any $K>M_G$ with $\alpha_K=\Pzero(\LR_C\ge K)>0$, the clinical likelihood-ratio rule
-\begin{equation}
-\phi_K(C)=\ind\{\LR_C(C)\ge K\}
-\end{equation}
-has
-\begin{equation}
-\frac{\Pone(\LR_C\ge K)}{\Pzero(\LR_C\ge K)}\ge K>M_G,
-\label{eq:clinicalLRplus}
-\end{equation}
-so at the same FPR $\alpha_K$ its power exceeds that of every genomic-only rule. Moreover $\alpha_K\le 1/K\to0$ as $K\to\infty$.
-\end{proposition}
-The proof is given in Appendix~\ref{app:proofs}. Part (i) is finite and does not require A2; only the arbitrarily extreme comparison in part (ii) invokes the unbounded-tail condition.
-
-\begin{corollary}[Genomic post-processing inherits the marginal bound]
-\label{cor:genomic-postprocessing}
-Let $S$ be generated from the measured genomic state $G$ by a class-independent Markov kernel $Q(ds\mid g)$, so that $Y\to G\to S$ forms a Markov chain. This includes deterministic scores $S=f(G)$ and randomized post-processing whose additional randomness is independent of disease class conditional on $G$. If $\LR_G\le M_G$ almost surely under $\Pzero$, then $\LR_S\le M_G$ almost surely. Thus no such post-processing of the same genomic information can evade Proposition~\ref{prop:genomicpower}.
-\end{corollary}
-The proof is given in Appendix~\ref{app:proofs}.
+The proof is given in Supplementary Material, Section S1.
 
 \subsection{Local decision gain and global discrimination}
 
@@ -191,4 +109,4 @@ Let $S(C)$ be a clinical score and $S'(C,G)$ an augmented score. Suppose $S'=S$ 
 \end{align}
 Hence an augmented rule can produce a substantial change in decisions within a small boundary region while producing an arbitrarily small change in global AUC as the case and control mass of that region tends to zero.
 \end{proposition}
-The proof is given in Appendix~\ref{app:proofs}.
+The proof is given in Supplementary Material, Section S1.
