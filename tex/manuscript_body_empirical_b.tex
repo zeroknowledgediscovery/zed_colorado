@@ -32,8 +32,6 @@ The two-threshold rescue rule is evaluated leakage-free: upper and lower ZeBRA t
 
 The existing result set also exposes an important limitation that should not be hidden. Among the small explicitly adjudicated-negative subset, the rescue rule has higher FPR than the original stringent ZeBRA baseline; for the 0.5\%/10\% rule the mean increase is 0.0666. The current analysis does \emph{not} calculate the corresponding explicitly-adjudicated-negative FPR for the fair matched-ZeBRA comparator, so this diagnostic cannot determine whether rescue is inferior to matched ZeBRA in that subset. We therefore describe the primary result as matched \emph{operational} FPR and reserve the adjudicated-negative matched comparison for a subsequent analysis.
 
-\figBoundaryRescue
-
 \begin{table*}[!t]
 \caption{All six evaluated rescue rules. $\Delta$FPR is rescue minus matched ZeBRA in the operational target-zero group; $\Delta$FPR$_{\rm adjud}$ is rescue minus the original stringent baseline among explicitly adjudicated negatives and is \emph{not} a matched-comparator quantity.}
 \label{tab:boundary-selected}\centering\footnotesize
@@ -56,7 +54,7 @@ The stringent held-out operating-point analysis provides a direct empirical comp
 
 The supporting hybrid ROC analysis reaches the same qualitative conclusion. The empirical hybrid AUC is 0.8095 versus 0.8142 for ZeBRA; the convex hull of the union of ZeBRA and hybrid ROC points has descriptive AUC 0.8260. The hull represents an attainable operating envelope, not a separately validated classifier.
 
-\figLowFPRGeometry
+\figDecisionConsequences
 
 \subsection{Calibration diagnostics delimit the present theory--data mapping}
 The raw ZeBRA score is not calibrated as an absolute FILD/FILA probability in this cohort. Across repeated held-out splits, the score has mean calibration slope approximately 0.18 and expected calibration error approximately 0.57; its mean value is about 0.59 while operational FILD/FILA prevalence is about 0.020. We therefore treat ZeBRA empirically as an ordinal clinical-history score in the current paper. Corollary~\ref{cor:zebra}, which maps a calibrated posterior probability to a likelihood ratio, remains conditional and is not invoked numerically with the raw score.
