@@ -30,6 +30,10 @@
   ],
   "primary_phenotype": "FILD_FILA",
   "score_range": [0, 1],
+  "expected_cohort": {
+    "cases": 252,
+    "gene_called_n": 12766
+  },
   "genomic_features": {
     "type": "all",
     "exclude_columns": ["target"]
