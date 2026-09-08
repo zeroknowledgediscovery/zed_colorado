@@ -1,0 +1,36 @@
+EMPIRICAL LR ESTIMATOR ROBUSTNESS
+Grid: n_knots={4,5,6}, logistic C={0.3,1,3}; primary specification is 5/1.
+This is a sensitivity analysis, not a model-selection exercise.
+
+Primary specification:
+  P0 mean LR_ZG = 1.014869
+  max control statewise |log LR_G| = 7.4320
+
+Across-specification ranges:
+  b_delta_0.05: min=0.8441, median=0.8528, max=0.9083
+  b_delta_0.01: min=0.8635, median=0.8871, max=0.9617
+  b_delta_0.005: min=0.8697, median=0.9088, max=1.6100
+  tail_95_median_log_LR_Z: min=1.4383, median=1.4978, max=1.6069
+  tail_95_q95_max_abs_log_LR_G_statewise: min=0.8155, median=0.9213, max=5.6485
+  tail_95_fraction_log_LR_Z_exceeds_statewise_genomic_scale: min=0.8811, median=0.9124, max=1.0000
+  tail_97.5_median_log_LR_Z: min=2.3756, median=2.7325, max=2.8043
+  tail_97.5_q95_max_abs_log_LR_G_statewise: min=0.7601, median=0.7766, max=8.4206
+  tail_97.5_fraction_log_LR_Z_exceeds_statewise_genomic_scale: min=0.8250, median=0.9938, max=1.0000
+  tail_99_median_log_LR_Z: min=3.7850, median=3.8363, max=3.9379
+  tail_99_q95_max_abs_log_LR_G_statewise: min=0.6849, median=0.7384, max=0.7473
+  tail_99_fraction_log_LR_Z_exceeds_statewise_genomic_scale: min=1.0000, median=1.0000, max=1.0000
+  fpr_0.5pct_n_flips: min=2.0000, median=3.0000, max=7.0000
+  fpr_0.5pct_median_boundary_distance_flips: min=0.1345, median=0.1788, max=0.3039
+  fpr_0.5pct_q95_boundary_distance_flips: min=0.1977, median=0.2418, max=0.5947
+  fpr_1pct_n_flips: min=21.0000, median=40.0000, max=69.0000
+  fpr_1pct_median_boundary_distance_flips: min=0.2292, median=0.4075, max=0.4991
+  fpr_1pct_q95_boundary_distance_flips: min=0.6512, median=0.7528, max=0.8934
+  fpr_2pct_n_flips: min=134.0000, median=149.0000, max=208.0000
+  fpr_2pct_median_boundary_distance_flips: min=0.2440, median=0.2789, max=0.4403
+  fpr_2pct_q95_boundary_distance_flips: min=0.7663, median=0.8591, max=0.9885
+  fpr_5pct_n_flips: min=535.0000, median=671.0000, max=914.0000
+  fpr_5pct_median_boundary_distance_flips: min=0.3314, median=0.4391, max=0.6001
+  fpr_5pct_q95_boundary_distance_flips: min=0.6823, median=0.7783, max=0.8053
+  fpr_10pct_n_flips: min=1240.0000, median=1401.0000, max=1479.0000
+  fpr_10pct_median_boundary_distance_flips: min=0.2095, median=0.2940, max=0.3658
+  fpr_10pct_q95_boundary_distance_flips: min=0.6606, median=0.7166, max=0.7488
