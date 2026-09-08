@@ -1,21 +1,4 @@
-% Integrated FILD/FILA empirical figures.
-% Canonical publication layout: one full-width 3x3 main figure and one
-% full-width 3x2 supplementary figure. Numerical values are read from
-% empirical_figures_data.tex, except the explicitly documented SHAP recurrence
-% and ROC-hull summary values.
-%
-% Layout rule: each panel reserves two distinct header bands. Legends sit just
-% above the plotting rectangle; panel letters sit higher still. This prevents
-% legend/panel-label collisions even for the three-entry legends. Bar-series
-% plots explicitly use PGFPlots' ybar legend handler and never use markers.
 
-% -----------------------------------------------------------------------------
-% Main Figure 1: selected nine-panel FILD/FILA evidence matrix
-% -----------------------------------------------------------------------------
-\newcommand{\figIntegratedFILD}{%
-\begin{figure*}[!p]
-\centering
-\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}
 \begin{groupplot}[
  group style={group name=fildIntegrated,group size=3 by 3,horizontal sep=1.05cm,vertical sep=2.35cm},
@@ -60,7 +43,7 @@
 \addplot+[ybar,ybar legend,mark=none,bar width=5pt,bar shift=3pt]
  table[x expr=\coordindex,y=LRT_G_given_Z]{\localbands};
 \addlegendentry{$G|Z$}
-
+ 
 % (d) Actual cross-fitted evidence channels.
 \nextgroupplot[
  xlabel={ZeBRA risk percentile},ylabel={Cross-fitted log-LR},
@@ -149,15 +132,3 @@
     at ([xshift=-7pt,yshift=29pt]fildIntegrated \p.north west) {(\lab)};%
 }
 \end{tikzpicture}%
-}
-\caption{\textbf{Integrated FILD/FILA evidence across global, local, likelihood-ratio, and operational regimes.}
-(a) Held-out discrimination shows that ZeBRA is substantially stronger globally than the broader array-derived genomic panel and that the nonlinear combined learner does not improve on ZeBRA. (b) Repeated-split SHAP attribution nevertheless shows that the combined learner uses the genomic channel: ZeBRA is the dominant feature and rs35705950 \textit{MUC5B} is the most recurrent genomic contributor. (c) Directional nested-model likelihood-ratio/deviance statistics demonstrate localized residual \textit{MUC5B} information after conditioning on ZeBRA. (d) The actual cross-fitted score-level evidence channels show clinical log-LR rising strongly with ZeBRA state while carrier and non-carrier residual \textit{MUC5B} evidence remains state dependent and on a smaller scale. (e) Local adjusted effect sizes show persistent \textit{MUC5B} contribution through much of the score axis and increasing clinical contribution in the extreme tail. (f) Boundary-targeted \textit{MUC5B} rescue produces positive sensitivity gain over a training-FPR-matched ZeBRA comparator. (g) At stringent requested FPRs, ZeBRA has substantially larger held-out LR$+$ than the genomic-only learner. (h) Across the nine prespecified LR estimators, clinical log-LR exceeds the measured residual genomic scale for most subjects in the observed upper ZeBRA tail, approaching complete dominance by the 99th percentile. (i) Supporting ROC-envelope quantities show modest geometric complementarity among observed operating points; hull/envelope areas are descriptive and are not performance estimates from a separately validated classifier.}
-\label{fig:integrated-fild}
-\end{figure*}%
-}
-
-% -----------------------------------------------------------------------------
-% Supplementary Figure S1: six substantive displaced/secondary panels
-% -----------------------------------------------------------------------------
-\newcommand{\figIntegratedSupplementary}{%
-

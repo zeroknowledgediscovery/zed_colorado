@@ -1,0 +1,56 @@
+This is BibTeX, Version 0.99d (TeX Live 2023/Fedora 39)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: zebra_genomics_boundary_theorem_empirical.aux
+The style file: IEEEtran.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Database file #1: zebra_genomics_references.bib
+-- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
+-- http://www.michaelshell.org/tex/ieeetran/bibtex/
+-- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
+
+Done.
+You've used 18 entries,
+            4087 wiz_defined-function locations,
+            952 strings with 10649 characters,
+and the built_in function-call counts, 15253 in all, are:
+= -- 1321
+> -- 327
+< -- 160
++ -- 188
+- -- 51
+* -- 753
+:= -- 2299
+add.period$ -- 36
+call.type$ -- 18
+change.case$ -- 18
+chr.to.int$ -- 342
+cite$ -- 18
+duplicate$ -- 1087
+empty$ -- 1078
+format.name$ -- 68
+if$ -- 3541
+int.to.chr$ -- 0
+int.to.str$ -- 18
+missing$ -- 169
+newline$ -- 77
+num.names$ -- 18
+pop$ -- 319
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 2
+skip$ -- 1185
+stack$ -- 0
+substring$ -- 827
+swap$ -- 958
+text.length$ -- 46
+text.prefix$ -- 0
+top$ -- 5
+type$ -- 18
+warning$ -- 0
+while$ -- 74
+width$ -- 20
+write$ -- 211

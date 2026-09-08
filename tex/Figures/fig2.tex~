@@ -1,0 +1,94 @@
+\begin{tikzpicture}
+\begin{groupplot}[
+ group style={group name=suppIntegrated,group size=3 by 2,horizontal sep=1.05cm,vertical sep=2.35cm},
+ width=0.265\textwidth,height=0.210\textwidth,
+ tick label style={font=\scriptsize},
+ label style={font=\scriptsize},
+ ymajorgrids=true,major grid style={dotted},
+ axis line style={line width=0.45pt},
+ tick style={line width=0.4pt},
+ clip=false]
+
+% (a) ZeBRA does not reconstruct MUC5B.
+\nextgroupplot[
+ ylabel={Carrier-prediction AUC},ymin=0.45,ymax=0.53,
+ xmin=0,xmax=1,
+ xtick={0.20,0.50,0.80},xticklabels={Pooled,Adj. neg.,FILD+},
+ xticklabel style={font=\scriptsize}]
+\addplot+[ybar,ybar legend,mark=none,bar width=10pt]
+ table[x expr=0.20,y=continuous_auc,restrict expr to domain={\coordindex}{0:0}]{\mucfive};
+\addplot+[ybar,ybar legend,mark=none,bar width=10pt]
+ table[x expr=0.50,y=continuous_auc,restrict expr to domain={\coordindex}{2:2}]{\mucfive};
+\addplot+[ybar,ybar legend,mark=none,bar width=10pt]
+ table[x expr=0.80,y=continuous_auc,restrict expr to domain={\coordindex}{3:3}]{\mucfive};
+\addplot+[dashed,no marks] coordinates {(0.04,0.5) (0.96,0.5)};
+
+% (b) Empirical residual-genomic scales.
+\nextgroupplot[
+ ylabel={Residual scale $\widehat b_\delta$},xlabel={Tail probability $\delta$},
+ ymin=0.75,ymax=1.70,
+ xmin=-0.45,xmax=2.45,
+ xtick={0,1,2},xticklabels={0.05,0.01,0.005}]
+\addplot+[only marks,mark=*,mark size=2.4pt,error bars/.cd,y dir=both,y explicit]
+ table[x expr=\coordindex,y=median_across_9_specs,
+ y error plus expr=\thisrow{max_across_9_specs}-\thisrow{median_across_9_specs},
+ y error minus expr=\thisrow{median_across_9_specs}-\thisrow{min_across_9_specs},
+ restrict expr to domain={\coordindex}{0:2}]{\rangesum};
+
+% (c) Decision-flip localization.
+\nextgroupplot[
+ ylabel={Distance to clinical LR boundary},xlabel={Requested FPR (\%)},
+ xmode=log,log basis x=10,xmin=0.4,xmax=12,
+ xtick={0.5,1,2,5,10},xticklabels={0.5,1,2,5,10},
+ ymin=0,ymax=1.05,
+ legend style={at={(0.5,1.09)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
+ /tikz/every even column/.append style={column sep=5pt}}]
+\addplot+[mark=*,mark size=1.7pt,thick] coordinates {(0.5,\flipMedA) (1,\flipMedB) (2,\flipMedC) (5,\flipMedD) (10,\flipMedE)};\addlegendentry{Median}
+\addplot+[mark=square*,mark size=1.7pt,thick] coordinates {(0.5,\flipQMaxA) (1,\flipQMaxB) (2,\flipQMaxC) (5,\flipQMaxD) (10,\flipQMaxE)};\addlegendentry{Max. 95th pct.}
+
+% (d) Rescue operational FPR difference.
+\nextgroupplot[
+ xlabel={Lower target FPR (\%)},ylabel={$\Delta$ operational FPR},
+ xmin=1.5,xmax=10.5,xtick={2,5,10},scaled y ticks=false,
+ ymin=-0.00035,ymax=0.00008,
+ ytick={-0.0003,-0.0002,-0.0001,0},
+ yticklabel style={font=\scriptsize,/pgf/number format/fixed,/pgf/number format/precision=4},
+ legend style={at={(0.5,1.09)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
+ /tikz/every even column/.append style={column sep=5pt}}]
+\addplot+[mark=*,mark size=1.7pt,thick] table[x expr=100*\thisrow{lower_target_fpr},y=rescue_minus_matched_FPR_mean,restrict expr to domain={\thisrow{main_target_fpr}}{0.0049:0.0051}]{\rescuedata};
+\addlegendentry{Upper 0.5\%}
+\addplot+[mark=square*,mark size=1.7pt,thick] table[x expr=100*\thisrow{lower_target_fpr},y=rescue_minus_matched_FPR_mean,restrict expr to domain={\thisrow{main_target_fpr}}{0.0099:0.0101}]{\rescuedata};
+\addlegendentry{Upper 1\%}
+\addplot+[dashed,no marks] coordinates {(1.5,0) (10.5,0)};
+
+% (e) Stringent sensitivity.
+\nextgroupplot[
+ xlabel={Requested FPR (\%)},ylabel={Held-out sensitivity},xmode=log,log basis x=10,
+ xmin=0.4,xmax=12,xtick={0.5,1,2,5,10},xticklabels={0.5,1,2,5,10},
+ ymin=0,ymax=0.55,
+ legend style={at={(0.5,1.09)},anchor=south,legend columns=3,draw=none,font=\scriptsize,
+ /tikz/every even column/.append style={column sep=3pt}}]
+\addplot+[mark=*,mark size=1.6pt,thick] coordinates {(0.5,\zsnA) (1,\zsnB) (2,\zsnC) (5,\zsnD) (10,\zsnE)};\addlegendentry{ZeBRA}
+\addplot+[mark=square*,mark size=1.6pt,thick] coordinates {(0.5,\gsnA) (1,\gsnB) (2,\gsnC) (5,\gsnD) (10,\gsnE)};\addlegendentry{Genomic}
+\addplot+[mark=triangle*,mark size=1.6pt,thick] coordinates {(0.5,\csnA) (1,\csnB) (2,\csnC) (5,\csnD) (10,\csnE)};\addlegendentry{Combined}
+
+% (f) Adjudicated-negative rescue diagnostic.
+\nextgroupplot[
+ xlabel={Lower target FPR (\%)},ylabel={Adj.-negative $\Delta$FPR},
+ xmin=1.5,xmax=10.5,xtick={2,5,10},ymin=-0.025,ymax=0.005,
+ legend style={at={(0.5,1.09)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
+ /tikz/every even column/.append style={column sep=5pt}}]
+\addplot+[mark=*,mark size=1.7pt,thick] table[x expr=100*\thisrow{lower_target_fpr},y=rescue_minus_matched_explicit_negative_FPR_mean,restrict expr to domain={\thisrow{main_target_fpr}}{0.0049:0.0051}]{\adjudrescue};
+\addlegendentry{Upper 0.5\%}
+\addplot+[mark=square*,mark size=1.7pt,thick] table[x expr=100*\thisrow{lower_target_fpr},y=rescue_minus_matched_explicit_negative_FPR_mean,restrict expr to domain={\thisrow{main_target_fpr}}{0.0099:0.0101}]{\adjudrescue};
+\addlegendentry{Upper 1\%}
+\addplot+[dashed,no marks] coordinates {(1.5,0) (10.5,0)};
+
+\end{groupplot}
+% Panel letters use a dedicated band above the legend band.
+\foreach \p/\lab in {c1r1/a,c2r1/b,c3r1/c,c1r2/d,c2r2/e,c3r2/f}{%
+  \node[anchor=south west,font=\footnotesize\bfseries]
+    at ([xshift=-7pt,yshift=29pt]suppIntegrated \p.north west) {(\lab)};%
+}
+\end{tikzpicture}%
+}

@@ -9,7 +9,22 @@
 
 This Supplementary Material is part of the same document as the main manuscript. It contains auxiliary proofs and the additional empirical analyses needed to assess genomic-panel provenance, robustness, local diagnostics, operating behavior, and calibration. The empirical scope remains restricted to the FILD/FILA endpoint. The broader genomic feature panel used for global model comparisons is distinguished explicitly from the focal \textit{MUC5B} rs35705950 channel used for the direct likelihood-ratio and local mechanistic analyses. The graphical results displaced from the nine-panel main figure are consolidated into Supplementary Fig.~\ref{fig:supp-integrated}; complete numerical values remain in the accompanying tables where a figure would be less concise.
 
-\figIntegratedSupplementary
+
+\begin{figure*}[!p]
+\centering
+   \tikzexternalenable
+     \tikzsetnextfilename{fig2a}
+   %\tikzXtrue
+   \iftikzX
+\input{Figures/fig2}
+ \else
+   \includegraphics[width=\textwidth]{Figures/External/fig2a}
+   \fi
+\captionN{\textbf{Supplementary FILD/FILA robustness and secondary diagnostics.}
+(a) ZeBRA predicts \textit{MUC5B} carrier status at chance level in pooled and disease-stratified analyses, showing that the clinical score does not reconstruct the focal genotype. (b) Empirical high-probability residual-genomic scales across the nine prespecified direct-LR estimators; the 95\% and 99\% scales are stable while the 99.5\% tail is more estimator sensitive. (c) Genomic-induced decision changes remain localized near the clinical LR boundary. (d) Operational FPR differences for the matched-FPR rescue rules are near zero. (e) Held-out sensitivity at stringent requested FPRs complements the LR$+$ comparison in main Fig.~\ref{fig:integrated-fild}g. (f) The explicitly adjudicated-negative rescue diagnostic is directionally favorable for most wider rescue bands but is underpowered because the adjudicated-negative subset is small.}
+\label{fig:supp-integrated}
+\end{figure*}%
+
 
 \subsection*{S1. Proofs of auxiliary results}
 

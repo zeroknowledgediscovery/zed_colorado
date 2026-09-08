@@ -1,53 +1,33 @@
-% Integrated FILD/FILA empirical figures.
-% Canonical publication layout: one full-width 3x3 main figure and one
-% full-width 3x2 supplementary figure. Numerical values are read from
-% empirical_figures_data.tex, except the explicitly documented SHAP recurrence
-% and ROC-hull summary values.
-%
-% Layout rule: each panel reserves two distinct header bands. Legends sit just
-% above the plotting rectangle; panel letters sit higher still. This prevents
-% legend/panel-label collisions even for the three-entry legends. Bar-series
-% plots explicitly use PGFPlots' ybar legend handler and never use markers.
 
-% -----------------------------------------------------------------------------
-% Main Figure 1: selected nine-panel FILD/FILA evidence matrix
-% -----------------------------------------------------------------------------
-\newcommand{\figIntegratedFILD}{%
-\begin{figure*}[!p]
-\centering
-\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}
 \begin{groupplot}[
- group style={group name=fildIntegrated,group size=3 by 3,horizontal sep=1.05cm,vertical sep=2.35cm},
- width=0.265\textwidth,height=0.205\textwidth,
+ group style={group name=fildIntegrated,group size=3 by 3,horizontal sep=1.5cm,vertical sep=2.5cm},
+ width=0.25\textwidth,height=0.225\textwidth,
  tick label style={font=\scriptsize},
  label style={font=\scriptsize},
  ymajorgrids=true,major grid style={dotted},
  axis line style={line width=0.45pt},
- tick style={line width=0.4pt},
+ tick style={line width=0.4pt},ylabel style={yshift=-.2in},    legend columns=2,
  clip=false]
-
 % (a) Global discrimination.
-\nextgroupplot[
+\nextgroupplot[ legend columns=2,
  ylabel={Held-out ROC AUC},ymin=0.50,ymax=0.85,
  xmin=-0.45,xmax=2.45,
  xtick={0,1,2},xticklabels={Combined,Genomic,ZeBRA},
  xticklabel style={font=\scriptsize,rotate=40,anchor=north east}]
 \addplot+[only marks,mark=none,mark size=1pt,error bars/.cd,y dir=both,y explicit]
  table[x expr=\coordindex,y=mean,y error=sd,restrict expr to domain={\coordindex}{0:2}]{\globalauc};
-
 % (b) SHAP stability.
-\nextgroupplot[
+\nextgroupplot[ legend columns=2,
  ylabel={Top-20 SHAP splits / 30},ymin=0,ymax=32,
  xmin=-0.55,xmax=5.55,
  xtick={0,1,2,3,4,5},
  xticklabels={ZeBRA,\textit{MUC5B},DOCK2,rs2726049,rs302837,TERT},
  xticklabel style={font=\scriptsize,rotate=40,anchor=north east}]
-\addplot+[ybar,ybar legend,mark=none,bar width=7pt]
+\addplot[ybar,ybar legend,mark=none,bar width=7pt,fill=black]
  coordinates {(0,30) (1,28) (2,15) (3,14) (4,13) (5,11)};
-
 % (c) Local directional contribution. Bar-series legend glyphs are bars, not markers.
-\nextgroupplot[
+\nextgroupplot[ legend columns=2,
  ylabel={Nested-model LR statistic},ymin=0,ymax=19,
  xmin=-0.45,xmax=3.45,
  xtick={0,1,2,3},xticklabels={2--5,5--10,10--20,20--40},
@@ -59,12 +39,11 @@
 \addlegendentry{$Z|G$}
 \addplot+[ybar,ybar legend,mark=none,bar width=5pt,bar shift=3pt]
  table[x expr=\coordindex,y=LRT_G_given_Z]{\localbands};
-\addlegendentry{$G|Z$}
-
+\addlegendentry{$G|Z$} 
 % (d) Actual cross-fitted evidence channels.
-\nextgroupplot[
+\nextgroupplot[ legend columns=2,
  xlabel={ZeBRA risk percentile},ylabel={Cross-fitted log-LR},
- xmin=23,xmax=99,ymin=-1.8,ymax=4.2,
+ xmin=23,xmax=99,ymin=-1.8,ymax=1.5,
  xtick={25,50,75,97.5},
  legend style={at={(0.5,1.09)},anchor=south,legend columns=3,draw=none,font=\scriptsize,
  /tikz/every even column/.append style={column sep=3pt}}]
@@ -75,11 +54,10 @@
 \addplot+[thick,mark=square*,mark size=0.9pt] table[x=window_center_percentile,y=median_log_LR_G0_given_Z]{\lrmoving};
 \addlegendentry{Non-carrier}
 \addplot+[thin,dotted,no marks] coordinates {(23,0) (99,0)};
-
 % (e) Local adjusted effects.
-\nextgroupplot[
+\nextgroupplot[ legend columns=1,
  xlabel={ZeBRA risk percentile},ylabel={Adjusted odds ratio},
- xmin=23,xmax=100,ymin=0.5,ymax=6.0,
+ xmin=23,xmax=100,ymin=0.5,ymax=6.5,
  xtick={25,50,75,100},
  legend style={at={(0.5,1.09)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
  /tikz/every even column/.append style={column sep=5pt}}]
@@ -90,7 +68,7 @@
 \addplot+[dashed,no marks] coordinates {(23,1) (100,1)};
 
 % (f) Rescue sensitivity gain.
-\nextgroupplot[
+\nextgroupplot[ legend columns=1,
  xlabel={Lower target FPR (\%)},ylabel={$\Delta$ sensitivity},
  xmin=1.5,xmax=10.5,xtick={2,5,10},ymin=0,ymax=0.055,
  legend style={at={(0.5,1.09)},anchor=south,legend columns=2,draw=none,font=\scriptsize,
@@ -99,9 +77,8 @@
 \addlegendentry{Upper 0.5\%}
 \addplot+[mark=square*,mark size=1.7pt,thick] table[x expr=100*\thisrow{lower_target_fpr},y=rescue_minus_matched_sensitivity_mean,restrict expr to domain={\thisrow{main_target_fpr}}{0.0099:0.0101}]{\rescuedata};
 \addlegendentry{Upper 1\%}
-
 % (g) Stringent LR+.
-\nextgroupplot[
+\nextgroupplot[ legend columns=2,
  xlabel={Requested FPR (\%)},ylabel={Held-out LR$+$},xmode=log,log basis x=10,
  xmin=0.4,xmax=12,xtick={0.5,1,2,5,10},xticklabels={0.5,1,2,5,10},
  ymin=0,ymax=65,
@@ -110,10 +87,9 @@
 \addplot+[mark=*,mark size=1.6pt,thick] coordinates {(0.5,\zlrA) (1,\zlrB) (2,\zlrC) (5,\zlrD) (10,\zlrE)};\addlegendentry{ZeBRA}
 \addplot+[mark=square*,mark size=1.6pt,thick] coordinates {(0.5,\glrA) (1,\glrB) (2,\glrC) (5,\glrD) (10,\glrE)};\addlegendentry{Genomic}
 \addplot+[mark=triangle*,mark size=1.6pt,thick] coordinates {(0.5,\clrA) (1,\clrB) (2,\clrC) (5,\clrD) (10,\clrE)};\addlegendentry{Combined}
-
 % (h) Upper-tail clinical dominance.
-\nextgroupplot[
- ylabel={Fraction clinical $>$ genomic scale},
+\nextgroupplot[ legend columns=2,
+ ylabel={Frac. clinical $>$ gen. scale},
  ymin=0.75,ymax=1.02,xmin=-0.45,xmax=2.45,
  xtick={0,1,2},xticklabels={95,97.5,99},xlabel={ZeBRA percentile threshold}]
 \addplot+[only marks,mark=*,mark size=2.4pt,error bars/.cd,y dir=both,y explicit]
@@ -131,17 +107,15 @@
  y error plus expr=\thisrow{max_across_9_specs}-\thisrow{median_across_9_specs},
  y error minus expr=\thisrow{median_across_9_specs}-\thisrow{min_across_9_specs},
  restrict expr to domain={\coordindex}{11:11}]{\rangesum};
-
 % (i) Descriptive ROC geometry.
-\nextgroupplot[
+\nextgroupplot[ legend columns=2,
  ylabel={AUC / envelope area},ymin=0.805,ymax=0.830,
  xmin=-0.45,xmax=4.45,
- xtick={0,1,2,3,4},
+ xtick={0,1,2,3,4}, 
  xticklabels={ZeBRA,Hybrid,Pointwise,Hull Z,Hull union},
- xticklabel style={font=\scriptsize,rotate=35,anchor=east}]
-\addplot+[ybar,ybar legend,mark=none,bar width=7pt]
+ xticklabel style={font=\scriptsize,rotate=40,anchor=north east}]
+\addplot+[ybar,ybar legend,mark=none,bar width=7pt,fill=Blue2]
  coordinates {(0,0.8142) (1,0.8095) (2,0.8196) (3,0.8219) (4,0.8260)};
-
 \end{groupplot}
 % Panel letters use a dedicated band above the legend band.
 \foreach \p/\lab in {c1r1/a,c2r1/b,c3r1/c,c1r2/d,c2r2/e,c3r2/f,c1r3/g,c2r3/h,c3r3/i}{%
@@ -149,15 +123,3 @@
     at ([xshift=-7pt,yshift=29pt]fildIntegrated \p.north west) {(\lab)};%
 }
 \end{tikzpicture}%
-}
-\caption{\textbf{Integrated FILD/FILA evidence across global, local, likelihood-ratio, and operational regimes.}
-(a) Held-out discrimination shows that ZeBRA is substantially stronger globally than the broader array-derived genomic panel and that the nonlinear combined learner does not improve on ZeBRA. (b) Repeated-split SHAP attribution nevertheless shows that the combined learner uses the genomic channel: ZeBRA is the dominant feature and rs35705950 \textit{MUC5B} is the most recurrent genomic contributor. (c) Directional nested-model likelihood-ratio/deviance statistics demonstrate localized residual \textit{MUC5B} information after conditioning on ZeBRA. (d) The actual cross-fitted score-level evidence channels show clinical log-LR rising strongly with ZeBRA state while carrier and non-carrier residual \textit{MUC5B} evidence remains state dependent and on a smaller scale. (e) Local adjusted effect sizes show persistent \textit{MUC5B} contribution through much of the score axis and increasing clinical contribution in the extreme tail. (f) Boundary-targeted \textit{MUC5B} rescue produces positive sensitivity gain over a training-FPR-matched ZeBRA comparator. (g) At stringent requested FPRs, ZeBRA has substantially larger held-out LR$+$ than the genomic-only learner. (h) Across the nine prespecified LR estimators, clinical log-LR exceeds the measured residual genomic scale for most subjects in the observed upper ZeBRA tail, approaching complete dominance by the 99th percentile. (i) Supporting ROC-envelope quantities show modest geometric complementarity among observed operating points; hull/envelope areas are descriptive and are not performance estimates from a separately validated classifier.}
-\label{fig:integrated-fild}
-\end{figure*}%
-}
-
-% -----------------------------------------------------------------------------
-% Supplementary Figure S1: six substantive displaced/secondary panels
-% -----------------------------------------------------------------------------
-\newcommand{\figIntegratedSupplementary}{%
-
