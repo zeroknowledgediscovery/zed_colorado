@@ -1,319 +1,313 @@
 # General ZeBRA + genomics comparison pipeline
 
-This directory is the disease-agnostic counterpart of `../zebra_comp/`. The original `zebra_comp/` remains the frozen Colorado ILD/IPF manuscript analysis and provenance snapshot. This package makes the disease-specific pieces declarative so the same analysis sequence can be rerun for ILD/IPF, ADRD, HFrEF, or another disease/gene pair without editing analysis code.
+This directory is the disease-agnostic counterpart of `../zebra_comp/`. The original `zebra_comp/` remains the frozen Colorado ILD/IPF manuscript provenance snapshot. Use `zebra_comp_general/` for new disease/gene analyses.
 
-**Validation status.** The generalized pipeline is validated against the frozen Colorado ILD/MUC5B manuscript analysis. A full reference run at code baseline `8c5db26623c3bc84ac2b0d5bae9bd109752e5dc8` produced `PASS=38, WARN=0, FAIL=0, INFO=2`. All manuscript-critical local-information, direct-LR, finite-stage `b_delta`, estimator-robustness, incremental-value, and rescue comparisons passed. The two INFO rows are the intentionally implementation-dependent global nonlinear genomics-only and combined-model AUCs. See `ILD_REFERENCE_VALIDATION.md` for the frozen validation record.
+## Validation status
 
-Use `../zebra_comp/` when reproducing the exact current ILD manuscript provenance. Use this generalized package for new disease/gene analyses.
-
-## Analysis conventions
-
-### One phenotype per disease configuration
-
-Each disease/gene run should have one primary binary phenotype. The current ILD configuration uses only:
+The generalized pipeline is validated against the frozen Colorado ILD/MUC5B analysis. A full reference run at code baseline `8c5db26623c3bc84ac2b0d5bae9bd109752e5dc8` produced:
 
 ```text
-FILD or FILA ADJUDICATED
+PASS=38, WARN=0, FAIL=0, INFO=2
 ```
 
-with internal name `FILD_FILA`. The nonfibrotic ILD and nonfibrotic ILA endpoints explored in the historical `zebra_comp/` workflow are not part of `configs/ild_muc5b.json` and are not run by the generalized ILD analysis.
+All manuscript-critical local-information, direct-LR, finite-stage `b_delta`, estimator-robustness, incremental-value, and rescue comparisons passed. The two INFO rows are the intentionally implementation-dependent global nonlinear genomics-only and combined-model AUCs. See `ILD_REFERENCE_VALIDATION.md`.
 
-The intended disease-level mapping is therefore:
+## Analysis convention: one phenotype per run
 
-- ILD: `FILD_FILA` + ZeBRA-ILD + broad ILD genomic panel + MUC5B T-carrier;
-- ADRD: `ADRD` + ZeBRA-ADRD + broad ADRD genomic panel + APOE4 carrier;
-- HFrEF: `HFrEF` + ZeBRA-HFrEF + broad cardiomyopathy/HF genomic panel + TTNtv carrier.
+Each disease config should contain one primary binary phenotype.
 
-Keeping one primary phenotype per config makes cohort construction, score interpretation, local conditional analyses, and disease-to-disease comparisons substantially cleaner.
+- ILD: `FILD_FILA` + ZeBRA-ILD + ILD genomic panel + MUC5B T-carrier
+- ADRD: `ADRD` + ZeBRA-ADRD + ADRD genomic panel + APOE4 carrier
+- HFrEF: `HFrEF` + ZeBRA-HFrEF + HF/cardiomyopathy genomic panel + TTNtv carrier
 
-### Replacing the ZeBRA risk values
+The current `configs/ild_muc5b.json` uses only `FILD or FILA ADJUDICATED`. The historical nonfibrotic ILD/ILA endpoints are not run by the generalized ILD config.
 
-If the disease, phenotype, genomic cohort, and focal gene signal are unchanged and only the ZeBRA risk values change, **no analysis code should be modified**. Update only the `inputs.zebra` block in the disease config.
+## Replacing ZeBRA risk values
 
-For example, the ILD config currently contains:
+If only the ZeBRA score changes for the same disease/cohort, do not modify analysis code. Change only the `inputs.zebra` block in the config:
 
 ```json
 "zebra": {
-  "path": "../../zebra_comp/PREDICTIONS_104W_PRED_WINDOW.parquet",
+  "path": "/path/to/new_predictions.parquet",
   "id_column": "patient_id",
   "score_column": "predicted_risk",
   "duplicate_policy": "identical"
 }
 ```
 
-For a new ILD risk file with the same column names, change only `path`. If the score column changes, update `score_column` as well. If the patient identifier changes, update `id_column`.
+If the score is not bounded in `[0,1]`, also change/remove `score_range`.
 
-Before interpreting a score-swap comparison, verify:
+Everything downstream is recalculated automatically: AUC, incremental genomic value, local FPR bands, `Lambda_Z`, `Lambda_{G|Z}`, `b_hat_delta`, tail summaries, decision-flip localization, and rescue.
 
-1. the new scores correspond to the intended disease and prediction horizon;
-2. they refer to the same intended cohort or any cohort change is explicitly documented;
-3. duplicate patient rows obey the configured `duplicate_policy`;
-4. `score_range` is appropriate. The current ILD config expects `[0,1]`; remove or change this if the new score is an unbounded continuous score;
-5. phenotype-table semantics remain unchanged. For the current sparse ILD adjudication table, missing values and patients absent from the phenotype table are treated as controls (`missing=negative`, `absent_row=negative`).
+For the validated ILD reference cohort the guards are:
 
-All downstream quantities are then recomputed from the new ZeBRA score automatically: global AUC, incremental genomic value, control-FPR bands, local `G|Z` tests, `Lambda_Z`, `Lambda_{G|Z}`, `b_hat_delta`, clinical-tail summaries, decision-flip localization, and matched-FPR rescue.
-
-For the validated ILD reference inputs, the cohort guards are:
-
-- full scored genomic cohort: 12,825;
-- full FILD/FILA cases: 254;
-- MUC5B-called cohort: 12,766;
-- MUC5B-called FILD/FILA cases: 252.
-
-If a new ILD score file intentionally covers a different population, update or remove `expected_cohort` only after confirming that the cohort difference is intended rather than a merge error.
-
-## What is configured per disease
-
-A JSON config specifies:
-
-1. **Genomic matrix**: file, patient ID, and which raw genomic columns are included.
-2. **Phenotype**: label column and how positive/negative/missing values are encoded, including whether absence from a sparse phenotype table means `negative` or `drop`.
-3. **ZeBRA score**: prediction file, patient ID, and score column.
-4. **Gene signal**: the binary candidate-gene state used for local/LR/rescue analyses (for example MUC5B T-carrier, APOE4 carrier, or TTN truncating-variant carrier).
-
-The broad genomic feature panel and the focal gene signal are deliberately separate. Global analyses can use hundreds/thousands of genomic columns while local likelihood-ratio analyses focus on one interpretable binary genomic channel.
+- full scored genomic cohort: 12,825
+- full FILD/FILA cases: 254
+- MUC5B-called cohort: 12,766
+- MUC5B-called FILD/FILA cases: 252
 
 ## Run sequence
 
-`run_all.sh` executes the same sequence for every config:
+```text
+01_GLOBAL_COMPARISON
+02_INCREMENTAL_LOGISTIC
+03_GENE_SCORE_ASSOCIATION
+04_LOCAL_INFORMATION
+05_DIRECT_LR
+06_BOUNDARY_RESCUE
+```
 
-1. `01_GLOBAL_COMPARISON` — repeated held-out ZeBRA vs genomics-only vs combined comparison plus stringent operating points.
-2. `02_INCREMENTAL_LOGISTIC` — paired ZeBRA-only vs ZeBRA+genomics incremental analysis using the validated nested elastic-net design.
-3. `03_GENE_SCORE_ASSOCIATION` — pooled and disease-stratified ZeBRA-to-gene association/enrichment.
-4. `04_LOCAL_INFORMATION` — local nested-model LR/deviance statistics and local effect sizes along the ZeBRA axis.
-5. `05_DIRECT_LR` — cross-fitted score-level `Lambda_Z` and `Lambda_{G|Z}`, finite-stage `b_delta`, clinical-tail summaries, decision-flip localization, and the prespecified 3x3 spline/regularization sensitivity grid used in the ILD analysis.
-6. `06_BOUNDARY_RESCUE` — leakage-free gene rescue between lower/upper ZeBRA thresholds compared with a ZeBRA-only threshold matched on training-set FPR.
-
-Each run writes a frozen config/parameter/version manifest and the encoded feature list under `RESULTS/<analysis_name>/`.
-
-## ILD reference validation
-
-Run the validated ILD/MUC5B reference comparison with:
+Run with:
 
 ```bash
-cd zebra_comp_general
+./run_all.sh CONFIG.json fast
+./run_all.sh CONFIG.json full
+```
+
+For ILD regression validation:
+
+```bash
 ./ild_reference.sh --run full
 ```
 
-The expected cohort invariants are:
+## Genomic feature selection
 
-- full scored genomic cohort: 12,825;
-- full FILD/FILA cases: 254;
-- MUC5B-called cohort: 12,766;
-- MUC5B-called FILD/FILA cases: 252.
+The config can select genomic columns by all columns, explicit names, regex/prefix, a contiguous column slice, or a CSV containing `header_name`.
 
-The ILD config contains explicit cohort guards so a sparse-phenotype merge error stops before the expensive analyses run.
-
-## Basic use for a new disease
-
-```bash
-cd zebra_comp_general
-pip install -r requirements.txt
-cp configs/adrd_apoe.template.json configs/adrd_apoe.json
-# Edit paths, phenotype semantics, genomic selector, and focal gene signal.
-./run_all.sh configs/adrd_apoe.json fast
-./run_all.sh configs/adrd_apoe.json full
-```
-
-## Genomic column selection
-
-`genomic_features` accepts any of the following selectors.
-
-### All genomic columns
+Example disease-panel file:
 
 ```json
-{"type": "all", "exclude_columns": ["target"]}
+"genomic_features": {
+  "type": "file",
+  "path": "../ADRD_genomic_header_matches.csv",
+  "column_field": "header_name"
+}
 ```
 
-### Explicit columns
+The disease gene panels are defined in `gene_panels.json`.
 
-```json
-{"type": "columns", "columns": ["rs123_A", "rs456_G"]}
-```
-
-### A contiguous section of a wide genomic table
-
-```json
-{"type": "slice", "start_column": "FIRST_GENOMIC_COLUMN", "end_column": "LAST_GENOMIC_COLUMN"}
-```
-
-### Regex/prefix selection
-
-```json
-{"type": "regex", "pattern": "^(rs|JHU_)"}
-```
-
-### A discovered disease-gene column file
-
-```json
-{"type": "file", "path": "../ADRD_genomic_header_matches.csv", "column_field": "header_name"}
-```
-
-Multiple selectors can be unioned with `"include": [...]`.
-
-Selected categorical genotype columns are one-hot encoded automatically; numeric genotype/dosage columns remain numeric. Invariant encoded columns are removed. Missing numeric values are imputed inside the training split.
-
-## Gene signal encodings
-
-The focal gene state must be binary for the local/direct-LR/rescue chain. Supported forms are:
-
-- `binary_column`: already encoded 0/1 carrier/status column;
-- `dosage_column`: positive if dosage is at or above a threshold;
-- `genotype_column`: raw categorical genotype with configured positive values;
-- `onehot_any`: current MUC5B-style one-hot state encoding.
-
-The ILD config demonstrates `onehot_any`. ADRD and HFrEF templates assume a precomputed `APOE4_carrier` or `TTNtv_carrier`; change those definitions to the representation actually present in the new cohort.
-
-**Important:** the broad disease-gene header matcher only identifies genomic columns that lie in or map to candidate genes. It does not define the focal biological carrier variable. For ADRD, `APOE4_carrier` should be derived from the actual APOE genotype/haplotype representation (classically rs429358 and rs7412, or an already curated APOE field), not from the presence of an arbitrary APOE-region variant. For HFrEF, `TTNtv_carrier` should be based on an appropriately annotated truncating/pathogenic TTN variant definition; any TTN-region variant is not equivalent to TTNtv carrier status.
-
-## Disease gene-column discovery
-
-The existing Colorado lineage used IPF, ADRD, and HFrEF gene panels. They now live in `gene_panels.json`.
-
-### ADRD
+Generate matched columns from a genomic header file with:
 
 ```bash
 scripts/get_adrd_gene_columns.sh genomicdataheader.csv ADRD_genomic_header_matches.csv
-python scripts/find_apoe4_columns.py genomicdataheader.csv
-```
-
-The first command returns the broad ADRD candidate-gene feature set. The second locates columns containing the two APOE-defining SNP IDs (`rs429358`, `rs7412`) so the actual allele/genotype encoding can be inspected before constructing `APOE4_carrier`.
-
-### HFrEF
-
-```bash
 scripts/get_hfref_gene_columns.sh genomicdataheader.csv HFREF_genomic_header_matches.csv
 ```
 
-Or call the generic panel matcher:
+For ADRD, locate the APOE-defining SNP columns with:
 
 ```bash
-python scripts/find_phenotype_genomic_headers.py genomicdataheader.csv --panel ADRD
-python scripts/find_phenotype_genomic_headers.py genomicdataheader.csv --panel HFREF
-python scripts/find_phenotype_genomic_headers.py genomicdataheader.csv --panel IPF
+python scripts/find_apoe4_columns.py genomicdataheader.csv --output APOE4_defining_columns.csv
 ```
 
-The utility resolves GRCh37 gene intervals and overlapping rsIDs through the Ensembl GRCh37 REST API and caches the result under `.ensembl_cache/`. Output has exactly `gene_name,header_name`, so it can be fed directly into a config using the `file` selector.
+The broad gene-column match is only the feature panel. It does not define the focal carrier variable.
 
-## ADRD/APOE next-analysis workflow
+- `APOE4_carrier` must come from verified APOE genotype encoding, normally rs429358 + rs7412 or an existing curated APOE field.
+- `TTNtv_carrier` must come from an annotated TTN truncating/pathogenic-variant definition; any TTN-region variant is not sufficient.
 
-See `ADRD_APOE_RUNBOOK.md`. The intended sequence is:
+# TODO: exact steps for the next runs
 
-1. discover the broad ADRD genomic feature columns;
-2. locate and inspect `rs429358` and `rs7412` (or use an existing curated APOE genotype field);
-3. construct a defensible binary `APOE4_carrier` variable;
-4. explicitly specify ADRD phenotype-table semantics (`absent_row=negative` only if absence truly means control; otherwise `drop`);
-5. run the unchanged validated pipeline first in `fast` mode and then in `full` mode.
+Do not change the validated analysis modules. Only produce the required input files/columns and edit the configs.
 
-## HFrEF workflow
+## ADRD / APOE4
+
+1. Generate the ADRD genomic-column list from the genomic header:
 
 ```bash
-scripts/get_hfref_gene_columns.sh /path/to/genomicdataheader.csv HFREF_genomic_header_matches.csv
-cp configs/hfref_ttn.template.json configs/hfref_ttn.json
-# Fill input paths, HFrEF label, cohort semantics, and actual TTNtv carrier representation.
-./run_all.sh configs/hfref_ttn.json fast
-./run_all.sh configs/hfref_ttn.json full
+cd zebra_comp_general
+scripts/get_adrd_gene_columns.sh \
+    /path/to/genomicdataheader.csv \
+    ADRD_genomic_header_matches.csv
 ```
 
-## TODO: ADRD and HFrEF runs
+Output required:
 
-The validated analysis code should remain unchanged for both diseases. The remaining work is cohort/input preparation and disease-specific configuration.
-
-### TODO — ADRD / APOE4
-
-Required inputs and decisions:
-
-- [ ] **ADRD genomic matrix**: identify the patient-level genomic file and its patient-ID column. It must contain the genomic columns to be analyzed and, directly or through a derived field, the APOE genotype information.
-- [ ] **Genomic header list**: identify/export the column-header file corresponding to the ADRD genomic matrix.
-- [ ] **ADRD phenotype table**: identify the single binary ADRD phenotype column to use. Do not include secondary exploratory phenotypes in the same config.
-- [ ] **ADRD phenotype semantics**: determine whether a missing cell means control or unknown, and whether a patient absent from the phenotype table means control or should be dropped. Set `missing` and `absent_row` accordingly.
-- [ ] **ADRD ZeBRA predictions**: identify the prediction file, patient-ID column, score column, and prediction horizon to be tested.
-- [ ] **Broad ADRD genomic panel**: run:
-
-```bash
-scripts/get_adrd_gene_columns.sh /path/to/genomicdataheader.csv ADRD_genomic_header_matches.csv
+```text
+ADRD_genomic_header_matches.csv
 ```
 
-- [ ] **Locate APOE-defining columns**: run:
+2. Find the APOE-defining columns:
 
 ```bash
-python scripts/find_apoe4_columns.py /path/to/genomicdataheader.csv --output APOE4_defining_columns.csv
+python scripts/find_apoe4_columns.py \
+    /path/to/genomicdataheader.csv \
+    --output APOE4_defining_columns.csv
+
 cat APOE4_defining_columns.csv
 ```
 
-- [ ] **Verify APOE allele/genotype encoding** for `rs429358` and `rs7412`, or identify an existing curated APOE genotype field.
-- [ ] **Construct `APOE4_carrier`**: `1` for confidently called subjects carrying at least one epsilon-4 allele, `0` for confidently called non-carriers, and missing for uncalled/ambiguous subjects. Do not define APOE4 carrier from an arbitrary APOE-region variant.
-- [ ] **Record ADRD cohort invariants before the full run**: total scored genomic cohort, ADRD cases, APOE-called N, APOE4 carrier N/prevalence, APOE-called ADRD cases, and carrier prevalence among cases and controls.
-- [ ] **Create runnable config**:
+Output required:
+
+```text
+APOE4_defining_columns.csv
+```
+
+It should identify the representations of `rs429358` and `rs7412`.
+
+3. From the actual genotype encoding, create one patient-level binary column:
+
+```text
+APOE4_carrier
+```
+
+Coding:
+
+```text
+1 = >=1 epsilon-4 allele
+0 = confidently called non-carrier
+NA = uncalled/ambiguous
+```
+
+Add this column to the genomic matrix used by the run.
+
+4. Obtain/provide the ADRD ZeBRA score file. It must contain at least:
+
+```text
+patient_id
+predicted_risk
+```
+
+(or use the actual ID/score column names in the config).
+
+5. Copy the config:
 
 ```bash
 cp configs/adrd_apoe.template.json configs/adrd_apoe.json
 ```
 
-Fill the genomic/phenotype/ZeBRA paths and ID columns, single ADRD label, score column, phenotype semantics, broad panel file, and actual APOE4 carrier representation.
+6. In `configs/adrd_apoe.json`, set only these cohort-specific fields:
 
-- [ ] **Smoke test**:
+```text
+inputs.genomics.path
+inputs.genomics.id_column
+inputs.phenotypes.path
+inputs.phenotypes.id_column
+inputs.zebra.path
+inputs.zebra.id_column
+inputs.zebra.score_column
+phenotypes[0].column
+phenotypes[0].missing
+phenotypes[0].absent_row
+genomic_features.path
+gene_signal.column
+```
+
+Expected settings for the generated files are:
+
+```json
+"genomic_features": {
+  "type": "file",
+  "path": "../ADRD_genomic_header_matches.csv",
+  "column_field": "header_name"
+},
+"gene_signal": {
+  "enabled": true,
+  "name": "APOE4_carrier",
+  "type": "binary_column",
+  "column": "APOE4_carrier"
+}
+```
+
+7. Run:
 
 ```bash
 ./run_all.sh configs/adrd_apoe.json fast
-```
-
-Inspect `RESULTS/adrd_apoe/RUN_MANIFEST.json` before continuing.
-
-- [ ] **Full run**:
-
-```bash
+cat RESULTS/adrd_apoe/RUN_MANIFEST.json
 ./run_all.sh configs/adrd_apoe.json full
 ```
 
-- [ ] **Compare with ILD geometry**: global incremental delta AUC, local `LRT_G_given_Z` profile, APOE4 effect across FPR bands, `b_hat_0.05`, `b_hat_0.01`, estimator robustness, decision-flip localization, and matched-FPR rescue gain.
+That is the complete ADRD execution path.
 
-### TODO — HFrEF / TTNtv
+## HFrEF / TTNtv
 
-Required inputs and decisions:
-
-- [ ] **HFrEF genomic matrix**: identify the patient-level genomic file and patient-ID column.
-- [ ] **Genomic header list**: identify/export the column-header file corresponding to that genomic matrix.
-- [ ] **HFrEF phenotype table**: identify the single binary HFrEF phenotype/label to use. The generalized config should analyze HFrEF only, not additional HF phenotypes in the same run.
-- [ ] **HFrEF phenotype semantics**: determine whether missing cells and patients absent from the phenotype table are controls or unknowns; set `missing` and `absent_row` explicitly.
-- [ ] **HFrEF ZeBRA predictions**: identify the HFrEF ZeBRA prediction file, patient-ID column, score column, and prediction horizon.
-- [ ] **Broad HFrEF/cardiomyopathy genomic panel**: run:
+1. Generate the HFrEF genomic-column list:
 
 ```bash
-scripts/get_hfref_gene_columns.sh /path/to/genomicdataheader.csv HFREF_genomic_header_matches.csv
+cd zebra_comp_general
+scripts/get_hfref_gene_columns.sh \
+    /path/to/genomicdataheader.csv \
+    HFREF_genomic_header_matches.csv
 ```
 
-- [ ] **Define the focal TTN signal**: identify an existing curated `TTNtv_carrier` field or construct one from appropriately annotated truncating/pathogenic TTN variants. Do **not** classify any TTN-region variant as a TTNtv.
-- [ ] **Verify TTN callability/annotation**: explicitly define which variant consequences/pathogenicity annotations count and which subjects are confidently callable as carrier/non-carrier.
-- [ ] **Record HFrEF cohort invariants before the full run**: total scored genomic cohort, HFrEF cases, TTNtv-called N, TTNtv carrier N/prevalence, TTNtv-called HFrEF cases, and carrier prevalence among cases and controls.
-- [ ] **Create runnable config**:
+Output required:
+
+```text
+HFREF_genomic_header_matches.csv
+```
+
+2. Create one patient-level binary focal-gene column from the annotated genomic data:
+
+```text
+TTNtv_carrier
+```
+
+Coding:
+
+```text
+1 = >=1 qualifying TTN truncating/pathogenic variant
+0 = confidently callable non-carrier
+NA = uncalled/ambiguous
+```
+
+Add this column to the genomic matrix. Do not define `TTNtv_carrier` from arbitrary TTN-region variation.
+
+3. Obtain/provide the HFrEF ZeBRA score file. It must contain at least:
+
+```text
+patient_id
+predicted_risk
+```
+
+(or use the actual ID/score column names in the config).
+
+4. Copy the config:
 
 ```bash
 cp configs/hfref_ttn.template.json configs/hfref_ttn.json
 ```
 
-Fill the genomic/phenotype/ZeBRA paths and ID columns, single HFrEF label, score column, phenotype semantics, broad panel file, and actual `TTNtv_carrier` representation.
+5. In `configs/hfref_ttn.json`, set only these cohort-specific fields:
 
-- [ ] **Smoke test**:
+```text
+inputs.genomics.path
+inputs.genomics.id_column
+inputs.phenotypes.path
+inputs.phenotypes.id_column
+inputs.zebra.path
+inputs.zebra.id_column
+inputs.zebra.score_column
+phenotypes[0].column
+phenotypes[0].missing
+phenotypes[0].absent_row
+genomic_features.path
+gene_signal.column
+```
+
+Expected settings for the generated files are:
+
+```json
+"genomic_features": {
+  "type": "file",
+  "path": "../HFREF_genomic_header_matches.csv",
+  "column_field": "header_name"
+},
+"gene_signal": {
+  "enabled": true,
+  "name": "TTNtv_carrier",
+  "type": "binary_column",
+  "column": "TTNtv_carrier"
+}
+```
+
+6. Run:
 
 ```bash
 ./run_all.sh configs/hfref_ttn.json fast
-```
-
-Inspect `RESULTS/hfref_ttn/RUN_MANIFEST.json` before continuing.
-
-- [ ] **Full run**:
-
-```bash
+cat RESULTS/hfref_ttn/RUN_MANIFEST.json
 ./run_all.sh configs/hfref_ttn.json full
 ```
 
-- [ ] **Compare with ILD and ADRD geometry**: global incremental delta AUC, local `LRT_G_given_Z` profile, TTNtv effect across FPR bands, `b_hat_delta`, estimator robustness, decision-flip localization, and matched-FPR rescue gain.
-
-### What should not change between diseases
-
-Unless a genuine methodological issue is discovered, do not modify the validated analysis modules (`analysis_global.py`, `analysis_gene.py`, `analysis_local.py`, `analysis_lr.py`, `analysis_rescue.py`) to accommodate ADRD or HFrEF. Disease-specific differences should be represented in the config, focal-gene preprocessing, cohort semantics, and genomic-column selection. This preserves the comparability of the three disease/gene experiments.
+That is the complete HFrEF execution path.
 
 ## Important interpretation constraint
 
-The direct LR analysis is exact for the observed score-level factorization `Lambda_{Z,G}=Lambda_Z Lambda_{G|Z}`. It does not assume that ZeBRA is sufficient for full clinical history, and a finite observed `b_delta` must not be described as a universal genome-wide or sequential bound. The generalized package preserves the same distinction as the ILD manuscript analysis.
+The direct LR analysis is exact for the observed score-level factorization `Lambda_{Z,G}=Lambda_Z Lambda_{G|Z}`. It does not assume ZeBRA is sufficient for the full clinical history, and a finite observed `b_delta` is not a universal genome-wide or sequential bound.
