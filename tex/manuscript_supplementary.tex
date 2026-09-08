@@ -1,0 +1,228 @@
+\clearpage
+\section*{Supplementary Material}
+\label{sec:supplementary}
+
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\setcounter{table}{0}
+\renewcommand{\thetable}{S\arabic{table}}
+
+This Supplementary Material is part of the same document as the main manuscript. It contains auxiliary proofs and the additional empirical analyses needed to assess robustness, local diagnostics, operating behavior, and calibration. The empirical scope remains restricted to the FILD/FILA endpoint and the measured \textit{MUC5B} rs35705950 channel.
+
+\subsection*{S1. Proofs of auxiliary results}
+
+\subsubsection*{Proof of Corollary~\ref{cor:deterministic-band}}
+\begin{proof}
+Under \eqref{eq:boundedconditional}, $R_G=\log \Lambda_{G\mid C}$ lies in $[\log m,\log M]$ almost surely. If $\Lambda_C<\lambda/M$, even the largest genomic factor cannot cross the threshold; if $\Lambda_C>\lambda/m$, even the smallest genomic factor cannot move the observation below threshold. This gives \eqref{eq:boundaryband}--\eqref{eq:logboundaryband}.
+\end{proof}
+
+\subsubsection*{Proof of Corollary~\ref{cor:zebra}}
+\begin{proof}
+Equation \eqref{eq:zlr} shows that posterior odds differ from $\Lambda_C$ only by the positive constant prior odds $\pi/(1-\pi)$. Substituting into \eqref{eq:boundaryband} yields the result.
+\end{proof}
+
+\subsubsection*{Proof of Theorem~\ref{thm:tail-extension}}
+\begin{proof}
+Consider the upper disease-evidence event $\{\log\Lambda_{C_n}\ge K\}$ with $K>0$. On
+\begin{equation}
+\{|R_{G,n}|\le b_\delta\}\cap\{\log\Lambda_{C_n}\ge K>0\},
+\end{equation}
+we have
+\begin{equation}
+\left|
+\frac{\log\Lambda_{C_n,G}-\log\Lambda_{C_n}}
+     {\log\Lambda_{C_n}}
+\right|
+=\frac{|R_{G,n}|}{\log\Lambda_{C_n}}
+\le \frac{b_\delta}{K}.
+\end{equation}
+Therefore violation of the relative bound on this upper tail implies $|R_{G,n}|>b_\delta$, whose $\mathbb P_0$ probability is at most $\delta$ uniformly in $n$ by A1-U. A2 is used only to ensure that positive-probability upper-tail events exist for arbitrarily large $K$; it is not derived from the preceding algebra.
+\end{proof}
+
+\subsubsection*{Proof of Proposition~\ref{prop:genomicpower}}
+\begin{proof}
+For part (i), using the Radon--Nikodym identity under $\mathbb P_0$,
+\begin{align}
+\mathbb E_1[\phi(G)]
+&=\mathbb E_0[\Lambda_G(G)\phi(G)]\\
+&\le M_G\mathbb E_0[\phi(G)]\\
+&=M_G\alpha.
+\end{align}
+For part (ii), define $A_K=\{c:\Lambda_C(c)\ge K\}$. Then
+\begin{align}
+\mathbb P_1(A_K)
+&=\mathbb E_0[\Lambda_C(C)\mathbf 1\{A_K\}]\\
+&\ge K\mathbb P_0(A_K)=K\alpha_K,
+\end{align}
+which gives \eqref{eq:clinicalLRplus}. If $K>M_G$, part (i) implies that any genomic-only test with false-positive rate $\alpha_K$ has power at most $M_G\alpha_K<K\alpha_K\le \mathbb P_1(A_K)$. Markov's inequality applied to $\mathbb E_0[\Lambda_C]=1$ yields $\alpha_K\le 1/K$.
+\end{proof}
+
+\subsubsection*{Proof of Corollary~\ref{cor:genomic-postprocessing}}
+\begin{proof}
+Under the class-independent channel $Q$, the score likelihood ratio satisfies
+\begin{equation}
+\Lambda_S(s)=\mathbb E_0[\Lambda_G(G)\mid S=s].
+\end{equation}
+A conditional expectation of a random variable bounded above by $M_G$ is itself bounded above by $M_G$. For a stochastic learning algorithm, this statement is interpreted conditional on the fitted model (or training sample); the deployment-time map from a new subject's $G$ to $S$ must satisfy the stated class-independence condition.
+\end{proof}
+
+\subsubsection*{Proof of Proposition~\ref{prop:auc-local}}
+\begin{proof}
+AUC is the probability that a randomly drawn case receives a higher score than a randomly drawn control, with the usual half-credit convention for ties. If neither member of a case--control pair lies in $B$, then $S'=S$ for both members and the pairwise ranking contribution is unchanged. Therefore the AUC contribution can differ only when at least one member of the pair lies in $B$. The probability of that event is
+\begin{multline}
+1-(1-\mathbb P_1(B))(1-\mathbb P_0(B))\\
+=\mathbb P_1(B)+\mathbb P_0(B)-\mathbb P_1(B)\mathbb P_0(B),
+\end{multline}
+which bounds the maximum possible AUC change.
+\end{proof}
+
+\subsection*{S2. Repeated-split SHAP stability}
+The nonlinear combined learner was evaluated across 30 outer splits. SHAP values were computed within each fitted split and features were ranked by mean absolute SHAP magnitude. The main text reports recurrence in the top 20 because recurrence is more stable across refits than a single pooled magnitude. Table~\ref{tab:supp-shap} shows the leading recurrent features for FILD/FILA. The ZeBRA risk score is rank 1 in every split. The rs35705950 GG indicator is the most recurrent genomic feature and appears in the top 20 in 28 of 30 splits. The result supports a hierarchy in which the clinical-history score dominates the combined learner while the \textit{MUC5B} locus remains its most stable genomic contributor.
+
+\begin{table}[!t]
+\caption{Repeated-split SHAP stability in the combined FILD/FILA model. Mean rank is calculated only among splits in which the feature appears in the top 20.}
+\label{tab:supp-shap}
+\centering\small
+\begin{tabular}{lrr}
+\toprule
+Feature & Top-20 splits / 30 & Mean rank when top 20\\
+\midrule
+ZeBRA predicted risk & 30 & 1.00\\
+rs35705950 GG (\textit{MUC5B}) & 28 & 4.46\\
+rs13183751 G1 & 15 & 9.27\\
+rs2726049 A1 & 14 & 9.93\\
+rs302837 A1 & 13 & 8.54\\
+rs2736100 A1 (\textit{TERT}) & 11 & 10.27\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{S3. Direct likelihood-ratio estimation and robustness}
+For the direct score-level analysis, $Z$ is the ZeBRA score and $G$ is binary \textit{MUC5B} T-carrier status. The subject-level quantities $\Pr(Y=1\mid Z)$, $\Pr(G=1\mid Y=1,Z)$, and $\Pr(G=1\mid Y=0,Z)$ are estimated out of fold by five repeats of fivefold stratified cross-fitting. Each regression uses a cubic spline expansion of the monotone logit transform of the bounded ZeBRA score followed by logistic regression. The primary estimator uses five spline knots and $C=1$. The sensitivity analysis crosses knot counts $\{4,5,6\}$ with $C\in\{0.3,1,3\}$; this grid is prespecified as an estimator-robustness analysis rather than used for model selection.
+
+The score-level factorization
+\begin{equation}
+\Lambda_{Z,G}(z,g)=\Lambda_Z(z)\Lambda_{G\mid Z}(g;z)
+\end{equation}
+is exact for the observed channels. The control-side residual scale is
+\begin{equation}
+B(Z)=\max_g|\log\widehat\Lambda_{G\mid Z}(g;Z)|,
+\qquad
+\widehat b_\delta=Q_{1-\delta}[B(Z)\mid Y=0].
+\end{equation}
+The analysis contains 12,766 subjects with called rs35705950 genotype, including 252 FILD/FILA cases. In the primary specification, $\mathbb E_0[\widehat\Lambda_Z]$ is normalized to 1 and the observed control mean of the joint factor $\widehat\Lambda_Z\widehat\Lambda_{G\mid Z}$ is 1.0149.
+
+\begin{table}[!t]
+\caption{Direct empirical likelihood-ratio summaries. The primary column uses the five-knot, $C=1$ estimator; the range column reports the minimum and maximum across the nine prespecified specifications.}
+\label{tab:supp-lr-summary}\centering\small
+\begin{tabular}{lcc}
+\toprule
+Quantity & Primary value & Robustness range\\
+\midrule
+$\widehat b_{0.05}$ & 0.8699 & 0.8441--0.9083\\
+$\widehat b_{0.01}$ & 0.9099 & 0.8635--0.9617\\
+$\widehat b_{0.005}$ & 0.9241 & 0.8697--1.6100\\
+Median $\log \Lambda_Z$ above 95th percentile & 1.5175 & 1.4383--1.6069\\
+95th pct. genomic scale above 95th percentile & 0.9213 & 0.8155--5.6485\\
+Fraction clinical $>$ genomic scale above 95th percentile & 0.9045 & 0.8811--1.0000\\
+Median $\log \Lambda_Z$ above 97.5th percentile & 2.7325 & 2.3756--2.8043\\
+95th pct. genomic scale above 97.5th percentile & 0.7758 & 0.7601--8.4206\\
+Fraction clinical $>$ genomic scale above 97.5th percentile & 0.9938 & 0.8250--1.0000\\
+Median $\log \Lambda_Z$ above 99th percentile & 3.8345 & 3.7850--3.9379\\
+95th pct. genomic scale above 99th percentile & 0.7384 & 0.6849--0.7473\\
+Fraction clinical $>$ genomic scale above 99th percentile & 1.0000 & 1.0000--1.0000\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The larger sensitivity of the most flexible estimators in very sparse tails is visible in Fig.~\ref{fig:lr-robustness}. This is why the manuscript emphasizes stable 95\% and 99\% residual scales and treats the 99.5\% estimate more cautiously. The high-ZeBRA tail remains an observed finite-range phenomenon and does not prove A1-U or A2.
+
+\figEmpiricalLRRobustness
+
+\subsection*{S4. Local-information diagnostics}
+The local nested-model LR/deviance statistics are descriptive tests of conditional contribution, not estimates of the subject-level residual likelihood ratio. Nominal one-degree-of-freedom p-values for the four non-overlapping control-FPR bands are: 2--5\%: 0.0352; 5--10\%: $4.74\times10^{-5}$; 10--20\%: 0.0289; and 20--40\%: $2.15\times10^{-4}$. These values are not multiplicity adjusted and are not used as confirmatory evidence.
+
+\begin{table*}[!t]
+\caption{Selected overlapping moving-window values illustrating the information crossover. Values are descriptive localization summaries.}
+\label{tab:supp-local-windows}\centering\scriptsize
+\begin{tabular}{rrrrrrr}
+\toprule
+ZeBRA percentile & LR stat. $Z\mid G$ & LR stat. $G\mid Z$ & OR ZeBRA/local SD & OR \textit{MUC5B} & Prev. carrier & Prev. non-carrier\\
+\midrule
+65.0 & 0.45 & 13.36 & 1.17 & 5.53 & 0.0466 & 0.00865\\
+70.0 & 0.002 & 10.93 & 0.99 & 4.52 & 0.0428 & 0.00980\\
+90.0 & 1.23 & 19.78 & 1.20 & 4.31 & 0.0827 & 0.0205\\
+92.5 & 0.41 & 20.37 & 1.09 & 3.56 & 0.1067 & 0.0323\\
+95.0 & 58.76 & 22.86 & 2.95 & 2.70 & 0.1845 & 0.0775\\
+97.5 & 68.12 & 15.61 & 4.07 & 2.43 & 0.2048 & 0.0989\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection*{S5. Boundary-targeted rescue and stringent operating points}
+The rescue rule uses an upper ZeBRA threshold and a lower boundary threshold learned from training negatives. Subjects above the upper threshold are positive regardless of genotype; subjects in the interval between the lower and upper thresholds are rescued only if they are \textit{MUC5B} T-carriers. For each outer split, a separate ZeBRA-only comparator threshold is selected using training data to match the rescue rule's training-set FPR. All comparisons are then evaluated on untouched test subjects.
+
+\begin{table}[!t]
+\caption{Matched-FPR rescue results across 100 repeated outer splits. $\Delta$ sensitivity and $\Delta$FPR are rescue minus matched ZeBRA.}
+\label{tab:supp-rescue}\centering\small
+\begin{tabular}{lrr}
+\toprule
+Upper/lower target FPR & Mean $\Delta$ sensitivity & Mean $\Delta$FPR\\
+\midrule
+0.5\% / 2\% & +0.01815 & $+1.20\times10^{-5}$\\
+0.5\% / 5\% & +0.03656 & $-4.00\times10^{-5}$\\
+0.5\% / 10\% & +0.04464 & $-2.53\times10^{-4}$\\
+1\% / 2\% & +0.00960 & $+6.66\times10^{-6}$\\
+1\% / 5\% & +0.02252 & $-1.84\times10^{-4}$\\
+1\% / 10\% & +0.03351 & $-1.78\times10^{-4}$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The explicitly adjudicated-negative diagnostic applies the already learned matched thresholds unchanged to the adjudicated-negative subset of each test split. Because this subset contains only about 216 subjects per split on average, its repeated-split distribution is treated as a control diagnostic rather than definitive evidence of superiority.
+
+\begin{table*}[!t]
+\caption{Explicitly adjudicated-negative comparison. FPR values are proportions; $\Delta$ is rescue minus matched ZeBRA.}
+\label{tab:supp-adjudicated}\centering\scriptsize
+\begin{tabular}{lrrrrr}
+\toprule
+Rule & Baseline FPR & Rescue FPR & Matched FPR & Mean $\Delta$ & 2.5--97.5\% $\Delta$\\
+\midrule
+0.5\% / 2\%  & 0.1292 & 0.1421 & 0.1458 & -0.0037 & -0.0249--0.0094\\
+0.5\% / 5\%  & 0.1292 & 0.1628 & 0.1689 & -0.0060 & -0.0353--0.0225\\
+0.5\% / 10\% & 0.1292 & 0.1958 & 0.2144 & -0.0185 & -0.0561--0.0194\\
+1\% / 2\%    & 0.1548 & 0.1635 & 0.1628 & +0.0006 & -0.0142--0.0138\\
+1\% / 5\%    & 0.1548 & 0.1842 & 0.1888 & -0.0046 & -0.0315--0.0194\\
+1\% / 10\%   & 0.1548 & 0.2172 & 0.2364 & -0.0192 & -0.0523--0.0188\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+For the 0.5\%/10\% rule, rescue has lower adjudicated-negative FPR than matched ZeBRA in 81\% of outer splits; the corresponding fraction is 78\% for the 1\%/10\% rule. Five of the six rules have a negative mean rescue-minus-matched FPR, while the 1\%/2\% rule is essentially equal.
+
+At stringent requested false-positive rates, the clinical-history score remains substantially stronger than the genomic-only learner. Mean held-out LR$+$ at requested FPR 0.5\% is approximately 57.9 for ZeBRA, 4.28 for the genomic-only model, and 39.1 for the nonlinear combined model. At requested FPR 1\%, the corresponding values are 29.8, 3.62, and 26.7. Figure~\ref{fig:decision-consequences} summarizes both the rescue results and these stringent operating-point comparisons.
+
+\figDecisionConsequences
+
+\subsection*{S6. Calibration diagnostics}
+The raw ZeBRA score is not an absolute calibrated FILD/FILA probability in this cohort. Across repeated held-out splits, its mean calibration slope is 0.180 and expected calibration error (ECE) is 0.570. The corresponding values are 0.241 and 0.115 for the genomic model and 1.140 and 0.121 for the nonlinear combined model. These diagnostics motivate treating ZeBRA as an ordinal clinical-history score and estimating $\Lambda_Z$ directly rather than interpreting the raw score as posterior probability.
+
+\begin{table}[!t]
+\caption{Calibration summary for FILD/FILA.}
+\label{tab:supp-calibration}\centering\small
+\begin{tabular}{lrr}
+\toprule
+Model & Calibration slope & ECE\\
+\midrule
+ZeBRA & 0.180 & 0.570\\
+Genomic & 0.241 & 0.115\\
+Combined & 1.140 & 0.121\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{S7. Supporting ROC-hull diagnostic}
+A descriptive ROC-hull analysis was used only to characterize geometric complementarity among observed operating points. The empirical/interpolated AUCs are 0.8142 for ZeBRA and 0.8095 for the hybrid decision rule. The convex hulls of the individual curves have AUCs 0.8219 and 0.8182, respectively; the pointwise maximum has AUC 0.8196; and the convex hull of the concatenated ZeBRA and hybrid ROC points has AUC 0.8260. These hull quantities are envelopes over evaluated operating points, not held-out performance estimates from a separately trained classifier. They are retained as a supplementary geometric diagnostic and are not used as primary evidence for the theorem.
+
+\subsection*{S8. Scope of the empirical likelihood-ratio result}
+The empirical residual-genomic quantiles are fixed-score quantities for the observed ZeBRA representation and the measured \textit{MUC5B} channel. They correspond to the finite-stage construction in Theorem~\ref{thm:main}(ii), not to A1-U across all clinical-history lengths. Likewise, the observed high-ZeBRA likelihood-ratio tail is finite-range correspondence to the conditional tail-extension theorem; it does not establish mathematical unboundedness in A2. Neither the direct LR result nor the broader selected genomic-panel analysis should be interpreted as an empirical bound on all genome-wide information, external polygenic scores, or unmeasured genomic features.
