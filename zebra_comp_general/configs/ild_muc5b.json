@@ -24,7 +24,8 @@
       "column": "FILD or FILA ADJUDICATED",
       "positive_values": ["Y", "y", 1, "1"],
       "negative_values": ["N", "n", 0, "0"],
-      "missing": "negative"
+      "missing": "negative",
+      "absent_row": "negative"
     }
   ],
   "primary_phenotype": "FILD_FILA",
