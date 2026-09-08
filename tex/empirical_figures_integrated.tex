@@ -13,8 +13,8 @@
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}
 \begin{groupplot}[
- group style={group name=fildIntegrated,group size=3 by 3,horizontal sep=0.62cm,vertical sep=1.70cm},
- width=0.285\textwidth,height=0.235\textwidth,
+ group style={group name=fildIntegrated,group size=3 by 3,horizontal sep=0.95cm,vertical sep=1.95cm},
+ width=0.270\textwidth,height=0.215\textwidth,
  tick label style={font=\scriptsize},
  label style={font=\scriptsize},
  ymajorgrids=true,major grid style={dotted},
@@ -33,7 +33,7 @@
 
 % (b) SHAP stability.
 \nextgroupplot[
- ylabel={SHAP top-20 splits / 30},ymin=0,ymax=32,
+ ylabel={Top-20 SHAP splits / 30},ymin=0,ymax=32,
  xmin=-0.55,xmax=5.55,
  xtick={0,1,2,3,4,5},
  xticklabels={ZeBRA,\textit{MUC5B},DOCK2,rs2726049,rs302837,TERT},
@@ -105,7 +105,7 @@
 
 % (h) Upper-tail clinical dominance.
 \nextgroupplot[
- ylabel={Fraction clinical log-LR $>$ genomic scale},
+ ylabel={Fraction clinical $>$ genomic scale},
  ymin=0.75,ymax=1.02,xmin=-0.45,xmax=2.45,
  xtick={0,1,2},xticklabels={95,97.5,99},xlabel={ZeBRA percentile threshold}]
 \addplot+[only marks,mark=*,mark size=2.4pt,error bars/.cd,y dir=both,y explicit]
@@ -134,10 +134,11 @@
 \addplot+[ybar,bar width=7pt] coordinates {(0,0.8142) (1,0.8095) (2,0.8196) (3,0.8219) (4,0.8260)};
 
 \end{groupplot}
-% Panel letters are deliberately outside the plotting rectangles.
+% Panel letters are deliberately outside the plotting rectangles, with a small
+% inset from the neighboring y-label clearance zone.
 \foreach \p/\lab in {c1r1/a,c2r1/b,c3r1/c,c1r2/d,c2r2/e,c3r2/f,c1r3/g,c2r3/h,c3r3/i}{%
   \node[anchor=south west,font=\footnotesize\bfseries]
-    at ([xshift=-11pt,yshift=8pt]fildIntegrated \p.north west) {(\lab)};%
+    at ([xshift=-6pt,yshift=10pt]fildIntegrated \p.north west) {(\lab)};%
 }
 \end{tikzpicture}%
 }
@@ -156,8 +157,8 @@
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}
 \begin{groupplot}[
- group style={group name=suppIntegrated,group size=3 by 2,horizontal sep=0.62cm,vertical sep=1.70cm},
- width=0.285\textwidth,height=0.235\textwidth,
+ group style={group name=suppIntegrated,group size=3 by 2,horizontal sep=0.95cm,vertical sep=1.95cm},
+ width=0.270\textwidth,height=0.220\textwidth,
  tick label style={font=\scriptsize},
  label style={font=\scriptsize},
  ymajorgrids=true,major grid style={dotted},
@@ -190,7 +191,7 @@
 
 % (c) Decision-flip localization.
 \nextgroupplot[
- ylabel={Distance from clinical LR boundary},xlabel={Requested FPR (\%)},
+ ylabel={Distance to clinical LR boundary},xlabel={Requested FPR (\%)},
  xmode=log,log basis x=10,xmin=0.4,xmax=12,
  xtick={0.5,1,2,5,10},xticklabels={0.5,1,2,5,10},
  ymin=0,ymax=1.05,
@@ -238,10 +239,10 @@
 \addplot+[dashed,no marks] coordinates {(1.5,0) (10.5,0)};
 
 \end{groupplot}
-% Panel letters are deliberately outside the plotting rectangles.
+% Keep labels clear of y-axis text and neighboring panels.
 \foreach \p/\lab in {c1r1/a,c2r1/b,c3r1/c,c1r2/d,c2r2/e,c3r2/f}{%
   \node[anchor=south west,font=\footnotesize\bfseries]
-    at ([xshift=-11pt,yshift=8pt]suppIntegrated \p.north west) {(\lab)};%
+    at ([xshift=-6pt,yshift=10pt]suppIntegrated \p.north west) {(\lab)};%
 }
 \end{tikzpicture}%
 }
