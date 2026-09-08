@@ -1,0 +1,28 @@
+{
+  "full": {
+    "global_repeats": 30,
+    "incremental_repeats": 30,
+    "gene_cv_folds": 5,
+    "lr_folds": 5,
+    "lr_repeats": 5,
+    "rescue_repeats": 100,
+    "train_size": 0.4,
+    "random_state": 1321,
+    "lr_spline_knots": 5,
+    "lr_logistic_c": 1.0,
+    "bootstrap_repeats": 1000
+  },
+  "fast": {
+    "global_repeats": 5,
+    "incremental_repeats": 5,
+    "gene_cv_folds": 3,
+    "lr_folds": 3,
+    "lr_repeats": 2,
+    "rescue_repeats": 5,
+    "train_size": 0.4,
+    "random_state": 1321,
+    "lr_spline_knots": 5,
+    "lr_logistic_c": 1.0,
+    "bootstrap_repeats": 100
+  }
+}
