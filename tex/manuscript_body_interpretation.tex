@@ -1,6 +1,10 @@
-\section{Why the clinical channel can have an extended tail}
+\section{Consequences and scope of the theory}
 
-The theorem does not assume that every later clinical event is informative, nor that disease becomes perfectly observable. It requires only that the clinical channel can accumulate sufficiently strong evidence on some disease trajectories. For a sequential history $C_n=(X_1,\ldots,X_n)$, the clinical likelihood ratio factorizes exactly as
+Theorem~\ref{thm:main} is the central result of the paper. It is finite-stage, requires only a finite control-side residual-genomic quantile $b_{\delta,n}$ at the clinical stage being analyzed, and is the part most directly instantiated by the Colorado data. The stronger sequential result, Theorem~\ref{thm:tail-extension}, is deliberately separate: it asks what would follow if the residual genomic scale remained uniformly tight as clinical history lengthened and if arbitrarily strong positive clinical evidence were attainable.
+
+\subsection{Clinical evidence may accumulate, but A2 is a separate assumption}
+
+For a sequential history $C_n=(X_1,\ldots,X_n)$, the clinical likelihood ratio factorizes exactly as
 \begin{equation}
 \LR_C(C_n)
 =\prod_{k=1}^{n}
@@ -17,25 +21,20 @@ so that
      {p(X_k\mid Y=0,X_{<k})}.
 \label{eq:sequentiallogLR}
 \end{equation}
-This is the standard likelihood-ratio accumulation underlying sequential testing and information accumulation \cite{Wald1945,CoverThomas2006}. The genomic state does not acquire new germline variants as disease approaches, whereas the clinical history can acquire additional diagnoses, procedures, prescriptions, and comorbidities. The difference is therefore not that clinical and genomic predictors obey different probability laws; both enter Bayes' rule as evidence. At any fixed clinical stage, Theorem~\ref{thm:main}(ii) measures the residual genomic scale by a control-side quantile $b_{\delta,n}$. The stronger A1-U condition is needed only to keep that residual scale uniformly tight as the clinical record lengthens; under Corollary~\ref{cor:deterministic-band} the same idea sharpens to a literal deterministic bound.
+This is the standard likelihood-ratio accumulation underlying sequential testing and information accumulation \cite{Wald1945,CoverThomas2006}. It shows how additional clinical observations can add evidence. It does \emph{not} imply that the positive clinical log-LR is mathematically unbounded. The conditional sequential extension additionally assumes A2: arbitrarily strong positive clinical evidence must be attainable on some rare trajectories. The Colorado data can show a strong observed tail over the measured range and can be consistent with the geometry predicted under A2, but they cannot prove unboundedness.
 
-Equation \eqref{eq:sequentialLR} also clarifies the sense in which clinical odds may rise sharply: likelihood evidence adds in log space but multiplies in odds space. No claim of exponential growth follows from AUC alone. Nor does the sequential factorization prove A2. It shows only how evidence can accumulate; A2 separately assumes that arbitrarily strong positive clinical-evidence tails are attainable on some trajectories.
+Likewise, A1-U is not a consequence of finite-stage behavior. Theorem~\ref{thm:main}(ii) uses the stage-specific scale $b_{\delta,n}$ and needs no common bound across $n$. A1-U is only the stronger requirement that one finite residual-genomic scale remain valid uniformly as clinical history accumulates. The empirical analysis estimates a score-level analogue of $b_{\delta,n}$ for \textit{MUC5B}; it does not establish A1-U.
 
-\section{Interpretation of the theoretical result}
+\subsection{Local decision gain need not produce global discrimination gain}
 
-The revised theory makes five distinct points that should not be conflated.
+Theorem~\ref{thm:main}(ii) controls where genomics can change a threshold decision, not the global ranking of all case--control pairs. If genomic information matters only in a narrow decision band, a clinically meaningful subset of decisions can change while global AUC changes negligibly. Proposition~\ref{prop:auc-local} formalizes this distinction. The relevant empirical question is therefore not whether a particular combined learner outperforms ZeBRA globally, but whether genomics contributes reproducible residual evidence after conditioning on the clinical channel and whether that evidence is localized near clinically relevant boundaries.
 
-\subsection{Global discrimination is not the quantity controlled by the theorem}
-Theorem~\ref{thm:main}(ii) controls where genomics can change a threshold decision, not the global ranking of all case--control pairs. If genomic information matters only in a narrow decision band, then only a restricted fraction of pairs can be reordered. Proposition~\ref{prop:auc-local} makes the consequence explicit: meaningful local operating-point improvement can coexist with negligible global AUC change.
+Weak ZeBRA--genotype association is also not evidence that residual genomic disease information is absent. The relevant object is $\LR_{G\mid C}$, not the marginal dependence between a clinical score and genotype. ZeBRA can be nearly uninformative about rs35705950 carrier status while \textit{MUC5B} still changes disease odds conditional on a given clinical state.
 
-\subsection{Weak ZeBRA--genotype association does not imply zero conditional genomic disease information}
-The relevant residual quantity is $\LR_{G\mid C}$, not the marginal dependence between ZeBRA and genotype. ZeBRA can be nearly uninformative about rs35705950 carrier status while \textit{MUC5B} still changes disease odds conditional on a given clinical state.
+\subsection{Operating thresholds and calibrated posterior scores are special cases}
 
-\subsection{Finite-stage localization does not require uniformity over history length}
-At a fixed observed clinical stage, Theorem~\ref{thm:main}(ii) is expressed through the finite-stage residual-evidence quantile $b_{\delta,n}$ and requires no common bound over all $n$. A1-U is an optional stronger assumption used only for sequential tail dominance. This distinction is important biologically and empirically: the Colorado analysis estimates a score-level residual-genomic scale for \textit{MUC5B}, but does not establish uniform tightness for arbitrary genomic features as clinical history accumulates. Corollary~\ref{cor:deterministic-band} recovers the exact boundary band as a stronger special case.
+The decision-relevant genomic region is defined relative to a chosen likelihood-ratio threshold. There is therefore no threshold-free universal ``useful band.'' Corollary~\ref{cor:zebra} translates this geometry into posterior-risk space only when a clinical score is calibrated so that $Z=\mathbb{P}(Y=1\mid C)$. Because raw Colorado ZeBRA is not calibrated as an absolute posterior probability, that corollary is not applied numerically. The empirical analysis instead estimates $\LR_Z$ directly from the observed ZeBRA score.
 
-\subsection{Operating-threshold dependence is a feature, not a defect}
-Corollary~\ref{cor:zebra} shows, for a calibrated posterior score, that the decision-relevant genomic region is defined relative to the chosen threshold. There is no threshold-free universal ``useful band.'' Changing the tolerated false-positive rate moves the clinical boundary and therefore changes which patients are potentially reclassified by genomics. Because the raw Colorado ZeBRA score is not calibrated as a posterior probability, this corollary is not applied numerically in the empirical section.
+\subsection{The sequential tail result is a conditional extension, not the empirical centerpiece}
 
-\subsection{Clinical-tail dominance is a stringent-operating-point statement}
-Proposition~\ref{prop:genomicpower} and Theorem~\ref{thm:main}(iii) concern the upper disease-evidence likelihood-ratio tail, explicitly $\{\log\Lambda_{C_n}\ge K>0\}$. The empirically relevant quantities are therefore direct likelihood-ratio estimates, decision-flip localization, and stringent-specificity LR$+$ behavior rather than global AUC alone. The data can support the observed tail geometry over the measured range; they do not prove the mathematical unboundedness assumption A2.
+Theorem~\ref{thm:tail-extension} and Proposition~\ref{prop:genomicpower}(ii) concern an idealized extreme-specificity regime under additional assumptions. Their empirical counterparts are stringent-specificity LR$+$ behavior and the observed comparison between clinical and residual-genomic evidence in the extreme measured ZeBRA tail. These analyses can support the predicted tail geometry over the available range; they do not establish A1-U, A2, or a universal genome-wide bound. The primary empirical test of the theory remains the direct finite-stage likelihood-ratio analysis corresponding to Theorem~\ref{thm:main}(ii).
