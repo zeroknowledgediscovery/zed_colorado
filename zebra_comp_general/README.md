@@ -11,7 +11,7 @@ A JSON config specifies:
 1. **Genomic matrix**: file, patient ID, and which raw genomic columns are included.
 2. **Phenotype**: label column and how positive/negative/missing values are encoded.
 3. **ZeBRA score**: prediction file, patient ID, and score column.
-4. **Gene signal**: the binary candidate-gene state used for local/LR/rescue analyses (for example MUC5B T-carrier, APOE4 carrier, or TTN pathogenic-variant carrier).
+4. **Gene signal**: the binary candidate-gene state used for local/LR/rescue analyses (for example MUC5B T-carrier, APOE4 carrier, or TTN truncating-variant carrier).
 
 The broad genomic feature panel and the focal gene signal are deliberately separate. Global analyses can use hundreds/thousands of genomic columns while local likelihood-ratio analyses focus on one interpretable binary genomic channel.
 
@@ -88,7 +88,9 @@ The focal gene state must be binary for the local/direct-LR/rescue chain. Suppor
 - `genotype_column`: raw categorical genotype with configured positive values.
 - `onehot_any`: current MUC5B-style one-hot state encoding; positive if any configured risk-state column is active.
 
-The ILD config demonstrates `onehot_any`. ADRD and HFrEF templates assume a precomputed `APOE4_carrier` or `TTN_pathogenic_carrier`; change those definitions to the representation actually present in the new cohort.
+The ILD config demonstrates `onehot_any`. ADRD and HFrEF templates assume a precomputed `APOE4_carrier` or `TTNtv_carrier`; change those definitions to the representation actually present in the new cohort.
+
+**Important:** the broad disease-gene header matcher only identifies genomic columns that lie in or map to candidate genes. It does not define the focal biological carrier variable. For ADRD, `APOE4_carrier` should be derived from the actual APOE genotype/haplotype representation (classically rs429358 and rs7412, or an already curated APOE field), not from the presence of an arbitrary APOE-region variant. For HFrEF, `TTNtv_carrier` should be based on an appropriately annotated truncating/pathogenic TTN variant definition; any TTN-region variant is not equivalent to TTNtv carrier status.
 
 ## Disease gene-column discovery
 
@@ -142,7 +144,7 @@ cp configs/adrd_apoe.template.json configs/adrd_apoe.json
 ```bash
 scripts/get_hfref_gene_columns.sh /path/to/genomicdataheader.csv HFREF_genomic_header_matches.csv
 cp configs/hfref_ttn.template.json configs/hfref_ttn.json
-# Fill input paths, HFrEF label, and actual TTN carrier representation.
+# Fill input paths, HFrEF label, and actual TTNtv carrier representation.
 ./run_all.sh configs/hfref_ttn.json fast
 ./run_all.sh configs/hfref_ttn.json full
 ```
