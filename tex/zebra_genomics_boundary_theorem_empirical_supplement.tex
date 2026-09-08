@@ -20,7 +20,7 @@ All empirical manuscript figures are generated at compilation time with PGFPlots
 so re-running the analyses and recompiling the manuscript updates plotted values without creating a separate manuscript-side data directory.
 
 \section*{Theory notation used in the main text}
-The main theorem distinguishes two residual-genomic scales. $b_{\delta,n}$ is the finite-stage $(1-\delta)$ control quantile of $|R_{G,n}|$ at a particular clinical-history stage $n$. The symbol $b_\delta$ is reserved for an $n$-independent bound that exists only under the stronger uniform-tightness condition A1-U. The empirical score-level analysis estimates an analogue of the former, not the latter.
+The main theorem distinguishes two residual-genomic scales. $b_{\delta,n}$ is the finite-stage $(1-\delta)$ control quantile of $|R_{G,n}|$ at a particular clinical-history stage $n$. The symbol $b_\delta$ is reserved for an $n$-independent bound that exists only under the stronger uniform-tightness condition A1-U. The empirical score-level analysis estimates $\widehat b_\delta$, an analogue of the former, not the latter; the missing $n$ subscript distinguishes the score-level estimate from the theoretical full-history quantity $b_{\delta,n}$.
 
 \section*{Primary source mapping}
 \begin{tabular}{p{0.30\textwidth}p{0.64\textwidth}}
@@ -56,9 +56,9 @@ Both use the same processed cohort inputs as the other analyses in \path{zebra_c
 \toprule
 Quantity & Primary value & Robustness range\\
 \midrule
-$b_{0.05}$ & 0.8699 & 0.8441--0.9083\\
-$b_{0.01}$ & 0.9099 & 0.8635--0.9617\\
-$b_{0.005}$ & 0.9241 & 0.8697--1.6100\\
+$\widehat b_{0.05}$ & 0.8699 & 0.8441--0.9083\\
+$\widehat b_{0.01}$ & 0.9099 & 0.8635--0.9617\\
+$\widehat b_{0.005}$ & 0.9241 & 0.8697--1.6100\\
 Median $\log \Lambda_Z$ above 95th percentile & 1.5175 & 1.4383--1.6069\\
 95th pct. residual genomic scale above 95th percentile & 0.9213 & 0.8155--5.6485\\
 Fraction with $\log\Lambda_Z$ exceeding genomic scale above 95th percentile & 0.9045 & 0.8811--1.0000\\
