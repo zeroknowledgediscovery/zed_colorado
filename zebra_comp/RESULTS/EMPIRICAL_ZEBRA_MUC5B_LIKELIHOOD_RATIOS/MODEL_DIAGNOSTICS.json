@@ -1,0 +1,20 @@
+{
+  "LR_ZG_P0_mean": 1.0148685699803142,
+  "LR_Z_P0_mean_after_normalization": 1.0,
+  "LR_Z_raw_P0_mean_before_normalization": 0.9837995202517431,
+  "carriers": 2499,
+  "cases": 252,
+  "controls": 12514,
+  "degree": 3,
+  "logistic_C": 1.0,
+  "n": 12766,
+  "n_knots": 5,
+  "n_pY_clipped": 0,
+  "n_q0_clipped": 0,
+  "n_q1_clipped": 0,
+  "n_repeats": 5,
+  "n_splits": 5,
+  "prevalence": 0.01973993420021933,
+  "probability_clip_epsilon": 1e-10,
+  "seed": 1321
+}

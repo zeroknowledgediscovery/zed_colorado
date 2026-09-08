@@ -1,0 +1,18 @@
+EMPIRICAL ZEBRA-MUC5B LIKELIHOOD-RATIO ANALYSIS
+Finite observed ranges are descriptive, not proof of a uniform population bound.
+N=12766; cases=252; controls=12514; carriers=2499
+P0 mean LR_Z after normalization=1.000000; P0 mean LR_ZG=1.014869
+
+Empirical stochastic residual-genomic scale under P0:
+  delta=0.1: b_delta=0.8454, exp(b)=2.329, bootstrap95=[0.8435,0.8471]
+  delta=0.05: b_delta=0.8699, exp(b)=2.387, bootstrap95=[0.8678,0.8719]
+  delta=0.025: b_delta=0.8879, exp(b)=2.430, bootstrap95=[0.8850,0.8917]
+  delta=0.01: b_delta=0.9099, exp(b)=2.484, bootstrap95=[0.9069,0.9131]
+  delta=0.005: b_delta=0.9241, exp(b)=2.520, bootstrap95=[0.9186,0.9290]
+
+Fixed-LR decision localization:
+  FPR=0.5%: flips=3, median distance=0.1374, q95=0.2164
+  FPR=1.0%: flips=23, median distance=0.3903, q95=0.6917
+  FPR=2.0%: flips=149, median distance=0.3332, q95=0.8591
+  FPR=5.0%: flips=806, median distance=0.5354, q95=0.7805
+  FPR=10.0%: flips=1479, median distance=0.2940, q95=0.7166
