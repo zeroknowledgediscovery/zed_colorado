@@ -5,7 +5,6 @@
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage{adjustbox}
-\usepackage{placeins}
 \usepackage{pgfplots,pgfplotstable}
 \usepgfplotslibrary{groupplots}
 \usepackage{tikz}
@@ -15,14 +14,20 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{microtype}
 
-\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
-\setlength{\floatsep}{8pt plus 2pt minus 2pt}
-\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+% Keep IEEE-style continuous text flow.  Historical FloatBarrier calls in the
+% supplementary source are intentionally neutralized so they do not force
+% premature float flushing and large vertical gaps.
+\newcommand{\FloatBarrier}{}
+\setlength{\parskip}{0pt}
+\setlength{\parindent}{1em}
+\setlength{\textfloatsep}{9pt plus 2pt minus 2pt}
+\setlength{\floatsep}{7pt plus 2pt minus 2pt}
+\setlength{\intextsep}{7pt plus 2pt minus 2pt}
 \renewcommand{\topfraction}{0.95}
 \renewcommand{\dbltopfraction}{0.95}
 \renewcommand{\textfraction}{0.05}
-\renewcommand{\floatpagefraction}{0.80}
-\renewcommand{\dblfloatpagefraction}{0.80}
+\renewcommand{\floatpagefraction}{0.78}
+\renewcommand{\dblfloatpagefraction}{0.78}
 \setcounter{topnumber}{4}
 \setcounter{dbltopnumber}{4}
 
@@ -45,7 +50,6 @@ Division of Biomedical Informatics, University of Kentucky College of Medicine}
 \input{empirical_figures.tex}
 
 \begin{document}
-\raggedbottom
 \maketitle
 \input{manuscript_body_intro.tex}
 \input{manuscript_body_theory.tex}
