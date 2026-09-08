@@ -1,0 +1,32 @@
+\subsection*{S10. Exhaustive genomic-panel inventory and multiplicity rationale}
+
+The processed genomic matrix used by the broad genomic-only and ZeBRA-plus-genomics analyses contains 513 one-hot genotype-state predictor columns corresponding to 171 retained variant loci. This count is obtained directly from the header of \texttt{ILD\_TOP\_DRIVERS\_DATA.csv}: each retained locus is represented by exactly three columns with state suffixes \texttt{\_0}, \texttt{\_1}, and \texttt{\_2}. The complete retained-locus inventory is provided as machine-readable Supplementary Data Table~S1, \texttt{supplementary\_genomic\_panel\_inventory.csv}. It lists all 171 rsIDs in matrix order, the exact processed locus token and allele tag, manuscript gene annotation where explicitly used, and the analysis role. The inventory is reproducibly generated from the processed matrix by \texttt{zebra\_comp/scripts/generate\_genomic\_panel\_inventory.py}.
+
+The 171-locus count is the final modeled panel and should not be confused with the 148 additional raw genotype columns matched from the archived supplemental candidate list. The historical panel was the union of a pre-existing FILD/FILA biological-driver set and the supplemental candidate expansion. Because the original restricted \texttt{biological\_drivers.csv} source is not retained in the current repository, per-variant assignment to ``base driver'' versus ``supplemental expansion'' cannot be reconstructed reliably from the processed matrix alone. We therefore report exactly what can be audited from the retained analysis input---the complete final modeled variant set---rather than infer historical source membership. The focal mechanistic channel remains \textit{MUC5B} rs35705950, which is also present in the broader panel; its three-state representation is reduced to GT/TT T-carrier status versus GG only for the direct mechanistic analyses.
+
+\begin{table*}[!t]
+\caption{Multiplicity-control rationale across the empirical analyses. Multiple-testing correction is required when a family of null hypotheses is evaluated and inferential claims depend on the resulting p-values. It is not a generic correction for the number of predictors, performance metrics, model refits, or descriptive robustness summaries.}
+\label{tab:supp-multiplicity-rationale}
+\centering\scriptsize
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.06}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{p{0.25\textwidth}p{0.30\textwidth}p{0.12\textwidth}p{0.25\textwidth}}
+\toprule
+Analysis & Statistical role & Formal p-value family? & Multiplicity treatment \\
+\midrule
+Broad genomic-only and ZeBRA-plus-genomics models & Held-out predictive performance (AUC, average precision, Brier score, log loss) for multivariable models & No & None. The 171 loci are predictors inside a fitted model, not 171 separately interpreted null-hypothesis tests. \\
+Repeated-split SHAP recurrence & Feature-attribution and stability summary across refits & No & None. SHAP ranks/recurrence are descriptive model-attribution quantities, not locus-wise p-values. \\
+Paired repeated-split incremental analysis & Distribution of held-out performance differences on matched test subjects & No & None. Split-wise values summarize predictive stability and are not treated as independent hypothesis-test replicates. \\
+Overlapping ZeBRA moving windows & Descriptive localization/effect-size trajectories & No & None. No window-specific significance threshold is used for the manuscript claim. \\
+Nine direct-LR estimator specifications & Prespecified estimator-sensitivity/robustness grid & No & None. The displayed min--max ranges are robustness summaries, not nine competing null tests. \\
+Matched-FPR rescue and stringent operating points & Held-out sensitivity/FPR/LR$+$ operating characteristics & No & None. These are performance estimands at evaluated operating rules, not a collection of p-value-based claims. \\
+Four non-overlapping local $G\mid Z$ bands & Exploratory tests of conditional genomic contribution after ZeBRA & Yes: four tests & Benjamini--Hochberg FDR correction across the four reported band tests; all remain below $q=0.05$. \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table*}
+
+The reason no panel-wide multiple-testing correction is applied to the broad genomic analyses is therefore substantive rather than merely procedural. The manuscript does not conduct 171 univariate SNP association tests and then select loci according to nominal significance. Instead, the complete encoded panel enters supervised multivariable learners whose generalization is evaluated on held-out subjects. The relevant protection against overfitting in that setting is separation of training and test data together with regularization/model selection confined to training data; applying Bonferroni or FDR across the 171 input features would answer a different inferential question---simultaneous SNP-wise association---and would not constitute a correction of held-out predictive performance. Likewise, reporting several performance metrics does not create a multiple-testing family when those metrics are used as complementary descriptive estimands rather than as a set of thresholded significance tests.
+
+The same distinction applies to SHAP recurrence, moving-window trajectories, rescue operating points, and the direct-LR robustness grid: none is used as a collection of nominal p-values from which favorable results are selected. By contrast, the four non-overlapping local $G\mid Z$ analyses do produce and interpret four p-values addressing the same conditional-contribution question in the same cohort, so they are treated as one exploratory family and corrected by Benjamini--Hochberg FDR. If future versions of the manuscript add SNP-by-SNP association p-values, formal p-values across the overlapping moving windows, or multiple separately interpreted genomic hypotheses, those analyses would require an explicitly defined multiplicity family and corresponding adjustment.
