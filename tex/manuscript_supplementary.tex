@@ -10,6 +10,7 @@
 This Supplementary Material is part of the same document as the main manuscript. It contains auxiliary proofs and the additional empirical analyses needed to assess robustness, local diagnostics, operating behavior, and calibration. The empirical scope remains restricted to the FILD/FILA endpoint and the measured \textit{MUC5B} rs35705950 channel. The graphical results displaced from the nine-panel main figure are consolidated into Supplementary Fig.~\ref{fig:supp-integrated}; complete numerical values remain in the accompanying tables where a figure would be less concise.
 
 \figIntegratedSupplementary
+\FloatBarrier
 
 \subsection*{S1. Proofs of auxiliary results}
 
@@ -85,6 +86,9 @@ The nonlinear combined learner was evaluated across 30 outer splits. SHAP values
 \caption{Repeated-split SHAP stability in the combined FILD/FILA model. Mean rank is calculated only among splits in which the feature appears in the top 20.}
 \label{tab:supp-shap}
 \centering\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{adjustbox}{max width=\columnwidth}
 \begin{tabular}{lrr}
 \toprule
 Feature & Top-20 splits / 30 & Mean rank when top 20\\
@@ -97,7 +101,9 @@ rs302837 A1 & 13 & 8.54\\
 rs2736100 A1 (\textit{TERT}) & 11 & 10.27\\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
+\FloatBarrier
 
 \subsection*{S3. Direct likelihood-ratio estimation and robustness}
 For the direct score-level analysis, $Z$ is the ZeBRA score and $G$ is binary \textit{MUC5B} T-carrier status. The subject-level quantities $\Pr(Y=1\mid Z)$, $\Pr(G=1\mid Y=1,Z)$, and $\Pr(G=1\mid Y=0,Z)$ are estimated out of fold by five repeats of fivefold stratified cross-fitting. Each regression uses a cubic spline expansion of the monotone logit transform of the bounded ZeBRA score followed by logistic regression. The primary estimator uses five spline knots and $C=1$. The sensitivity analysis crosses knot counts $\{4,5,6\}$ with $C\in\{0.3,1,3\}$; this grid is prespecified as an estimator-robustness analysis rather than used for model selection.
@@ -114,9 +120,13 @@ B(Z)=\max_g|\log\widehat\Lambda_{G\mid Z}(g;Z)|,
 \end{equation}
 The analysis contains 12,766 subjects with called rs35705950 genotype, including 252 FILD/FILA cases. In the primary specification, $\mathbb E_0[\widehat\Lambda_Z]$ is normalized to 1 and the observed control mean of the joint factor $\widehat\Lambda_Z\widehat\Lambda_{G\mid Z}$ is 1.0149.
 
-\begin{table}[!t]
+\begin{table*}[!t]
 \caption{Direct empirical likelihood-ratio summaries. The primary column uses the five-knot, $C=1$ estimator; the range column reports the minimum and maximum across the nine prespecified specifications.}
-\label{tab:supp-lr-summary}\centering\small
+\label{tab:supp-lr-summary}
+\centering\footnotesize
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{lcc}
 \toprule
 Quantity & Primary value & Robustness range\\
@@ -135,16 +145,22 @@ Median $\log \Lambda_Z$ above 99th percentile & 3.8345 & 3.7850--3.9379\\
 Fraction clinical $>$ genomic scale above 99th percentile & 1.0000 & 1.0000--1.0000\\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{adjustbox}
+\end{table*}
+\FloatBarrier
 
-The larger sensitivity of the most flexible estimators in very sparse tails is why the manuscript emphasizes stable 95\% and 99\% residual scales and treats the 99.5\% estimate more cautiously. Supplementary Fig.~\ref{fig:supp-integrated}c shows the residual-scale robustness, while main Fig.~\ref{fig:integrated-fild}h shows the corresponding upper-tail dominance fraction across all nine estimators. The high-ZeBRA tail remains an observed finite-range phenomenon and does not prove A1-U or A2.
+The larger sensitivity of the most flexible estimators in very sparse tails is why the manuscript emphasizes stable 95\% and 99\% residual scales and treats the 99.5\% estimate more cautiously. Supplementary Fig.~\ref{fig:supp-integrated}b shows the residual-scale robustness, while main Fig.~\ref{fig:integrated-fild}h shows the corresponding upper-tail dominance fraction across all nine estimators. The high-ZeBRA tail remains an observed finite-range phenomenon and does not prove A1-U or A2.
 
 \subsection*{S4. Local-information diagnostics}
 The local nested-model LR/deviance statistics are descriptive tests of conditional contribution, not estimates of the subject-level residual likelihood ratio. Nominal one-degree-of-freedom p-values for the four non-overlapping control-FPR bands are: 2--5\%: 0.0352; 5--10\%: $4.74\times10^{-5}$; 10--20\%: 0.0289; and 20--40\%: $2.15\times10^{-4}$. These values are not multiplicity adjusted and are not used as confirmatory evidence. Main Fig.~\ref{fig:integrated-fild}e shows the corresponding moving-window adjusted effect-size trajectories.
 
 \begin{table*}[!t]
 \caption{Selected overlapping moving-window values illustrating the information crossover. Values are descriptive localization summaries.}
-\label{tab:supp-local-windows}\centering\scriptsize
+\label{tab:supp-local-windows}
+\centering\scriptsize
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{rrrrrrr}
 \toprule
 ZeBRA percentile & LR stat. $Z\mid G$ & LR stat. $G\mid Z$ & OR ZeBRA/local SD & OR \textit{MUC5B} & Prev. carrier & Prev. non-carrier\\
@@ -157,17 +173,23 @@ ZeBRA percentile & LR stat. $Z\mid G$ & LR stat. $G\mid Z$ & OR ZeBRA/local SD &
 97.5 & 68.12 & 15.61 & 4.07 & 2.43 & 0.2048 & 0.0989\\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table*}
+\FloatBarrier
 
 \subsection*{S5. Boundary-targeted rescue and stringent operating points}
-The rescue rule uses an upper ZeBRA threshold and a lower boundary threshold learned from training negatives. Subjects above the upper threshold are positive regardless of genotype; subjects in the interval between the lower and upper thresholds are rescued only if they are \textit{MUC5B} T-carriers. For each outer split, a separate ZeBRA-only comparator threshold is selected using training data to match the rescue rule's training-set FPR. All comparisons are then evaluated on untouched test subjects. Main Fig.~\ref{fig:integrated-fild}f shows the sensitivity gains; Supplementary Fig.~\ref{fig:supp-integrated}e shows the corresponding operational-FPR differences.
+The rescue rule uses an upper ZeBRA threshold and a lower boundary threshold learned from training negatives. Subjects above the upper threshold are positive regardless of genotype; subjects in the interval between the lower and upper thresholds are rescued only if they are \textit{MUC5B} T-carriers. For each outer split, a separate ZeBRA-only comparator threshold is selected using training data to match the rescue rule's training-set FPR. All comparisons are then evaluated on untouched test subjects. Main Fig.~\ref{fig:integrated-fild}f shows the sensitivity gains; Supplementary Fig.~\ref{fig:supp-integrated}d shows the corresponding operational-FPR differences.
 
 \begin{table}[!t]
-\caption{Matched-FPR rescue results across 100 repeated outer splits. $\Delta$ sensitivity and $\Delta$FPR are rescue minus matched ZeBRA.}
-\label{tab:supp-rescue}\centering\small
+\caption{Matched-FPR rescue results across 100 repeated outer splits. $\Delta$ values are rescue minus matched ZeBRA.}
+\label{tab:supp-rescue}
+\centering\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{adjustbox}{max width=\columnwidth}
 \begin{tabular}{lrr}
 \toprule
-Upper/lower target FPR & Mean $\Delta$ sensitivity & Mean $\Delta$FPR\\
+Rule & Mean $\Delta$ sensitivity & Mean $\Delta$FPR\\
 \midrule
 0.5\% / 2\% & +0.01815 & $+1.20\times10^{-5}$\\
 0.5\% / 5\% & +0.03656 & $-4.00\times10^{-5}$\\
@@ -177,13 +199,18 @@ Upper/lower target FPR & Mean $\Delta$ sensitivity & Mean $\Delta$FPR\\
 1\% / 10\% & +0.03351 & $-1.78\times10^{-4}$\\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 
-The explicitly adjudicated-negative diagnostic applies the already learned matched thresholds unchanged to the adjudicated-negative subset of each test split. Because this subset contains only about 216 subjects per split on average, its repeated-split distribution is treated as a control diagnostic rather than definitive evidence of superiority. Supplementary Fig.~\ref{fig:supp-integrated}g shows the rescue-minus-matched adjudicated-negative FPR; the complete numerical intervals remain in Table~\ref{tab:supp-adjudicated}.
+The explicitly adjudicated-negative diagnostic applies the already learned matched thresholds unchanged to the adjudicated-negative subset of each test split. Because this subset contains only about 216 subjects per split on average, its repeated-split distribution is treated as a control diagnostic rather than definitive evidence of superiority. Supplementary Fig.~\ref{fig:supp-integrated}f shows the rescue-minus-matched adjudicated-negative FPR; the complete numerical intervals remain in Table~\ref{tab:supp-adjudicated}.
 
 \begin{table*}[!t]
 \caption{Explicitly adjudicated-negative comparison. FPR values are proportions; $\Delta$ is rescue minus matched ZeBRA.}
-\label{tab:supp-adjudicated}\centering\scriptsize
+\label{tab:supp-adjudicated}
+\centering\scriptsize
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{lrrrrr}
 \toprule
 Rule & Baseline FPR & Rescue FPR & Matched FPR & Mean $\Delta$ & 2.5--97.5\% $\Delta$\\
@@ -196,18 +223,24 @@ Rule & Baseline FPR & Rescue FPR & Matched FPR & Mean $\Delta$ & 2.5--97.5\% $\D
 1\% / 10\%   & 0.1548 & 0.2172 & 0.2364 & -0.0192 & -0.0523--0.0188\\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table*}
+\FloatBarrier
 
 For the 0.5\%/10\% rule, rescue has lower adjudicated-negative FPR than matched ZeBRA in 81\% of outer splits; the corresponding fraction is 78\% for the 1\%/10\% rule. Five of the six rules have a negative mean rescue-minus-matched FPR, while the 1\%/2\% rule is essentially equal.
 
-At stringent requested false-positive rates, the clinical-history score remains substantially stronger than the genomic-only learner. Mean held-out LR$+$ at requested FPR 0.5\% is approximately 57.9 for ZeBRA, 4.28 for the genomic-only model, and 39.1 for the nonlinear combined model. At requested FPR 1\%, the corresponding values are 29.8, 3.62, and 26.7. Main Fig.~\ref{fig:integrated-fild}g shows LR$+$ across all five requested FPRs; Supplementary Fig.~\ref{fig:supp-integrated}f shows the corresponding held-out sensitivities.
+At stringent requested false-positive rates, the clinical-history score remains substantially stronger than the genomic-only learner. Mean held-out LR$+$ at requested FPR 0.5\% is approximately 57.9 for ZeBRA, 4.28 for the genomic-only model, and 39.1 for the nonlinear combined model. At requested FPR 1\%, the corresponding values are 29.8, 3.62, and 26.7. Main Fig.~\ref{fig:integrated-fild}g shows LR$+$ across all five requested FPRs; Supplementary Fig.~\ref{fig:supp-integrated}e shows the corresponding held-out sensitivities.
 
 \subsection*{S6. Calibration diagnostics}
 The raw ZeBRA score is not an absolute calibrated FILD/FILA probability in this cohort. Across repeated held-out splits, its mean calibration slope is 0.180 and expected calibration error (ECE) is 0.570. The corresponding values are 0.241 and 0.115 for the genomic model and 1.140 and 0.121 for the nonlinear combined model. These diagnostics motivate treating ZeBRA as an ordinal clinical-history score and estimating $\Lambda_Z$ directly rather than interpreting the raw score as posterior probability.
 
 \begin{table}[!t]
 \caption{Calibration summary for FILD/FILA.}
-\label{tab:supp-calibration}\centering\small
+\label{tab:supp-calibration}
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{adjustbox}{max width=\columnwidth}
 \begin{tabular}{lrr}
 \toprule
 Model & Calibration slope & ECE\\
@@ -217,7 +250,9 @@ Genomic & 0.241 & 0.115\\
 Combined & 1.140 & 0.121\\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
+\FloatBarrier
 
 \subsection*{S7. Supporting ROC-hull diagnostic}
 A descriptive ROC-hull analysis was used only to characterize geometric complementarity among observed operating points. The empirical/interpolated AUCs are 0.8142 for ZeBRA and 0.8095 for the hybrid decision rule. The convex hulls of the individual curves have AUCs 0.8219 and 0.8182, respectively; the pointwise maximum has AUC 0.8196; and the convex hull of the concatenated ZeBRA and hybrid ROC points has AUC 0.8260. These hull quantities are envelopes over evaluated operating points, not held-out performance estimates from a separately trained classifier. Main Fig.~\ref{fig:integrated-fild}i retains the most interpretable summary quantities solely as a geometric diagnostic; they are not used as primary evidence for the theorem.
