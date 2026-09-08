@@ -8,7 +8,7 @@
     "zebra": {"path": "PATH_TO_HFREF_ZEBRA.parquet", "id_column": "patient_id", "score_column": "predicted_risk", "duplicate_policy": "identical"}
   },
   "phenotypes": [
-    {"name": "HFrEF", "column": "HFREF_LABEL", "positive_values": ["Y", 1, "1"], "negative_values": ["N", 0, "0"], "missing": "negative"}
+    {"name": "HFrEF", "column": "HFREF_LABEL", "positive_values": ["Y", 1, "1"], "negative_values": ["N", 0, "0"], "missing": "drop", "absent_row": "drop"}
   ],
   "primary_phenotype": "HFrEF",
   "score_range": [0, 1],
