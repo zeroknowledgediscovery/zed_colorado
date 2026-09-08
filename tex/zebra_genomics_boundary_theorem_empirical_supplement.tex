@@ -3,7 +3,7 @@
 \usepackage{booktabs,array,url,hyperref}
 \usepackage{microtype}
 \hypersetup{hidelinks}
-\title{Supplementary Computational Provenance\\Boundary-Localized Genomic Utility and Clinical-Tail Dominance}
+\title{Supplementary Computational Provenance\\Boundary-Localized Genomic Utility in Fibrotic Interstitial Lung Disease}
 \author{Ishanu Chattopadhyay}
 \date{}
 \begin{document}
@@ -20,7 +20,7 @@ All empirical manuscript figures are generated at compilation time with PGFPlots
 so re-running the analyses and recompiling the manuscript updates plotted values without creating a separate manuscript-side data directory.
 
 \section*{Theory notation used in the main text}
-The main theorem distinguishes two residual-genomic scales. $b_{\delta,n}$ is the finite-stage $(1-\delta)$ control quantile of $|R_{G,n}|$ at a particular clinical-history stage $n$. The symbol $b_\delta$ is reserved for an $n$-independent bound that exists only under the stronger uniform-tightness condition A1-U. The empirical score-level analysis estimates $\widehat b_\delta$, an analogue of the former, not the latter; the missing $n$ subscript distinguishes the score-level estimate from the theoretical full-history quantity $b_{\delta,n}$.
+The main theorem is the finite-stage boundary-localization result. Its residual-genomic scale $b_{\delta,n}$ is the finite-stage $(1-\delta)$ control quantile of $|R_{G,n}|$ at a particular clinical-history stage $n$ and requires no uniformity over history length. The symbol $b_\delta$ is reserved for an $n$-independent bound that exists only under the stronger optional A1-U condition used by the separate sequential tail-extension theorem. The empirical score-level analysis estimates $\widehat b_\delta$, an analogue of the finite-stage quantity; the missing $n$ subscript distinguishes the observed score-level estimate from the theoretical full-history quantity $b_{\delta,n}$.
 
 \section*{Primary source mapping}
 \begin{tabular}{p{0.30\textwidth}p{0.64\textwidth}}
@@ -73,10 +73,10 @@ Fraction with $\log\Lambda_Z$ exceeding genomic scale above 99th percentile & 1.
 \end{table}
 
 \section*{Theory--data scope}
-The empirical residual-genomic quantiles are fixed-score quantities for the observed ZeBRA representation and \textit{MUC5B}. They correspond to the finite-stage $b_{\delta,n}$ construction in Theorem~1(ii), not to the optional uniform-tightness condition A1-U over all clinical-history lengths. Likewise, the observed high-ZeBRA likelihood-ratio tail does not establish the mathematical unboundedness assumption A2.
+The empirical residual-genomic quantiles are fixed-score quantities for the observed ZeBRA representation and \textit{MUC5B}. They correspond to the finite-stage $b_{\delta,n}$ construction in Theorem~1(ii), not to the optional A1-U condition over all clinical-history lengths. The observed high-ZeBRA likelihood-ratio tail is finite-range correspondence to the separate conditional tail-extension theorem; it does not establish A1-U or the mathematical unboundedness assumption A2.
 
-\section*{Exploratory local likelihood-ratio tests}
-The main manuscript reports the local nested-model likelihood-ratio statistics as descriptive localization summaries and omits nominal p-values because multiple regions and overlapping windows are examined in the same cohort. For reproducibility, the nominal one-degree-of-freedom p-values for the four non-overlapping control-FPR bands are: 2--5\%: 0.0352; 5--10\%: $4.74\times10^{-5}$; 10--20\%: 0.0289; and 20--40\%: $2.15\times10^{-4}$. These values are not multiplicity-adjusted and are not used as confirmatory evidence.
+\section*{Exploratory local nested-model likelihood-ratio tests}
+The main manuscript reports the local nested-model likelihood-ratio/deviance statistics as descriptive localization summaries. These are not estimates of the subject-level residual likelihood ratio $\Lambda_{G\mid C}$ in the theorem. Nominal one-degree-of-freedom p-values for the four non-overlapping control-FPR bands are: 2--5\%: 0.0352; 5--10\%: $4.74\times10^{-5}$; 10--20\%: 0.0289; and 20--40\%: $2.15\times10^{-4}$. These values are not multiplicity-adjusted and are not used as confirmatory evidence.
 
 \section*{Matched comparator within explicitly adjudicated negatives}
 The adjudicated-negative diagnostic reuses the saved outer-split seeds and the matched-ZeBRA thresholds learned from the original training data. The thresholds are applied unchanged to the explicitly adjudicated-negative subjects in the corresponding untouched test sets; the subset is never used for threshold fitting. The table below reports mean FPRs and rescue-minus-matched differences across 100 outer splits. The percentile range is descriptive across repeated splits rather than a confidence interval from an independent external sample.
@@ -98,7 +98,7 @@ Rule & Baseline FPR & Rescue FPR & Matched FPR & Mean $\Delta$ & 2.5--97.5\% $\D
 \end{tabular}
 \end{table}
 
-For the 0.5\%/10\% rule, rescue has lower adjudicated-negative FPR than matched ZeBRA in 81\% of outer splits; the corresponding fraction is 78\% for the 1\%/10\% rule. Five of the six rules have a negative mean rescue-minus-matched FPR, while the 1\%/2\% rule is essentially equal. Because the adjudicated-negative subset contains only about 216 subjects per outer split on average, these results resolve the earlier concern that rescue might uniquely inflate adjudicated-negative FPR but do not establish a statistically definitive reduction.
+For the 0.5\%/10\% rule, rescue has lower adjudicated-negative FPR than matched ZeBRA in 81\% of outer splits; the corresponding fraction is 78\% for the 1\%/10\% rule. Five of the six rules have a negative mean rescue-minus-matched FPR, while the 1\%/2\% rule is essentially equal. Because the adjudicated-negative subset contains only about 216 subjects per outer split on average, these results are retained as a control diagnostic rather than evidence of definitive superiority.
 
 \section*{Calibration summary}
 The raw ZeBRA score is not an absolute calibrated FILD/FILA probability in this cohort. Across repeated held-out splits, the mean calibration slope is 0.180 for ZeBRA, 0.241 for the genomic model, and 1.140 for the combined model; corresponding expected calibration errors are 0.570, 0.115, and 0.121. The main manuscript therefore treats ZeBRA as an ordinal clinical-history score unless an explicit score-level likelihood-ratio transformation is estimated.
@@ -107,6 +107,6 @@ The raw ZeBRA score is not an absolute calibrated FILD/FILA probability in this 
 The descriptive ROC-hull analysis is retained as a supporting result rather than a primary predictive comparison. The empirical/interpolated AUCs are 0.8142 for ZeBRA and 0.8095 for the hybrid model; the convex hulls of the individual curves have AUCs 0.8219 and 0.8182, respectively; the pointwise maximum has AUC 0.8196; and the convex hull of the concatenated ZeBRA and hybrid ROC points has AUC 0.8260. These hull quantities are geometric envelopes over the evaluated ROC point sets and are not held-out performance estimates from a separately fitted classifier. The concatenated hull is included to illustrate the best randomized operating trade-off available from the observed ZeBRA and hybrid points; it is neither a universal theoretical maximum nor evidence that a classifier with AUC 0.8260 has been prospectively validated.
 
 \section*{Authoritative manuscript sources}
-The canonical manuscript master is \path{zebra_genomics_boundary_theorem_empirical.tex}. The scientific narrative is split across \path{manuscript_body_intro.tex}, \path{manuscript_body_theory.tex}, \path{manuscript_body_interpretation.tex}, \path{manuscript_body_empirical_a.tex}, \path{manuscript_body_empirical_b.tex}, and \path{manuscript_body_end.tex}. Figure definitions are assembled by \path{empirical_figures.tex} from \path{empirical_figures_data.tex}, \path{empirical_figures_primary.tex}, \path{empirical_figures_lr.tex}, and \path{empirical_figures_adjudicated.tex}. These figure-source files are the authoritative mapping between manuscript plots and analysis-result tables.
+The canonical manuscript master is \path{zebra_genomics_boundary_theorem_empirical.tex}. The scientific narrative is split across \path{manuscript_body_intro.tex}, \path{manuscript_body_theory.tex}, \path{manuscript_body_interpretation.tex}, \path{manuscript_body_empirical_a.tex}, \path{manuscript_body_empirical_b.tex}, and \path{manuscript_body_end.tex}. Auxiliary proofs are retained inside the same manuscript through \path{manuscript_appendix_proofs.tex}. Figure definitions are assembled by \path{empirical_figures.tex} from \path{empirical_figures_data.tex}, \path{empirical_figures_primary.tex}, and \path{empirical_figures_lr.tex}. These figure-source files are the authoritative mapping between manuscript plots and analysis-result tables.
 
 \end{document}
