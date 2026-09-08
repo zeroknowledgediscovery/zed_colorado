@@ -101,7 +101,11 @@ def encode_binary_label(s: pd.Series, spec: dict[str, Any]) -> pd.Series:
 
     def enc(v: Any) -> float:
         if pd.isna(v):
-            return 0.0 if missing == "negative" else np.nan
+            if missing == "negative":
+                return 0.0
+            if missing == "positive":
+                return 1.0
+            return np.nan
         t = str(v).strip().lower()
         if t in pos:
             return 1.0
@@ -120,6 +124,46 @@ def encode_binary_label(s: pd.Series, spec: dict[str, Any]) -> pd.Series:
         raise ValueError(f"Cannot encode phenotype value {v!r} for {spec.get('name', spec.get('column'))}")
 
     return s.map(enc)
+
+
+def apply_absent_row_policy(
+    d: pd.DataFrame,
+    phenos: list[dict[str, Any]],
+    presence_column: str = "_phenotype_row_present",
+) -> pd.DataFrame:
+    """Apply phenotype semantics to genomic patients absent from the phenotype file.
+
+    `missing` controls a null cell in an existing phenotype row. `absent_row`
+    controls a patient who is not represented in the phenotype table at all.
+    If `absent_row` is omitted it inherits `missing`, which preserves the common
+    case-control convention that a sparse case/adjudication table plus
+    `missing=negative` means patients absent from that table are controls.
+    """
+    out = d.copy()
+    if presence_column not in out:
+        raise ValueError(f"Internal phenotype-presence marker {presence_column!r} missing")
+    absent = out[presence_column].isna()
+    for spec in phenos:
+        name = spec["name"]
+        policy = spec.get("absent_row", spec.get("missing", "drop"))
+        if policy == "negative":
+            out.loc[absent, name] = 0.0
+        elif policy == "positive":
+            out.loc[absent, name] = 1.0
+        elif policy == "drop":
+            pass
+        elif policy == "error":
+            if absent.any():
+                raise ValueError(
+                    f"{int(absent.sum())} genomic/scored patients are absent from phenotype table "
+                    f"for phenotype {name!r}; absent_row='error'"
+                )
+        else:
+            raise ValueError(
+                f"Unknown absent_row policy {policy!r} for phenotype {name!r}; "
+                "use negative, positive, drop, or error"
+            )
+    return out
 
 
 def _read_selector_file(cfg: dict[str, Any], selector: dict[str, Any]) -> list[str]:
@@ -310,9 +354,10 @@ def build_analysis_frame(cfg: dict[str, Any]) -> tuple[pd.DataFrame, list[str], 
     Xg["gene_signal"] = gene.values
 
     p = praw[[id_name] + pcols].copy()
+    p["_phenotype_row_present"] = 1
     for spec in phenos:
         p[spec["name"]] = encode_binary_label(p[spec["column"]], spec)
-    p = p[[id_name] + [x["name"] for x in phenos]]
+    p = p[[id_name, "_phenotype_row_present"] + [x["name"] for x in phenos]]
 
     d = Xg.merge(p, on=id_name, how="left").merge(zraw[[id_name, "zebra_score"]], on=id_name, how="left")
     d["zebra_score"] = pd.to_numeric(d["zebra_score"], errors="coerce")
@@ -322,6 +367,15 @@ def build_analysis_frame(cfg: dict[str, Any]) -> tuple[pd.DataFrame, list[str], 
         lo, hi = cfg["score_range"]
         if not d.zebra_score.dropna().between(float(lo), float(hi)).all():
             raise ValueError(f"ZeBRA score outside configured range [{lo}, {hi}]")
+
+    # Apply phenotype-row absence semantics *after* the left merge. This is the
+    # critical distinction for sparse case/adjudication tables: an absent row
+    # may mean control rather than unknown. The frozen ILD analysis uses this
+    # convention explicitly via fillna(0) after merging the phenotype table.
+    d = apply_absent_row_policy(d, phenos)
+    phenotype_row_present_n = int(d["_phenotype_row_present"].notna().sum())
+    phenotype_row_absent_n = int(d["_phenotype_row_present"].isna().sum())
+    d = d.drop(columns="_phenotype_row_present")
 
     if primary_name not in d:
         raise ValueError(f"Primary phenotype {primary_name!r} not present")
@@ -348,6 +402,8 @@ def build_analysis_frame(cfg: dict[str, Any]) -> tuple[pd.DataFrame, list[str], 
         "n": int(len(d)),
         "cases": int(d.target.sum()),
         "controls": int((d.target == 0).sum()),
+        "phenotype_row_present_n_after_score_filter": phenotype_row_present_n,
+        "phenotype_row_absent_n_after_score_filter": phenotype_row_absent_n,
         "gene_called_n": int(d.gene_signal.notna().sum()),
         "gene_positive_n": int(d.gene_signal.fillna(0).sum()) if d.gene_signal.notna().any() else 0,
     }
