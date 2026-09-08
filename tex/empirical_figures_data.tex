@@ -11,9 +11,13 @@
 \pgfplotstableread[col sep=comma]{\resultroot/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/FPR_DEFINED_LOCAL_INFORMATION_BANDS.csv}\localbands
 \pgfplotstableread[col sep=comma]{\resultroot/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/LOCAL_ZEBRA_MUC5B_INFORMATION_WINDOWS.csv}\localwindows
 \pgfplotstableread[col sep=comma]{\resultroot/MUC5B_ZEBRA_RESCUE_RULE/REPEATED_SPLIT_MUC5B_RESCUE_SUMMARY.csv}\rescuedata
+\pgfplotstableread[col sep=comma]{\resultroot/MUC5B_ZEBRA_RESCUE_RULE/REPEATED_SPLIT_ADJUDICATED_MATCHED_FPR_SUMMARY.csv}\adjudrescue
 \pgfplotstableread[col sep=comma]{\resultroot/032_REPEATED_SPLITS_03_TARGET_LOGIC/zedstat_operating_points_summary.csv}\operatingpoints
 
 % FILD/FILA operating-point means at requested FPR 0.5, 1, 2, 5, and 10%.
+% These row indices correspond to the named FILD/FILA model/metric/FPR rows in
+% zedstat_operating_points_summary.csv and have been cross-checked against the
+% source table.
 \newcommand{\OperatingMean}[2]{%
   \pgfplotstablegetelem{#1}{mean}\of\operatingpoints%
   \expandafter\xdef\csname #2\endcsname{\pgfplotsretval}%
@@ -24,6 +28,7 @@
 \OperatingMean{424}{zsnA}\OperatingMean{458}{zsnB}\OperatingMean{492}{zsnC}\OperatingMean{526}{zsnD}\OperatingMean{560}{zsnE}
 \OperatingMean{226}{gsnA}\OperatingMean{260}{gsnB}\OperatingMean{294}{gsnC}\OperatingMean{328}{gsnD}\OperatingMean{362}{gsnE}
 \OperatingMean{28}{csnA}\OperatingMean{62}{csnB}\OperatingMean{96}{csnC}\OperatingMean{130}{csnD}\OperatingMean{164}{csnE}
+
 \pgfplotstableread[col sep=comma]{\resultroot/EMPIRICAL_ZEBRA_MUC5B_LR_ROBUSTNESS/LR_ESTIMATOR_SENSITIVITY_GRID.csv}\lrgrid
 \pgfplotstableread[col sep=comma]{\resultroot/EMPIRICAL_ZEBRA_MUC5B_LR_ROBUSTNESS/CLINICAL_TAIL_ROBUSTNESS.csv}\tailrob
 \pgfplotstableread[col sep=comma]{\resultroot/EMPIRICAL_ZEBRA_MUC5B_LR_ROBUSTNESS/ROBUSTNESS_RANGE_SUMMARY.csv}\rangesum
