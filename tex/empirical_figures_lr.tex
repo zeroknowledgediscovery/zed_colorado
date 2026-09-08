@@ -10,7 +10,7 @@
  xmajorgrids=true,ymajorgrids=true,major grid style={dotted},clip=false]
 
 \nextgroupplot[
- ylabel={Residual bound $b_\delta$},xlabel={Tail probability $\delta$},
+ ylabel={Empirical residual scale $\widehat b_\delta$},xlabel={Tail probability $\delta$},
  ymin=0.75,ymax=1.70,
  xtick={0,1,2},xticklabels={0.05,0.01,0.005},
  xticklabel style={font=\scriptsize}]
@@ -70,7 +70,8 @@
 \node[anchor=south west,font=\footnotesize\bfseries] at ([xshift=-1pt,yshift=16pt]lrPanels c1r2.north west) {(c)};
 \node[anchor=south west,font=\footnotesize\bfseries] at ([xshift=-1pt,yshift=16pt]lrPanels c2r2.north west) {(d)};
 \end{tikzpicture}
-\caption{\textbf{Direct empirical likelihood-ratio support for stochastic boundary localization.} (a) Median high-probability residual-genomic bounds across nine prespecified estimator specifications, with error bars spanning the minimum to maximum. The 95\% and 99\% bounds are stable, whereas the 99.5\% tail is more estimator-sensitive. (b) In the primary estimator, median clinical log-likelihood evidence rises sharply across the upper ZeBRA tail while the 95th percentile of the residual genomic scale remains substantially smaller. (c) The fraction of subjects for whom clinical evidence exceeds the estimated residual genomic scale approaches one in the extreme tail; points show the median across specifications and error bars span the full sensitivity range. (d) Genomic-induced decision changes remain concentrated near the clinical likelihood-ratio boundary across stringent operating points.}
+\caption{\textbf{Direct empirical likelihood-ratio support for finite-stage boundary localization.} (a) Median score-level high-probability residual-genomic scales across nine prespecified estimator specifications, with error bars spanning the minimum to maximum. The 95\% and 99\% scales are stable, whereas the 99.5\% tail is more estimator-sensitive. (b) In the primary estimator, median clinical log-likelihood evidence rises sharply across the upper ZeBRA tail while the 95th percentile of the residual genomic scale remains substantially smaller. (c) The fraction of subjects for whom clinical evidence exceeds the estimated residual genomic scale approaches one in the extreme observed tail; this is finite-range correspondence, not proof of A2. (d) Genomic-induced decision changes remain concentrated near the clinical likelihood-ratio boundary across stringent operating points.}
 \label{fig:empirical-lr-robustness}
+\label{fig:lr-robustness}
 \end{figure*}%
 }
