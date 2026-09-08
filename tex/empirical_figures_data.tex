@@ -1,0 +1,49 @@
+% Empirical figures for the ZeBRA--genomics manuscript.
+% All figures are generated with PGFPlots from CSV files under ../zebra_comp/RESULTS.
+
+\RequirePackage{pgfplotstable}
+\newcommand{\resultroot}{../zebra_comp/RESULTS}
+
+\pgfplotstableread[col sep=comma]{\resultroot/032_REPEATED_SPLITS_03_TARGET_LOGIC/auc_distribution_summary.csv}\globalauc
+\pgfplotstableread[col sep=comma]{\resultroot/032_REPEATED_SPLITS_03_TARGET_LOGIC/paired_auc_delta_summary.csv}\globalpaired
+\pgfplotstableread[col sep=comma]{\resultroot/033_INCREMENTAL_LOGISTIC_32_COHORT/paired_incremental_summary.csv}\incremental
+\pgfplotstableread[col sep=comma]{\resultroot/MUC5B_STRATIFIED_BY_FILD/MUC5B_ZEBRA_STRATIFIED_SUMMARY.csv}\mucfive
+\pgfplotstableread[col sep=comma]{\resultroot/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/FPR_DEFINED_LOCAL_INFORMATION_BANDS.csv}\localbands
+\pgfplotstableread[col sep=comma]{\resultroot/LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/LOCAL_ZEBRA_MUC5B_INFORMATION_WINDOWS.csv}\localwindows
+\pgfplotstableread[col sep=comma]{\resultroot/MUC5B_ZEBRA_RESCUE_RULE/REPEATED_SPLIT_MUC5B_RESCUE_SUMMARY.csv}\rescuedata
+\pgfplotstableread[col sep=comma]{\resultroot/032_REPEATED_SPLITS_03_TARGET_LOGIC/zedstat_operating_points_summary.csv}\operatingpoints
+
+% FILD/FILA operating-point means at requested FPR 0.5, 1, 2, 5, and 10%.
+\newcommand{\OperatingMean}[2]{%
+  \pgfplotstablegetelem{#1}{mean}\of\operatingpoints%
+  \expandafter\xdef\csname #2\endcsname{\pgfplotsretval}%
+}
+\OperatingMean{428}{zlrA}\OperatingMean{462}{zlrB}\OperatingMean{496}{zlrC}\OperatingMean{530}{zlrD}\OperatingMean{564}{zlrE}
+\OperatingMean{230}{glrA}\OperatingMean{264}{glrB}\OperatingMean{298}{glrC}\OperatingMean{332}{glrD}\OperatingMean{366}{glrE}
+\OperatingMean{32}{clrA}\OperatingMean{66}{clrB}\OperatingMean{100}{clrC}\OperatingMean{134}{clrD}\OperatingMean{168}{clrE}
+\OperatingMean{424}{zsnA}\OperatingMean{458}{zsnB}\OperatingMean{492}{zsnC}\OperatingMean{526}{zsnD}\OperatingMean{560}{zsnE}
+\OperatingMean{226}{gsnA}\OperatingMean{260}{gsnB}\OperatingMean{294}{gsnC}\OperatingMean{328}{gsnD}\OperatingMean{362}{gsnE}
+\OperatingMean{28}{csnA}\OperatingMean{62}{csnB}\OperatingMean{96}{csnC}\OperatingMean{130}{csnD}\OperatingMean{164}{csnE}
+\pgfplotstableread[col sep=comma]{\resultroot/EMPIRICAL_ZEBRA_MUC5B_LR_ROBUSTNESS/LR_ESTIMATOR_SENSITIVITY_GRID.csv}\lrgrid
+\pgfplotstableread[col sep=comma]{\resultroot/EMPIRICAL_ZEBRA_MUC5B_LR_ROBUSTNESS/CLINICAL_TAIL_ROBUSTNESS.csv}\tailrob
+\pgfplotstableread[col sep=comma]{\resultroot/EMPIRICAL_ZEBRA_MUC5B_LR_ROBUSTNESS/ROBUSTNESS_RANGE_SUMMARY.csv}\rangesum
+
+% Extract compact robustness summaries directly from ROBUSTNESS_RANGE_SUMMARY.csv.
+\newcommand{\RangeVal}[3]{%
+  \pgfplotstablegetelem{#1}{#2}\of\rangesum%
+  \expandafter\xdef\csname #3\endcsname{\pgfplotsretval}%
+}
+% Residual-genomic stochastic-bound summaries: rows 0, 1, 2.
+\RangeVal{0}{min_across_9_specs}{bMinA}\RangeVal{0}{median_across_9_specs}{bMedA}\RangeVal{0}{max_across_9_specs}{bMaxA}
+\RangeVal{1}{min_across_9_specs}{bMinB}\RangeVal{1}{median_across_9_specs}{bMedB}\RangeVal{1}{max_across_9_specs}{bMaxB}
+\RangeVal{2}{min_across_9_specs}{bMinC}\RangeVal{2}{median_across_9_specs}{bMedC}\RangeVal{2}{max_across_9_specs}{bMaxC}
+% Clinical-tail fractions: rows 5, 8, 11.
+\RangeVal{5}{min_across_9_specs}{fracMinA}\RangeVal{5}{median_across_9_specs}{fracMedA}\RangeVal{5}{max_across_9_specs}{fracMaxA}
+\RangeVal{8}{min_across_9_specs}{fracMinB}\RangeVal{8}{median_across_9_specs}{fracMedB}\RangeVal{8}{max_across_9_specs}{fracMaxB}
+\RangeVal{11}{min_across_9_specs}{fracMinC}\RangeVal{11}{median_across_9_specs}{fracMedC}\RangeVal{11}{max_across_9_specs}{fracMaxC}
+% Flip-distance summaries at 0.5, 1, 2, 5, 10% requested FPR.
+\RangeVal{13}{median_across_9_specs}{flipMedA}\RangeVal{14}{max_across_9_specs}{flipQMaxA}
+\RangeVal{16}{median_across_9_specs}{flipMedB}\RangeVal{17}{max_across_9_specs}{flipQMaxB}
+\RangeVal{19}{median_across_9_specs}{flipMedC}\RangeVal{20}{max_across_9_specs}{flipQMaxC}
+\RangeVal{22}{median_across_9_specs}{flipMedD}\RangeVal{23}{max_across_9_specs}{flipQMaxD}
+\RangeVal{25}{median_across_9_specs}{flipMedE}\RangeVal{26}{max_across_9_specs}{flipQMaxE}
