@@ -1,0 +1,17 @@
+{
+  "IPF": [
+    "MUC5B", "TERT", "TERC", "RTEL1", "PARN", "STN1", "DKC1", "TINF2", "NAF1", "ZCCHC8",
+    "SFTPA1", "SFTPA2", "SFTPC", "ABCA3", "DSP", "FAM13A", "DPP9", "TOLLIP", "ATP11A",
+    "AKAP13", "DEPTOR", "KIF15", "MAD1L1", "IVD", "ZKSCAN1"
+  ],
+  "ADRD": [
+    "APOE", "APP", "PSEN1", "PSEN2", "TREM2", "SORL1", "ABCA7", "BIN1", "CR1", "CLU",
+    "PICALM", "CD33", "INPP5D", "PLCG2", "ABI3", "CD2AP", "EPHA1", "FERMT2", "PTK2B",
+    "ADAM10", "ACE", "SPI1", "MS4A6A", "ABCA1", "MAPT", "GRN", "C9ORF72", "TMEM106B",
+    "TBK1", "SNCA", "GBA1", "NOTCH3", "HTRA1"
+  ],
+  "HFREF": [
+    "TTN", "MYBPC3", "BAG3", "FLNC", "LMNA", "RBM20", "DSP", "PLN", "MYH7", "TNNT2",
+    "TNNI3", "TNNC1", "SCN5A", "DES", "ACTN2", "HSPB7", "NKX2-5", "FHOD3"
+  ]
+}
