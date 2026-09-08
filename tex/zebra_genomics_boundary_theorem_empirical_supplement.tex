@@ -69,6 +69,24 @@ Fraction with $\log\Lambda_Z$ exceeding genomic scale above 99th percentile & 1.
 \end{tabular}
 \end{table}
 
+\section*{Exploratory local likelihood-ratio statistics}
+The local FPR-band analyses are used descriptively in the main manuscript because multiple regions are examined within the same cohort. For reproducibility, the nominal one-degree-of-freedom likelihood-ratio-test p-values are recorded here but are not treated as multiplicity-adjusted confirmatory inference.
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+ZeBRA control-FPR band & LRT for adding \textit{MUC5B} after ZeBRA & Nominal $p$\\
+\midrule
+2--5\% & 4.44 & 0.0352\\
+5--10\% & 16.55 & $4.74\times10^{-5}$\\
+10--20\% & 4.77 & 0.0289\\
+20--40\% & 13.69 & $2.15\times10^{-4}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{Theory--data scope}
+The empirical residual-genomic quantiles are fixed-score quantities for the observed ZeBRA representation and \textit{MUC5B}. They correspond to the finite-stage $b_{\delta,n}$ construction in Theorem~1(ii), not to the optional uniform-tightness condition A1-U over all clinical-history lengths. Likewise, the observed high-ZeBRA likelihood-ratio tail does not establish the mathematical unboundedness assumption A2.
+
 \section*{Calibration summary}
 The raw ZeBRA score is not an absolute calibrated FILD/FILA probability in this cohort. Across repeated held-out splits, the mean calibration slope is 0.180 for ZeBRA, 0.241 for the genomic model, and 1.140 for the combined model; corresponding expected calibration errors are 0.570, 0.115, and 0.121. The main manuscript therefore treats ZeBRA as an ordinal clinical-history score unless an explicit score-level likelihood-ratio transformation is estimated.
 
