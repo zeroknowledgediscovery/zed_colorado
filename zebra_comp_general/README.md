@@ -23,7 +23,7 @@ The broad genomic feature panel and the focal gene signal are deliberately separ
 2. `02_INCREMENTAL_LOGISTIC` — paired regularized ZeBRA-only vs ZeBRA+genomics incremental analysis.
 3. `03_GENE_SCORE_ASSOCIATION` — pooled and disease-stratified ZeBRA-to-gene association/enrichment.
 4. `04_LOCAL_INFORMATION` — local nested-model LR/deviance statistics and local effect sizes along the ZeBRA axis.
-5. `05_DIRECT_LR` — cross-fitted score-level `Lambda_Z` and `Lambda_{G|Z}`, finite-stage `b_delta`, clinical-tail summaries, and decision-flip localization.
+5. `05_DIRECT_LR` — cross-fitted score-level `Lambda_Z` and `Lambda_{G|Z}`, finite-stage `b_delta`, clinical-tail summaries, decision-flip localization, and the prespecified 3×3 spline/regularization sensitivity grid used in the ILD analysis.
 6. `06_BOUNDARY_RESCUE` — leakage-free gene rescue between lower/upper ZeBRA thresholds compared with a ZeBRA-only threshold matched on training-set FPR.
 
 Each run writes a frozen config/parameter/version manifest and the encoded feature list under `RESULTS/<analysis_name>/`.
