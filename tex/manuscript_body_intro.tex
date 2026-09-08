@@ -1,0 +1,81 @@
+\begin{abstract}
+Genomic risk and longitudinal clinical history are distinct information channels for forecasting future disease. We study when a static germline genomic channel can add predictive value once a longitudinal clinical-history score has become strongly informative. The central object is the residual genomic likelihood ratio conditional on clinical history. We first state a stochastic boundary-localization theorem: if the residual genomic log-likelihood ratio is bounded with high probability under controls, then genomic information can change a likelihood-ratio decision only inside a correspondingly narrow neighborhood of the clinical decision boundary except on a low-probability exceptional set. Under a stronger deterministic boundedness assumption, this band becomes exact, and sufficiently extreme clinical likelihood-ratio thresholds still dominate any genomic-only rule whose marginal likelihood ratio is bounded. We evaluate these predictions in a Colorado fibrotic interstitial lung disease (ILD) analysis using ZeBRA, a longitudinal EHR-derived score, and a curated genomic panel containing \textit{MUC5B} rs35705950. Across repeated held-out splits, ZeBRA dominates global discrimination, broad genomic augmentation provides essentially no global FILD/FILA gain after conditioning on ZeBRA, and ZeBRA predicts \textit{MUC5B} carrier status only at chance level. Nevertheless, \textit{MUC5B} shows localized conditional predictive association in restricted ZeBRA operating bands, and across the evaluated two-threshold rescue grid the largest mean held-out sensitivity gain is approximately 4.5 percentage points at essentially matched operational false-positive rate. A new direct empirical likelihood-ratio analysis further shows control-side high-probability residual-genomic bounds of about 0.87 and 0.91 log-LR units at the 95\% and 99\% levels, with clinical log-likelihood clearly dominating residual genomic scale in the extreme ZeBRA tail. The empirical pattern is therefore not global genomic redundancy but regime-dependent complementarity localized near the clinical decision boundary.
+\end{abstract}
+
+\begin{IEEEkeywords}
+ZeBRA, fibrotic interstitial lung disease, idiopathic pulmonary fibrosis, MUC5B, genomics, likelihood ratio, Neyman--Pearson lemma, Bayesian inference, decision boundary.
+\end{IEEEkeywords}
+
+\section{Motivating problem: ZeBRA and genomic risk in fibrotic ILD}
+
+Fibrotic ILDs, including idiopathic pulmonary fibrosis (IPF), have a strong but non-Mendelian genetic component. The \textit{MUC5B} promoter variant rs35705950 is among the strongest common genetic risk factors for pulmonary fibrosis \cite{Seibold2011,Fingerlin2013,Allen2020}. In the original report, the minor allele was present much more frequently among subjects with IPF than among controls \cite{Seibold2011}. At the same time, disease emergence is accompanied by a growing sequence of clinically observable diagnoses, prescriptions, procedures, and comorbidities. ZeBRA is designed to summarize such routinely observed longitudinal clinical histories into a future-risk score without requiring laboratory tests, imaging, or questionnaires \cite{Onishchenko2026}.
+
+Our recent fibrotic ILD analyses ask whether genomic information improves prediction once ZeBRA is known. In 30 repeated held-out splits of the current operational FILD/FILA endpoint, mean AUC is approximately 0.814 for ZeBRA, 0.566 for the selected genomic panel, and 0.799 for a nonlinear combined model. Because that comparison alone does not isolate incremental information, we also performed a paired regularized analysis in which ZeBRA-only and ZeBRA-plus-genomics models were evaluated on the same held-out subjects. For FILD/FILA, the mean paired AUC increment from the complete genomic panel is only $+0.00043$, the median increment is 0, and the split-wise 2.5th--97.5th percentile range spans approximately $-0.0051$ to $+0.0041$; average precision decreases and both Brier score and log loss worsen after broad genomic augmentation.
+
+The absence of global gain is not explained by ZeBRA reconstructing the major genomic signal. Among subjects with called rs35705950 genotype, ZeBRA predicts \textit{MUC5B} carrier status at chance level (AUC approximately 0.509). A modest pooled enrichment of carriers in the extreme ZeBRA tail disappears after stratification by FILD/FILA status, showing that the pooled association is consistent with both channels tracking disease rather than with clinical history encoding genotype. Yet residual \textit{MUC5B} disease information is strongly heterogeneous across ZeBRA score space. In the ZeBRA band corresponding approximately to 5--10\% control FPR, adding \textit{MUC5B} after ZeBRA yields a likelihood-ratio statistic of 16.55 ($p\approx4.7\times10^{-5}$). Across the evaluated two-threshold grid, a rule that consults \textit{MUC5B} only between a stringent upper and lower ZeBRA threshold achieves a largest mean held-out sensitivity gain of approximately 4.5 percentage points while preserving essentially the same realized operational FPR. These observations motivate and correspond to the theory below; they are not taken as proofs of its regularity assumptions.
+
+The apparent paradox is therefore:
+\begin{quote}
+A strong genomic risk factor can be biologically important, and can improve decisions for selected individuals, while contributing almost nothing to global discrimination once a strong clinical-history predictor is available.
+\end{quote}
+
+We show that this behavior follows naturally from a Bayesian likelihood-ratio formulation under the stochastic residual-evidence and clinical-tail conditions developed below.
+
+\section{Latent-state and information-channel formulation}
+
+Let $B_t$ denote the latent biological state at time $t$, $G$ the germline genomic state, and $E_{0:t}$ the accumulated non-genetic exposure history. The biological state evolves under the influence of $G$ and $E_{0:t}$. For a fixed future horizon $h>0$, define the disease-risk functional
+\begin{equation}
+\rho_h(B_t)
+=\mathbb{P}(T\le t+h\mid T>t,B_t),
+\label{eq:rho}
+\end{equation}
+where $T$ is the disease-event time. The clinical event sequence $C_{0:t}$ is a noisy observation of the latent biological trajectory $B_{0:t}$. In the idealized Bayesian limit, a clinical-history predictor satisfies
+\begin{equation}
+Z_h(C_{0:t})
+=\mathbb{P}(T\le t+h\mid C_{0:t})
+=\int \rho_h(b)\,d\mathbb{P}(B_t=b\mid C_{0:t}).
+\label{eq:zposterior}
+\end{equation}
+Thus ZeBRA need not reconstruct $B_t$; it estimates the disease-relevant functional of $B_t$ from the clinical observation channel.
+
+For the theorem it is enough to reduce the problem to binary prediction. Let
+\begin{equation}
+Y=\ind\{T\le t+h\}\in\{0,1\},
+\end{equation}
+and write $C$ for the available clinical history. The genomic channel $G$ and clinical channel $C$ are then placed on equal statistical footing through their disease-versus-control likelihood ratios.
+
+\section{Likelihood-ratio representation}
+
+Let $\Pone(\cdot)=\mathbb{P}(\cdot\mid Y=1)$ and $\Pzero(\cdot)=\mathbb{P}(\cdot\mid Y=0)$. Assume throughout that the case distributions used below are absolutely continuous with respect to their control counterparts, so the relevant likelihood ratios exist as Radon--Nikodym derivatives and satisfy $\Ezero[\LR]=1$. Where the deterministic two-sided bounded-residual corollary is invoked, the corresponding conditional genomic laws are mutually absolutely continuous. For readability we write these derivatives using densities with respect to common dominating measures. Define the clinical likelihood ratio
+\begin{equation}
+\LR_C(c)=\frac{p(c\mid Y=1)}{p(c\mid Y=0)},
+\label{eq:clinicalLR}
+\end{equation}
+and the residual genomic likelihood ratio conditional on clinical history
+\begin{equation}
+\LR_{G\mid C}(g;c)
+=\frac{p(g\mid Y=1,C=c)}{p(g\mid Y=0,C=c)}.
+\label{eq:conditionalGLR}
+\end{equation}
+The full joint likelihood ratio is
+\begin{equation}
+\LR_{C,G}(c,g)
+=\frac{p(c,g\mid Y=1)}{p(c,g\mid Y=0)}.
+\end{equation}
+By the probability chain rule,
+\begin{equation}
+\boxed{
+\LR_{C,G}(c,g)
+=\LR_C(c)\,\LR_{G\mid C}(g;c).
+}
+\label{eq:factorization}
+\end{equation}
+No conditional-independence assumption is required.
+
+If $Z$ is a calibrated clinical posterior, $Z=\mathbb{P}(Y=1\mid C)$, and $\pi=\mathbb{P}(Y=1)$, Bayes' rule yields
+\begin{equation}
+\frac{Z}{1-Z}
+=\frac{\pi}{1-\pi}\LR_C(C),
+\label{eq:zlr}
+\end{equation}
+so thresholding calibrated ZeBRA is equivalent to thresholding $\LR_C$. More generally, the same results apply whenever the clinical score is a strictly monotone transformation of $\LR_C$.
