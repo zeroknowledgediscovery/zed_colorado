@@ -1,0 +1,100 @@
+\section{Empirical correspondence in the Colorado ILD analysis}
+\label{sec:empirical}
+
+\subsection{Cohort, provenance, and analysis hierarchy}
+The empirical study uses a Colorado genomic--clinical cohort with linked longitudinal ZeBRA scores and germline genotype features. The primary operational endpoint is future fibrotic ILD or fibrotic interstitial lung abnormality (FILD/FILA); nonfibrotic ILA and nonfibrotic ILD are retained as ancillary endpoints. Subjects without a usable 104-week ZeBRA score are excluded. In the historical endpoint construction, missing adjudication values are included in the target-zero comparison group, so this group is an operational negative set rather than a fully adjudicated control cohort. False-positive rates are therefore described as operational unless explicitly restricted to adjudicated negatives.
+
+The common repeated-split cohort contains 12,825 subjects. The FILD/FILA endpoint has 254 positives, whereas the nonfibrotic ILA and nonfibrotic ILD endpoints have only 74 and 27 positives, respectively. We therefore treat FILD/FILA as the primary empirical endpoint and the two nonfibrotic outcomes as sparse ancillary checks rather than independent replications.
+
+The empirical analyses are hierarchical. First, repeated held-out splits compare global discrimination and stringent operating points for ZeBRA, genomic-only, and nonlinear combined models. Second, a paired regularized analysis tests incremental genomic value after conditioning on ZeBRA. Third, locus-specific analyses determine whether ZeBRA reconstructs \textit{MUC5B} and whether residual \textit{MUC5B} disease information varies across ZeBRA score space. Fourth, a leakage-free two-threshold rescue analysis tests whether consulting \textit{MUC5B} only near selected ZeBRA boundaries improves held-out sensitivity. Finally, a cross-fitted likelihood-ratio analysis estimates the score-level clinical and residual-genomic evidence channels directly. Computational provenance and exact analysis-output mappings are provided in the Supplementary Methods.
+
+\begin{table*}[!t]
+\caption{Theory--evidence correspondence. The empirical analyses test consequences and operating behavior; they do not prove the assumptions globally.}
+\label{tab:theory-evidence-map}
+\centering\footnotesize\setlength{\tabcolsep}{5pt}
+\begin{tabular}{p{0.22\textwidth}p{0.31\textwidth}p{0.38\textwidth}}
+\toprule
+Theory component & Empirical analysis & Empirical meaning\\
+\midrule
+Distinct channels and residual genomic evidence & ZeBRA-to-\textit{MUC5B} pooled and FILD-stratified analyses & Weak global genomic increment is not explained by ZeBRA reconstructing rs35705950.\\
+High-probability boundary localization (Theorem~\ref{thm:main}(ii)) & Direct empirical residual-LR estimation, local information curves, and decision-flip localization & The new LR analysis directly estimates a control-side high-probability residual-genomic scale; the earlier local-window analyses show where conditional genomic disease information is concentrated.\\
+Local gain with little global AUC change (Proposition~\ref{prop:auc-local}) & Repeated-split global comparison, paired incremental analysis, and matched-operational-FPR rescue & Broad global augmentation yields essentially no FILD/FILA AUC gain even though selected boundary decisions improve.\\
+Clinical-tail dominance (Theorem~\ref{thm:main}(iii); Proposition~\ref{prop:genomicpower}) & Direct clinical-tail LR summaries and stringent held-out operating points & Clinical evidence dominates residual genomic scale in the extreme ZeBRA tail, and ZeBRA-induced low-FPR rules achieve much larger LR$+$ than the genomic-only model.\\
+Scope caveat & Same direct LR analyses & The new stochastic bounds are estimated under the control law and for the measured MUC5B residual channel; they are support for the theorem's geometry, not a proof of a universal genome-wide bound.\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Global repeated-split discrimination}
+Across 30 repeated held-out outer splits, ZeBRA is the strongest predictor for all three operational endpoints. For FILD/FILA, mean AUC is 0.8142 for ZeBRA, 0.5662 for the selected genomic panel, and 0.7988 for the nonlinear combined model. In the paired repeated-split comparison, combined-minus-ZeBRA FILD/FILA AUC is negative in all 30 splits (mean $-0.01535$). The sparse nonfibrotic endpoints show the same ordering but are not treated as replication.
+
+\figGlobalRepeatedSplits
+
+\begin{table*}[!t]
+\caption{Primary cohort sizes and repeated-split AUC. The two nonfibrotic endpoints are sparse ancillary analyses.}
+\label{tab:auc-repeated}\centering\footnotesize
+\begin{tabular}{lrrrr}
+\toprule
+Target & Positives / $N$ & ZeBRA AUC & Genomic AUC & Combined AUC\\
+\midrule
+FILD/FILA & $254/12{,}825$ & $0.8142\pm0.0089$ & $0.5662\pm0.0245$ & $0.7988\pm0.0150$\\
+Nonfibrotic ILA & $74/12{,}825$ & $0.8281\pm0.0162$ & $0.4717\pm0.0443$ & $0.7112\pm0.0541$\\
+Nonfibrotic ILD & $27/12{,}825$ & $0.8202\pm0.0257$ & $0.5141\pm0.0719$ & $0.6145\pm0.0953$\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The combined learner was not simply blind to the major genomic signal: in the repeated-split feature-attribution analysis, the ZeBRA score is a top-20 combined-model feature in 30/30 splits, while the rs35705950 GG indicator is top-20 in 28/30 combined-model splits and 27/30 genomic-only splits. Thus the lack of global improvement should not be interpreted as evidence that the fitted genomic models never used \textit{MUC5B}.
+
+\subsection{Paired incremental value conditional on ZeBRA}
+A paired regularized analysis evaluates ZeBRA-only and ZeBRA-plus-genomics models on the same held-out subjects in 30 repeated splits. For FILD/FILA, the mean paired AUC difference is only $+0.00043$, the median is 0, and the split-wise 2.5th--97.5th percentile range is $[-0.00507,0.00408]$. Average precision decreases, while Brier score and log loss worsen. These are empirical split quantiles, not confidence limits from independent samples.
+
+\figIncrementalAUC
+
+\subsection{ZeBRA does not reconstruct \textit{MUC5B}}
+Among 12,766 subjects with called rs35705950 genotype, ZeBRA predicts T-carrier status at essentially chance level: pooled AUC 0.5088, explicitly adjudicated FILD/FILA-negative AUC 0.4847, and FILD/FILA-positive AUC 0.4817. Carrier prevalence is nevertheless 39.3\% in FILD/FILA-positive subjects versus 19.2\% among explicit negatives. The pooled top 1\% ZeBRA tail shows 1.47-fold carrier enrichment ($p\approx0.009$), but the corresponding enrichment is absent within disease strata. This pattern is consistent with shared association to disease status rather than recovery of genotype from clinical history.
+
+\figMUCfiveBApparentAndStratified
+
+\subsection{Residual genomic information is localized in ZeBRA score space}
+The absence of global incremental AUC does not imply that the genomic channel is conditionally uninformative everywhere. We therefore examined both clinically interpretable control-FPR bands and overlapping moving windows along the ZeBRA percentile axis. Here ``conditional LRT'' denotes the nested-model likelihood-ratio (deviance) statistic for adding one predictor after the other within a local subset. It is evidence for conditional predictive contribution, not an estimate of the individual-level likelihood-ratio factor $\LR_{G\mid C}$ in Theorem~\ref{thm:main}. These analyses therefore test a qualitative implication of Theorem~\ref{thm:main}(ii): residual genomic predictive evidence should be concentrated in restricted clinical-evidence regimes rather than distributed uniformly. They do not estimate the deterministic special-case interval $[\lambda/M,\lambda/m]$ in Corollary~\ref{cor:deterministic-band}, and the overlapping windows are descriptive localization analyses rather than independent confirmatory tests.
+
+The FPR-defined analysis makes the directional asymmetry explicit. In every displayed band, the likelihood-ratio statistic for adding \textit{MUC5B} after ZeBRA ($G\mid Z$) exceeds the converse statistic for adding ZeBRA after \textit{MUC5B} ($Z\mid G$). The difference is especially large in the 5--10\% band, where $G\mid Z=16.55$ versus $Z\mid G=6.84$, and in the 20--40\% band, where $G\mid Z=13.69$ versus $Z\mid G=0.064$ (Table~\ref{tab:local-info}). The nominal $G\mid Z$ p-values in these two bands are $4.74\times10^{-5}$ and $2.15\times10^{-4}$, respectively. Because the bands and local tests are evaluated in the same cohort, these values are localization evidence rather than multiplicity-adjusted confirmatory inference.
+
+The moving-window analysis in Fig.~\ref{fig:local-information}B shows the regime transition more directly. Across much of the intermediate-to-high ZeBRA axis, residual \textit{MUC5B} information substantially exceeds residual ZeBRA information. For example, at the 70th-percentile window, $G\mid Z=10.93$ while $Z\mid G\approx0.002$; at the 90th percentile the corresponding values are 19.78 and 1.23; and at 92.5 they are 20.37 and 0.41. The ordering reverses only in the extreme clinical-risk tail: at the 95th-percentile window, $Z\mid G=58.76$ versus $G\mid Z=22.86$, and at 97.5 the values are 68.12 versus 15.61. Thus the observed data exhibit a local information crossover: genomics remains conditionally useful through a substantial boundary-adjacent region, whereas the clinical-history channel becomes dominant at the most extreme ZeBRA values. This is qualitative correspondence to the theorem's geometry, not an empirical proof of A1$^\star$ or A2.
+
+The same pattern is visible without likelihood-ratio terminology. Within the moving windows, observed FILD/FILA prevalence is consistently higher among \textit{MUC5B} T-carriers than non-carriers (Fig.~\ref{fig:local-information}C). At the 70th-percentile window, prevalence is 4.28\% in carriers versus 0.98\% in non-carriers; at 90 it is 8.27\% versus 2.05\%; at 95 it is 18.45\% versus 7.75\%; and at 97.5 it is 20.48\% versus 9.89\%. Local adjusted odds ratios provide the corresponding effect-size view (Fig.~\ref{fig:local-information}D): the \textit{MUC5B} carrier OR remains several-fold across much of the risk axis, whereas the ZeBRA OR per local SD rises sharply only in the extreme tail, reaching 2.95 at the 95th percentile and 4.07 at 97.5. These complementary representations make the central empirical claim precise: the genomic signal is neither globally redundant nor uniformly useful; it is locally informative until sufficiently strong clinical evidence becomes dominant. The within-band ZeBRA AUC of 0.367 in the 5--10\% control-FPR band is therefore interpreted as a genuine local reversal inside a narrow score slice rather than as a transcription error or contradiction of ZeBRA's global performance.
+
+\figLocalInformation
+
+\begin{table*}[!t]
+\caption{Local FILD/FILA information in ZeBRA-defined control-FPR bands. Both directional conditional LRTs are shown so the asymmetry between channels is explicit.}
+\label{tab:local-info}\centering\scriptsize
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Band & $N$ & Cases & LRT $Z\mid G$ & LRT $G\mid Z$ & $G{-}Z$ partial & nominal $p(G\mid Z)$ & AUC ZeBRA & AUC \textit{MUC5B}\\
+\midrule
+2--5\% & 401 & 26 & 1.15 & 4.44 & 3.29 & 0.0352 & 0.577 & 0.595\\
+5--10\% & 652 & 26 & 6.84 & 16.55 & 9.71 & $4.74\times10^{-5}$ & 0.367 & 0.677\\
+10--20\% & 1,281 & 30 & 1.19 & 4.77 & 3.58 & 0.0289 & 0.558 & 0.586\\
+20--40\% & 2,540 & 37 & 0.06 & 13.69 & 13.63 & $2.15\times10^{-4}$ & 0.516 & 0.635\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[!t]
+\caption{Selected moving-window values illustrating the information crossover. Windows are centered on the indicated ZeBRA percentile and overlap; values are descriptive localization summaries.}
+\label{tab:local-windows}\centering\scriptsize
+\begin{tabular}{rrrrrrr}
+\toprule
+ZeBRA percentile & LRT $Z\mid G$ & LRT $G\mid Z$ & OR ZeBRA/local SD & OR \textit{MUC5B} & Prev. carrier & Prev. non-carrier\\
+\midrule
+65.0 & 0.45 & 13.36 & 1.17 & 5.53 & 0.0466 & 0.00865\\
+70.0 & 0.002 & 10.93 & 0.99 & 4.52 & 0.0428 & 0.00980\\
+90.0 & 1.23 & 19.78 & 1.20 & 4.31 & 0.0827 & 0.0205\\
+92.5 & 0.41 & 20.37 & 1.09 & 3.56 & 0.1067 & 0.0323\\
+95.0 & 58.76 & 22.86 & 2.95 & 2.70 & 0.1845 & 0.0775\\
+97.5 & 68.12 & 15.61 & 4.07 & 2.43 & 0.2048 & 0.0989\\
+\bottomrule
+\end{tabular}
+\end{table*}
