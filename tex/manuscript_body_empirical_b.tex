@@ -27,30 +27,30 @@ Finally, decision flips induced by genomics remain localized near the clinical b
 
 \figEmpiricalLRRobustness
 
-\subsection{Boundary-targeted \textit{MUC5B} use: held-out gain and an important control diagnostic}
-The two-threshold rescue rule is evaluated leakage-free: upper and lower ZeBRA thresholds are derived from training negatives, the MUC5B rescue is applied only to untouched outer-test subjects, and a ZeBRA-only threshold is separately selected on training data to match the rescue rule's training-set FPR before test evaluation. Across the six evaluated threshold pairs, the \emph{mean} held-out sensitivity gain is positive. For the 0.5\%/10\% pair, mean sensitivity increases by 0.0446 and mean operational FPR differs from the matched ZeBRA comparator by only $-2.5\times10^{-4}$.
+\subsection{Boundary-targeted \textit{MUC5B} use: held-out gain at matched false-positive rate}
+The two-threshold rescue rule is evaluated leakage-free: upper and lower ZeBRA thresholds are derived from training negatives, the \textit{MUC5B} rescue is applied only to untouched outer-test subjects, and a ZeBRA-only threshold is separately selected on training data to match the rescue rule's training-set FPR before test evaluation. Across all six evaluated threshold pairs, the \emph{mean} held-out sensitivity gain over this fair matched-ZeBRA comparator is positive. For the 0.5\%/10\% rule, mean sensitivity increases by 0.0446 while mean operational FPR differs from matched ZeBRA by only $-2.53\times10^{-4}$.
 
-The existing result set also exposes an important limitation that should not be hidden. Among the small explicitly adjudicated-negative subset, the rescue rule has higher FPR than the original stringent ZeBRA baseline; for the 0.5\%/10\% rule the mean increase is 0.0666. The current analysis does \emph{not} calculate the corresponding explicitly-adjudicated-negative FPR for the fair matched-ZeBRA comparator, so this diagnostic cannot determine whether rescue is inferior to matched ZeBRA in that subset. We therefore describe the primary result only as matched \emph{operational} FPR. We do not claim that rescue is beneficial at matched FPR within the explicitly adjudicated-negative population until the corresponding matched-ZeBRA comparator is calculated for that subset. A dedicated follow-up analysis will compute that matched comparator for every rescue-rule pair to determine whether the operational sensitivity gain persists under the stricter adjudicated-negative definition.
+We additionally resolved the stricter adjudicated-negative comparison that was previously a limitation. Each original outer split was reconstructed from its saved split seed, and the already training-derived matched-ZeBRA threshold was applied unchanged to the explicitly adjudicated-negative subjects in the untouched test set; no threshold was fitted within that subset. For the 0.5\%/10\% rule, mean adjudicated-negative FPR is 0.1292 for the original stringent ZeBRA rule, 0.1958 for rescue, and 0.2144 for the fair matched-ZeBRA comparator. Thus rescue increases FPR relative to the original more-stringent baseline, but is 0.0185 lower than matched ZeBRA on average. Rescue has lower mean adjudicated-negative FPR than matched ZeBRA in five of the six evaluated rules; the remaining 1\%/2\% rule is essentially equal ($+0.00065$). For the 0.5\%/10\% rule, rescue has lower adjudicated-negative FPR than matched ZeBRA in 81\% of outer splits. Because each split contains only about 216 explicitly adjudicated negatives on average, the split-wise 2.5th--97.5th percentile range for the rescue-minus-matched difference remains broad ($-0.0561$ to $+0.0194$ for the 0.5\%/10\% rule). We therefore interpret this analysis as resolving the direction of the earlier diagnostic concern rather than as definitive evidence of a lower adjudicated-negative FPR.
 
 \begin{table*}[!t]
-\caption{All six evaluated rescue rules. $\Delta$FPR is rescue minus matched ZeBRA in the operational target-zero group; $\Delta$FPR$_{\rm adjud}$ is rescue minus the original stringent baseline among explicitly adjudicated negatives and is \emph{not} a matched-comparator quantity.}
-\label{tab:boundary-selected}\centering\footnotesize
+\caption{Boundary-targeted \textit{MUC5B} rescue compared with a fair ZeBRA-only rule matched on training-set operational FPR. Sensitivity and FPR differences are rescue minus matched ZeBRA. The adjudicated-negative comparison uses the same untouched outer-test subjects and the already training-derived matched threshold. Values are means across 100 repeated outer splits; the final column gives the fraction of splits in which rescue produced a lower adjudicated-negative FPR than matched ZeBRA.}
+\label{tab:boundary-selected}\centering\scriptsize
 \begin{tabular}{lrrrr}
 \toprule
-Upper/lower target FPR & Mean $\Delta$sensitivity & Mean $\Delta$operational FPR & Mean LR$+$ gain & Mean $\Delta$FPR$_{\rm adjud}$\\
+Upper/lower target FPR & $\Delta$ sensitivity (pp) & $\Delta$ operational FPR (pp) & $\Delta$ adjudicated FPR (pp) & Rescue lower (\%)\\
 \midrule
-0.5\% / 2\% & +0.0181 & +0.000012 & +1.51 & +0.0129\\
-0.5\% / 5\% & +0.0366 & -0.000040 & +2.48 & +0.0336\\
-0.5\% / 10\% & +0.0446 & -0.000253 & +1.96 & +0.0666\\
-1\% / 2\% & +0.0096 & +0.000007 & +0.60 & +0.0087\\
-1\% / 5\% & +0.0225 & -0.000184 & +1.33 & +0.0294\\
-1\% / 10\% & +0.0335 & -0.000178 & +1.20 & +0.0624\\
+0.5\% / 2\%  & +1.81 & +0.0012 & -0.37 & 51\\
+0.5\% / 5\%  & +3.66 & -0.0040 & -0.60 & 61\\
+0.5\% / 10\% & +4.46 & -0.0253 & -1.85 & 81\\
+1\% / 2\%    & +0.96 & +0.0007 & +0.06 & 31\\
+1\% / 5\%    & +2.25 & -0.0184 & -0.46 & 55\\
+1\% / 10\%   & +3.35 & -0.0178 & -1.92 & 78\\
 \bottomrule
 \end{tabular}
 \end{table*}
 
 \subsection{Stringent operating points provide direct clinical-tail correspondence}
-The stringent held-out operating-point analysis provides a direct empirical comparison to the clinical-tail portion of the theory that is more informative than global AUC alone. At requested FPR 0.5\%, mean held-out LR$+$ is approximately 57.9 for ZeBRA, 4.28 for the genomic-only model, and 39.1 for the nonlinear combined model. At requested FPR 1\%, the corresponding means are 29.8, 3.62, and 26.7. Thus the evaluated clinical-history score dominates the evaluated genomic-only model in the stringent tail. Because raw ZeBRA is not calibrated onto a likelihood-ratio scale in this cohort, these LR$+$ values characterize the induced held-out decision rules rather than directly identifying a threshold $K$ on $\LR_C$. They therefore provide operating-point correspondence to the theorem over the observed range without proving either the unbounded-tail assumption A2 or a universal genomic bound $M_G$.
+The stringent held-out operating-point analysis provides a direct empirical comparison to the clinical-tail portion of the theory that is more informative than global AUC alone. At requested FPR 0.5\%, mean held-out LR$+$ is approximately 57.9 for ZeBRA, 4.28 for the genomic-only model, and 39.1 for the nonlinear combined model. At requested FPR 1\%, the corresponding means are 29.8, 3.62, and 26.7. Thus the evaluated clinical-history score dominates the evaluated genomic-only model in the stringent tail. Because raw ZeBRA is not calibrated onto a likelihood-ratio scale in this cohort, these LR$+$ values characterize the induced held-out decision rules rather than directly identifying a threshold $K$ on $\LR_C$. They therefore provide the appropriate operating-point correspondence to the theorem without proving either an unbounded clinical tail or a universal genomic bound $M_G$.
 
 The supporting hybrid ROC analysis is included only as a geometric complementarity diagnostic. The empirical hybrid AUC is 0.8095 versus 0.8142 for ZeBRA; the convex hull of the union of the observed ZeBRA and hybrid ROC points has descriptive AUC 0.8260. This hull is not a validated classifier and should not be interpreted as held-out model performance or as a universal theoretical maximum. It is the best randomized operating envelope attainable from the evaluated ROC point set and illustrates where the two score families offer complementary operating points.
 
