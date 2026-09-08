@@ -1,0 +1,70 @@
+\newcommand{\figEmpiricalLRRobustness}{%
+\begin{figure*}[!t]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[
+ group style={group size=2 by 2,horizontal sep=1.35cm,vertical sep=1.75cm},
+ width=0.41\textwidth,height=0.215\textwidth,
+ tick label style={font=\scriptsize},label style={font=\footnotesize},
+ xmajorgrids=true,ymajorgrids=true,major grid style={dotted}]
+\nextgroupplot[
+ ylabel={Residual bound $b_\delta$ (log-LR)},xlabel={Tail probability $\delta$},
+ ymin=0.75,ymax=1.70,
+ xtick={0,1,2},xticklabels={0.05,0.01,0.005},
+ xticklabel style={font=\scriptsize}]
+\addplot+[only marks,mark=*,mark size=2.3pt,error bars/.cd,y dir=both,y explicit]
+ table[x expr=\coordindex,y=median_across_9_specs,
+ y error plus expr=\thisrow{max_across_9_specs}-\thisrow{median_across_9_specs},
+ y error minus expr=\thisrow{median_across_9_specs}-\thisrow{min_across_9_specs},
+ restrict expr to domain={\coordindex}{0:2}]{\rangesum};
+\node[anchor=north east,font=\footnotesize\bfseries] at (rel axis cs:0.97,0.97) {A};
+\nextgroupplot[
+ ylabel={Log-LR scale},xlabel={ZeBRA percentile cutoff},
+ ymin=0,ymax=4.2,
+ xmin=94.5,xmax=99.5,xtick={95,97.5,99},
+ xticklabel style={font=\scriptsize},
+ legend style={at={(0.02,0.98)},anchor=north west,draw=none,font=\scriptsize}]
+\addplot+[mark=*,thick] table[x expr=\thisrow{ZeBRA_percentile_cutoff},y=median_log_LR_Z,restrict expr to domain={\thisrow{n_knots}}{5:5},restrict expr to domain={\thisrow{logistic_C}}{1:1}]{\tailrob};
+\addlegendentry{Median clinical $\log \Lambda$}
+\addplot+[mark=square*,thick] table[x expr=\thisrow{ZeBRA_percentile_cutoff},y=q95_max_abs_log_LR_G_statewise,restrict expr to domain={\thisrow{n_knots}}{5:5},restrict expr to domain={\thisrow{logistic_C}}{1:1}]{\tailrob};
+\addlegendentry{95th pct. genomic scale}
+\node[anchor=north east,font=\footnotesize\bfseries] at (rel axis cs:0.97,0.97) {B};
+\nextgroupplot[
+ ylabel={Fraction},xlabel={ZeBRA percentile cutoff},
+ ymin=0.80,ymax=1.02,
+ xmin=94.5,xmax=99.5,xtick={95,97.5,99},
+ xticklabel style={font=\scriptsize}]
+\addplot+[only marks,mark=*,mark size=2.3pt,error bars/.cd,y dir=both,y explicit]
+ table[x expr=95,y=median_across_9_specs,
+ y error plus expr=\thisrow{max_across_9_specs}-\thisrow{median_across_9_specs},
+ y error minus expr=\thisrow{median_across_9_specs}-\thisrow{min_across_9_specs},
+ restrict expr to domain={\coordindex}{5:5}]{\rangesum};
+\addplot+[only marks,mark=*,mark size=2.3pt,error bars/.cd,y dir=both,y explicit]
+ table[x expr=97.5,y=median_across_9_specs,
+ y error plus expr=\thisrow{max_across_9_specs}-\thisrow{median_across_9_specs},
+ y error minus expr=\thisrow{median_across_9_specs}-\thisrow{min_across_9_specs},
+ restrict expr to domain={\coordindex}{8:8}]{\rangesum};
+\addplot+[only marks,mark=*,mark size=2.3pt,error bars/.cd,y dir=both,y explicit]
+ table[x expr=99,y=median_across_9_specs,
+ y error plus expr=\thisrow{max_across_9_specs}-\thisrow{median_across_9_specs},
+ y error minus expr=\thisrow{median_across_9_specs}-\thisrow{min_across_9_specs},
+ restrict expr to domain={\coordindex}{11:11}]{\rangesum};
+\addplot+[thin,dashed,no marks] coordinates {(94.5,1) (99.5,1)};
+\node[anchor=north east,font=\footnotesize\bfseries] at (rel axis cs:0.97,0.97) {C};
+\nextgroupplot[
+ ylabel={Distance from clinical boundary},xlabel={Requested FPR (\%)},
+ xmode=log,log basis x=10,xmin=0.4,xmax=12,
+ xtick={0.5,1,2,5,10},xticklabels={0.5,1,2,5,10},
+ ymin=0,ymax=1.05,
+ legend style={at={(0.02,0.98)},anchor=north west,draw=none,font=\scriptsize}]
+\addplot+[mark=*,thick] coordinates {(0.5,\flipMedA) (1,\flipMedB) (2,\flipMedC) (5,\flipMedD) (10,\flipMedE)};
+\addlegendentry{Median flip distance}
+\addplot+[mark=square*,thick] coordinates {(0.5,\flipQMaxA) (1,\flipQMaxB) (2,\flipQMaxC) (5,\flipQMaxD) (10,\flipQMaxE)};
+\addlegendentry{Max. 95th pct. distance}
+\node[anchor=north east,font=\footnotesize\bfseries] at (rel axis cs:0.97,0.97) {D};
+\end{groupplot}
+\end{tikzpicture}
+\caption{\textbf{Direct empirical likelihood-ratio support for stochastic boundary localization.} (A) Median high-probability residual-genomic bounds across nine prespecified estimator specifications, with error bars spanning the minimum to maximum; the 95\% and 99\% bounds are stable, whereas the 99.5\% tail is more estimator-sensitive. (B) In the primary estimator, median clinical log-likelihood evidence increases sharply across the upper ZeBRA tail while the 95th percentile of the residual genomic scale remains substantially smaller. (C) The fraction of subjects for whom clinical evidence exceeds the estimated residual genomic scale approaches one in the extreme tail; points show the median across specifications and error bars span the full sensitivity range. (D) Genomic-induced decision changes remain concentrated near the clinical likelihood-ratio boundary across stringent operating points.}
+\label{fig:empirical-lr-robustness}
+\end{figure*}%
+}
