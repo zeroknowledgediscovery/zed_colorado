@@ -31,7 +31,7 @@ Global repeated-split discrimination & \path{032_REPEATED_SPLITS_03_TARGET_LOGIC
 Paired incremental-value figure & \path{033_INCREMENTAL_LOGISTIC_32_COHORT/paired_incremental_summary.csv} \\
 ZeBRA--MUC5B stratification & \path{MUC5B_STRATIFIED_BY_FILD/MUC5B_ZEBRA_STRATIFIED_SUMMARY.csv} \\
 Local information figure & \path{LOCAL_ZEBRA_MUC5B_INFORMATION_CURVES/FPR_DEFINED_LOCAL_INFORMATION_BANDS.csv} and \path{LOCAL_ZEBRA_MUC5B_INFORMATION_WINDOWS.csv} \\
-Boundary rescue figure & \path{MUC5B_ZEBRA_RESCUE_RULE/REPEATED_SPLIT_MUC5B_RESCUE_SUMMARY.csv} \\
+Boundary rescue figure & \path{MUC5B_ZEBRA_RESCUE_RULE/REPEATED_SPLIT_MUC5B_RESCUE_SUMMARY.csv} and \path{REPEATED_SPLIT_ADJUDICATED_MATCHED_FPR_SUMMARY.csv} \\
 Stringent operating points & \path{032_REPEATED_SPLITS_03_TARGET_LOGIC/zedstat_operating_points_summary.csv} \\
 Direct likelihood-ratio robustness figure & \path{EMPIRICAL_ZEBRA_MUC5B_LR_ROBUSTNESS/LR_ESTIMATOR_SENSITIVITY_GRID.csv}, \path{CLINICAL_TAIL_ROBUSTNESS.csv}, and \path{ROBUSTNESS_RANGE_SUMMARY.csv} \\
 \bottomrule
@@ -78,6 +78,28 @@ The empirical residual-genomic quantiles are fixed-score quantities for the obse
 \section*{Exploratory local likelihood-ratio tests}
 The main manuscript reports the local nested-model likelihood-ratio statistics as descriptive localization summaries and omits nominal p-values because multiple regions and overlapping windows are examined in the same cohort. For reproducibility, the nominal one-degree-of-freedom p-values for the four non-overlapping control-FPR bands are: 2--5\%: 0.0352; 5--10\%: $4.74\times10^{-5}$; 10--20\%: 0.0289; and 20--40\%: $2.15\times10^{-4}$. These values are not multiplicity-adjusted and are not used as confirmatory evidence.
 
+\section*{Matched comparator within explicitly adjudicated negatives}
+The adjudicated-negative diagnostic reuses the saved outer-split seeds and the matched-ZeBRA thresholds learned from the original training data. The thresholds are applied unchanged to the explicitly adjudicated-negative subjects in the corresponding untouched test sets; the subset is never used for threshold fitting. The table below reports mean FPRs and rescue-minus-matched differences across 100 outer splits. The percentile range is descriptive across repeated splits rather than a confidence interval from an independent external sample.
+
+\begin{table}[!t]
+\caption{Explicitly adjudicated-negative comparison. FPR values are proportions; $\Delta$ is rescue minus matched ZeBRA.}
+\centering\small
+\begin{tabular}{lrrrrr}
+\toprule
+Rule & Baseline FPR & Rescue FPR & Matched FPR & Mean $\Delta$ & 2.5--97.5\% $\Delta$\\
+\midrule
+0.5\% / 2\%  & 0.1292 & 0.1421 & 0.1458 & -0.0037 & -0.0249--0.0094\\
+0.5\% / 5\%  & 0.1292 & 0.1628 & 0.1689 & -0.0060 & -0.0353--0.0225\\
+0.5\% / 10\% & 0.1292 & 0.1958 & 0.2144 & -0.0185 & -0.0561--0.0194\\
+1\% / 2\%    & 0.1548 & 0.1635 & 0.1628 & +0.0006 & -0.0142--0.0138\\
+1\% / 5\%    & 0.1548 & 0.1842 & 0.1888 & -0.0046 & -0.0315--0.0194\\
+1\% / 10\%   & 0.1548 & 0.2172 & 0.2364 & -0.0192 & -0.0523--0.0188\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For the 0.5\%/10\% rule, rescue has lower adjudicated-negative FPR than matched ZeBRA in 81\% of outer splits; the corresponding fraction is 78\% for the 1\%/10\% rule. Five of the six rules have a negative mean rescue-minus-matched FPR, while the 1\%/2\% rule is essentially equal. Because the adjudicated-negative subset contains only about 216 subjects per outer split on average, these results resolve the earlier concern that rescue might uniquely inflate adjudicated-negative FPR but do not establish a statistically definitive reduction.
+
 \section*{Calibration summary}
 The raw ZeBRA score is not an absolute calibrated FILD/FILA probability in this cohort. Across repeated held-out splits, the mean calibration slope is 0.180 for ZeBRA, 0.241 for the genomic model, and 1.140 for the combined model; corresponding expected calibration errors are 0.570, 0.115, and 0.121. The main manuscript therefore treats ZeBRA as an ordinal clinical-history score unless an explicit score-level likelihood-ratio transformation is estimated.
 
@@ -85,6 +107,6 @@ The raw ZeBRA score is not an absolute calibrated FILD/FILA probability in this 
 The descriptive ROC-hull analysis is retained as a supporting result rather than a primary predictive comparison. The empirical/interpolated AUCs are 0.8142 for ZeBRA and 0.8095 for the hybrid model; the convex hulls of the individual curves have AUCs 0.8219 and 0.8182, respectively; the pointwise maximum has AUC 0.8196; and the convex hull of the concatenated ZeBRA and hybrid ROC points has AUC 0.8260. These hull quantities are geometric envelopes over the evaluated ROC point sets and are not held-out performance estimates from a separately fitted classifier. The concatenated hull is included to illustrate the best randomized operating trade-off available from the observed ZeBRA and hybrid points; it is neither a universal theoretical maximum nor evidence that a classifier with AUC 0.8260 has been prospectively validated.
 
 \section*{Authoritative manuscript sources}
-The canonical manuscript master is \path{zebra_genomics_boundary_theorem_empirical.tex}. The scientific narrative is split across \path{manuscript_body_intro.tex}, \path{manuscript_body_theory.tex}, \path{manuscript_body_interpretation.tex}, \path{manuscript_body_empirical_a.tex}, \path{manuscript_body_empirical_b.tex}, and \path{manuscript_body_end.tex}. Figure definitions are assembled by \path{empirical_figures.tex} from \path{empirical_figures_data.tex}, \path{empirical_figures_primary.tex}, and \path{empirical_figures_lr.tex}. These figure-source files are the authoritative mapping between manuscript plots and analysis-result tables.
+The canonical manuscript master is \path{zebra_genomics_boundary_theorem_empirical.tex}. The scientific narrative is split across \path{manuscript_body_intro.tex}, \path{manuscript_body_theory.tex}, \path{manuscript_body_interpretation.tex}, \path{manuscript_body_empirical_a.tex}, \path{manuscript_body_empirical_b.tex}, and \path{manuscript_body_end.tex}. Figure definitions are assembled by \path{empirical_figures.tex} from \path{empirical_figures_data.tex}, \path{empirical_figures_primary.tex}, \path{empirical_figures_lr.tex}, and \path{empirical_figures_adjudicated.tex}. These figure-source files are the authoritative mapping between manuscript plots and analysis-result tables.
 
 \end{document}
