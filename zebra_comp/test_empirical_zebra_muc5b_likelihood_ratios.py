@@ -57,9 +57,70 @@ def decode_muc5b(d):
     for c in req: d[c] = pd.to_numeric(d[c], errors="coerce")
     sm = d[req].sum(axis=1)
     if (sm > 1).any(): raise ValueError("Some MUC5B rows have >1 active genotype state")
-    d = d.loc[sm == 1].copy()
+    d = d.loc[sm == 1].copy()  # all-zero is missing genotype in historical one-hot encoding
     d["MUC5B_T_carrier"] = ((d[GT_COLUMN] == 1) | (d[TT_COLUMN] == 1)).astype(int)
     return d
+
+
+def collapse_prediction_rows(pred, relevant_patient_ids):
+    """Return one ZeBRA prediction per relevant patient.
+
+    The historical prediction parquet can contain duplicate patient_id rows.
+    Existing manuscript scripts merge that file directly, but repeated rows are
+    inappropriate for cross-fitting because the same patient could otherwise
+    appear in both training and test folds. We therefore collapse duplicates
+    only after restricting to patients in the genomic analysis cohort.
+
+    Collapsing is allowed only when all non-missing predicted_risk values for a
+    patient are identical (to numerical tolerance). If a relevant patient has
+    genuinely different risk values, the script stops rather than choosing an
+    arbitrary aggregation rule.
+    """
+    if not {"patient_id", "predicted_risk"}.issubset(pred.columns):
+        raise ValueError("Prediction parquet needs patient_id,predicted_risk")
+
+    p = pred[["patient_id", "predicted_risk"]].copy()
+    p = p.loc[p.patient_id.isin(set(relevant_patient_ids))].copy()
+    p["predicted_risk"] = pd.to_numeric(p.predicted_risk, errors="coerce")
+
+    n_rows = len(p)
+    n_ids = p.patient_id.nunique(dropna=False)
+    n_extra = n_rows - n_ids
+    if n_extra:
+        print(
+            f"Prediction parquet has {n_extra:,} extra duplicate rows among "
+            f"{n_ids:,} genomic-cohort patient IDs; checking whether risks agree..."
+        )
+
+    conflict_ids = []
+    for pid, s in p.groupby("patient_id", sort=False)["predicted_risk"]:
+        vals = s.dropna().to_numpy(float)
+        if vals.size > 1 and not np.allclose(vals, vals[0], rtol=0.0, atol=1e-12):
+            conflict_ids.append(pid)
+            if len(conflict_ids) >= 20:
+                break
+
+    if conflict_ids:
+        examples = ", ".join(map(str, conflict_ids[:10]))
+        raise ValueError(
+            "Relevant patients have multiple different predicted_risk values in "
+            f"{PRED_FILE}; refusing arbitrary aggregation. Example patient_id(s): {examples}. "
+            "Inspect the prediction parquet and define the intended 104-week row selection."
+        )
+
+    # If duplicates are exact (or differ only by missing copies), retain the
+    # single non-missing value. This preserves one independent row per patient.
+    def first_nonmissing_or_nan(s):
+        x = s.dropna()
+        return float(x.iloc[0]) if len(x) else np.nan
+
+    p = (
+        p.groupby("patient_id", as_index=False, sort=False)["predicted_risk"]
+         .agg(first_nonmissing_or_nan)
+    )
+
+    check_unique(p, "collapsed prediction table")
+    return p
 
 
 def load_data():
@@ -70,16 +131,19 @@ def load_data():
     if "arb_person_id" in tar and "patient_id" not in tar: tar = tar.rename(columns={"arb_person_id":"patient_id"})
     check_unique(tar, TARGET_FILE)
     if TARGET_NAME not in tar: raise ValueError(f"Missing target: {TARGET_NAME}")
-    pred = pd.read_parquet(PRED_FILE); check_unique(pred, PRED_FILE)
-    if not {"patient_id","predicted_risk"}.issubset(pred.columns): raise ValueError("Prediction parquet needs patient_id,predicted_risk")
+
+    pred_raw = pd.read_parquet(PRED_FILE)
+    pred = collapse_prediction_rows(pred_raw, base.patient_id)
+
     tar = tar[["patient_id",TARGET_NAME]].copy(); tar["target"] = numeric_target(tar[TARGET_NAME])
-    d = base.merge(tar[["patient_id","target"]], on="patient_id", how="left").merge(pred[["patient_id","predicted_risk"]], on="patient_id", how="left")
+    d = base.merge(tar[["patient_id","target"]], on="patient_id", how="left").merge(pred, on="patient_id", how="left")
     d["target"] = pd.to_numeric(d.target, errors="coerce").fillna(0).astype(int)
     d["predicted_risk"] = pd.to_numeric(d.predicted_risk, errors="coerce")
     d = d.loc[d.predicted_risk.notna()].copy(); d = decode_muc5b(d)
+    check_unique(d, "final LR analysis cohort")
     if not d.predicted_risk.between(0,1).all(): raise ValueError("predicted_risk must lie in [0,1]")
     s = np.clip(d.predicted_risk.to_numpy(float), 1e-8, 1-1e-8)
-    d["z_model"] = np.log(s/(1-s))
+    d["z_model"] = np.log(s/(1-s))  # monotone expansion only; not a calibration claim
     d["ZeBRA_percentile"] = d.predicted_risk.rank(method="average", pct=True)*100
     return d.reset_index(drop=True)
 
