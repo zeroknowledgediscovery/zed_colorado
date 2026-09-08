@@ -48,7 +48,7 @@ def read_header(path: Path) -> list[str]:
 
 
 def build_inventory(columns: list[str]) -> list[dict[str, object]]:
-    grouped: OrderedDict[tuple[str, str, str], dict[str, str]] = OrderedDict()
+    grouped: OrderedDict[tuple[str, str, str], set[str]] = OrderedDict()
 
     for column in columns:
         if column in {"patient_id", "target"}:
@@ -59,11 +59,11 @@ def build_inventory(columns: list[str]) -> list[dict[str, object]]:
         locus_token, allele_tag, state = match.groups()
         rsid = locus_token.split(".", 1)[0]
         key = (rsid, locus_token, allele_tag)
-        grouped.setdefault(key, {})[state] = column
+        grouped.setdefault(key, set()).add(state)
 
     rows: list[dict[str, object]] = []
     for index, ((rsid, locus_token, allele_tag), states) in enumerate(grouped.items(), start=1):
-        if set(states) != {"0", "1", "2"}:
+        if states != {"0", "1", "2"}:
             raise ValueError(
                 f"{locus_token}_{allele_tag} does not have exactly states 0/1/2: {sorted(states)}"
             )
@@ -78,9 +78,6 @@ def build_inventory(columns: list[str]) -> list[dict[str, object]]:
                 "rsid": rsid,
                 "processed_locus_token": locus_token,
                 "allele_tag": allele_tag,
-                "state_0_column": states["0"],
-                "state_1_column": states["1"],
-                "state_2_column": states["2"],
                 "known_gene_or_locus": KNOWN_MANUSCRIPT_LOCI.get(rsid, ""),
                 "manuscript_role": role,
             }
