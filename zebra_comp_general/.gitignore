@@ -1,0 +1,5 @@
+RESULTS/
+.ensembl_cache/
+__pycache__/
+*.pyc
+*_genomic_header_matches.csv
