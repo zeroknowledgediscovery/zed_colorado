@@ -51,21 +51,24 @@ The current publication layout uses one empirical figure in the main manuscript 
 8. **(h)** robustness of upper-tail clinical evidence exceeding the measured residual-genomic scale; and
 9. **(i)** the supporting ROC-envelope/hull AUC geometry, explicitly treated as descriptive rather than validated classifier performance.
 
-This panel set is intentionally selective. It emphasizes the global hierarchy, reproducible genomic contribution, localized conditional information, direct LR geometry, local effect-size structure, an operational consequence, stringent evidence ratios, finite-range tail dominance, and the supporting ROC geometry in one disease-level figure.
+The axes are deliberately near-square rather than compressed horizontal strips. The 3x3 matrix uses the full two-column text width with internal legends and abbreviated axis labels where needed, so labels, ticks, and data remain legible in the compiled PDF.
 
-### Supplementary Figure S1: displaced and secondary diagnostics
+### Supplementary Figure S1: 3x2 robustness matrix
 
-`\figIntegratedSupplementary` contains the panels not retained in main Figure 1:
+The previous single-point paired-`Delta`AUC panel has been removed from the supplementary figure; that result remains stated numerically in the main text. `\figIntegratedSupplementary` now contains six substantive panels in a 3x2 near-square matrix:
 
-1. **(a)** paired incremental FILD/FILA AUC after adding the complete genomic panel to ZeBRA;
-2. **(b)** ZeBRA-to-MUC5B carrier-prediction AUC, showing that ZeBRA does not reconstruct genotype;
-3. **(c)** empirical residual-genomic high-probability scales `bhat_delta` across the nine prespecified direct-LR estimators;
-4. **(d)** localization of genomic-induced decision flips around the clinical likelihood-ratio boundary;
-5. **(e)** rescue-rule operational FPR change relative to matched ZeBRA;
-6. **(f)** stringent held-out sensitivity across ZeBRA, genomic, and combined models; and
-7. **(g)** explicitly adjudicated-negative rescue-minus-matched FPR diagnostics.
+1. **(a)** ZeBRA-to-MUC5B carrier-prediction AUC, showing that ZeBRA does not reconstruct genotype;
+2. **(b)** empirical residual-genomic high-probability scales `bhat_delta` across the nine prespecified direct-LR estimators;
+3. **(c)** localization of genomic-induced decision flips around the clinical likelihood-ratio boundary;
+4. **(d)** rescue-rule operational FPR change relative to matched ZeBRA;
+5. **(e)** stringent held-out sensitivity across ZeBRA, genomic, and combined models; and
+6. **(f)** explicitly adjudicated-negative rescue-minus-matched FPR diagnostics.
 
-The supplementary PGFPlots layout uses a 3x3 matrix with two intentionally empty cells rather than inventing additional graphical analyses solely to fill the grid. Calibration and complete numerical summaries remain in Supplementary Tables because those values are more concise and less ambiguous in tabular form.
+Calibration and complete numerical summaries remain in Supplementary Tables because those values are more concise and less ambiguous in tabular form.
+
+## Table and float layout
+
+The canonical manuscript loads `adjustbox` and `placeins`. Wide tables are constrained explicitly to `\textwidth`, single-column tables to `\columnwidth`, and dense tables use modestly reduced column spacing and controlled row spacing. The broad LR summary is a two-column `table*` rather than a squeezed single-column table. Float barriers keep the integrated figures and supplementary tables from drifting into unrelated text.
 
 ## Figure implementation
 
