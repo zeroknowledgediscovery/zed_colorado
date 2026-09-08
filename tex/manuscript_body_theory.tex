@@ -1,105 +1,121 @@
 \section{Main theorem}
 
-The original deterministic argument can be made materially more realistic by separating a \emph{high-probability} residual-genomic bound from the stronger special case of a literal uniform bound.
+The boundary-localization result does not require a likelihood-ratio bound that is uniform over all possible clinical-history lengths. At any fixed observed history length, the relevant quantity is simply the high-probability scale of the residual genomic log-likelihood ratio. A stronger uniform condition is needed only for a sequential statement whose bound remains stable as clinical history accumulates.
 
-\paragraph*{Notation.} Write
+\paragraph*{Notation.} For sequential clinical histories $C_n=(X_1,\ldots,X_n)$, write
 \begin{equation}
-R_G(g;c)=\log \LR_{G\mid C}(g;c)
+R_{G,n}=\log \LR_{G\mid C_n}(G;C_n)
 \end{equation}
-for the residual genomic log-likelihood ratio. For a clinical likelihood-ratio threshold $\lambda>0$, define the clinical-only and clinically-augmented decisions
+for the residual genomic log-likelihood ratio at stage $n$. For a clinical likelihood-ratio threshold $\lambda>0$, define
 \begin{equation}
-D_C=\ind\{\LR_C\ge \lambda\},\qquad D_{C,G}=\ind\{\LR_C\LR_{G\mid C}\ge \lambda\}.
+D_{C_n}=\ind\{\LR_{C_n}\ge \lambda\},\qquad
+D_{C_n,G}=\ind\{\LR_{C_n}\LR_{G\mid C_n}\ge \lambda\}.
 \end{equation}
+For each fixed $n$ and tolerance $\delta\in(0,1)$, define the finite-stage residual-evidence scale
+\begin{equation}
+b_{\delta,n}
+=\inf\left\{b\ge0:\Pzero\bigl(|R_{G,n}|>b\bigr)\le\delta\right\},
+\label{eq:finite-stage-bound}
+\end{equation}
+whenever this quantile is finite. Thus $b_{\delta,n}$ is a property of the residual genomic evidence distribution at the clinical stage actually being analyzed; no uniformity over $n$ is required for the boundary-localization statement below.
 
-\textbf{A1$^\star$ (Uniform stochastic boundedness of residual genomic evidence).} For the sequential clinical histories $C_n=(X_1,\ldots,X_n)$, write
+\textbf{A1-U (Optional uniform tightness of residual genomic evidence).} For the stronger sequential tail statement, assume that for each tolerance $\delta\in(0,1)$ there exists a finite $b_\delta$, independent of $n$, such that
 \begin{equation}
-R_{G,n}=\log \LR_{G\mid C_n}(G;C_n).
-\end{equation}
-For each tolerance level $\delta\in(0,1)$ relevant to the operating regime, there exists a finite constant $b_\delta<\infty$, independent of $n$, such that
-\begin{equation}
-\sup_n\Pzero\bigl(|R_{G,n}|>b_\delta\bigr)\le \delta.
+\sup_n\Pzero\bigl(|R_{G,n}|>b_\delta\bigr)\le\delta.
 \label{eq:stochasticbound}
 \end{equation}
-Thus the residual genomic log-likelihood contribution remains tight as clinical observations accumulate. This condition allows rare large residual genomic effects; it excludes only a residual genomic scale that grows without bound with clinical-history length.
+This is stronger than finite-stage boundedness. It allows rare large residual genomic effects but excludes a residual genomic scale that grows without bound as the clinical record lengthens. The empirical analysis below estimates a fixed-score analogue of $b_{\delta,n}$ for \textit{MUC5B}; it does not establish A1-U for arbitrary genomic features or for all $n$.
 
-\textbf{A2 (Extended clinical-evidence tail).} Clinical history can accumulate arbitrarily strong disease evidence on rare trajectories. Formally, for arbitrarily large $K$ there exists an $n$ such that
+\textbf{A2 (Extended clinical-evidence tail).} Clinical history is assumed to admit arbitrarily strong disease evidence on rare trajectories. Formally, for arbitrarily large $K>0$ there exists an $n$ such that
 \begin{equation}
 \Pzero\bigl(\log \LR_{C_n}(C_n)\ge K\bigr)>0.
 \label{eq:clinicaltailassumption}
 \end{equation}
-A2 is an essential-unboundedness condition, not a claim that typical controls acquire large likelihood ratios.
+A2 is an explicit structural assumption, not a consequence of high AUC or of sequential observation alone. The empirical analysis can demonstrate a strong observed tail over the available range, but cannot prove mathematical unboundedness.
 
-\begin{theorem}[High-probability boundary localization and clinical-tail dominance]
+\begin{theorem}[Finite-stage boundary localization and sequential clinical-tail dominance]
 \label{thm:main}
-Assume A1$^\star$.
+Assume the relevant likelihood ratios are well defined and $b_{\delta,n}<\infty$ at the finite stage under consideration.
 
-\emph{(i) Exact factorization.} The joint disease-versus-control likelihood ratio factorizes as
+\emph{(i) Exact factorization.} For every $n$,
 \begin{equation}
-\LR_{C,G}(c,g)=\LR_C(c)\LR_{G\mid C}(g;c).
+\LR_{C_n,G}(c_n,g)=\LR_{C_n}(c_n)\LR_{G\mid C_n}(g;c_n).
 \end{equation}
 
-\emph{(ii) High-probability boundary localization.} For any decision threshold $\lambda>0$ and any $\delta\in(0,1)$ with bound $b_\delta$ from \eqref{eq:stochasticbound},
+\emph{(ii) Finite-stage high-probability boundary localization.} For every $n$, every decision threshold $\lambda>0$, and every $\delta\in(0,1)$,
 \begin{equation}
 \boxed{
-\Pzero\Bigl(D_{C,G}\neq D_C,\ \bigl|\log \LR_C-\log\lambda\bigr|>b_\delta\Bigr)\le \delta.
+\Pzero\Bigl(
+D_{C_n,G}\neq D_{C_n},\
+\bigl|\log \LR_{C_n}-\log\lambda\bigr|>b_{\delta,n}
+\Bigr)\le \delta.
 }
 \label{eq:stochastic-band-result}
 \end{equation}
-Thus, outside a clinical log-LR band of half-width $b_\delta$ around the decision boundary, genomic information can reverse the clinical decision only on a control-side exceptional event of probability at most $\delta$.
+Thus, at a fixed clinical stage, genomic information can reverse the clinical decision outside a log-LR neighborhood of half-width $b_{\delta,n}$ only on a control-side exceptional event of probability at most $\delta$.
 
-\emph{(iii) High-probability clinical-tail dominance.} For every $n$, every $K>0$, and every $\delta$ with bound $b_\delta$ from A1$^\star$,
+\emph{(iii) Sequential high-probability clinical-tail dominance.} If A1-U also holds, then for every $n$, every \emph{positive} upper-tail threshold $K>0$, and every $\delta\in(0,1)$,
 \begin{equation}
 \boxed{
 \Pzero\left(
 \log\LR_{C_n}\ge K,\
-\left|\frac{\log\LR_{C_n,G}}{\log\LR_{C_n}}-1\right|>\frac{b_\delta}{K}
+\left|
+\frac{\log\LR_{C_n,G}-\log\LR_{C_n}}
+     {\log\LR_{C_n}}
+\right|>\frac{b_\delta}{K}
 \right)\le\delta.
 }
 \label{eq:taildom-prob}
 \end{equation}
-If A2 also holds, positive-probability clinical tail events exist for arbitrarily large $K$, while the tolerated relative contribution $b_\delta/K$ tends to zero. Thus, apart from the same low-probability residual-genomic exception, sufficiently strong clinical log-likelihood dominates the combined log-likelihood.
+The denominator is therefore strictly positive on the event to which the bound is applied. If A2 also holds, positive-probability upper clinical-tail events exist for arbitrarily large $K$, while $b_\delta/K\to0$. Apart from the low-probability residual-genomic exception, the relative contribution of residual genomic log-evidence is then arbitrarily small on sufficiently strong disease-evidence tails.
 \end{theorem}
 
 \begin{proof}
 Part (i) is the chain rule:
 \begin{align}
-\LR_{C,G}(c,g)
-&=\frac{p(c,g\mid Y=1)}{p(c,g\mid Y=0)}\\
-&=\frac{p(c\mid Y=1)p(g\mid Y=1,c)}{p(c\mid Y=0)p(g\mid Y=0,c)}\\
-&=\LR_C(c)\LR_{G\mid C}(g;c).
+\LR_{C_n,G}(c_n,g)
+&=\frac{p(c_n,g\mid Y=1)}{p(c_n,g\mid Y=0)}\\
+&=\frac{p(c_n\mid Y=1)p(g\mid Y=1,c_n)}{p(c_n\mid Y=0)p(g\mid Y=0,c_n)}\\
+&=\LR_{C_n}(c_n)\LR_{G\mid C_n}(g;c_n).
 \end{align}
 
-For part (ii), if both $|\log \LR_C-\log\lambda|>b_\delta$ and $|R_G|\le b_\delta$ hold, then the sign of $\log \LR_C-\log\lambda$ cannot be changed by adding $R_G$. Indeed, if $\log \LR_C-\log\lambda>b_\delta$, then
+For part (ii), if both $|\log \LR_{C_n}-\log\lambda|>b_{\delta,n}$ and $|R_{G,n}|\le b_{\delta,n}$ hold, then adding $R_{G,n}$ cannot change the sign of $\log \LR_{C_n}-\log\lambda$. If $\log \LR_{C_n}-\log\lambda>b_{\delta,n}$, then
 \begin{equation}
-\log \LR_{C,G}-\log\lambda = \log \LR_C-\log\lambda + R_G > b_\delta-b_\delta = 0,
+\log \LR_{C_n,G}-\log\lambda
+=\log \LR_{C_n}-\log\lambda+R_{G,n}>0,
 \end{equation}
-so $D_{C,G}=D_C=1$. Similarly, if $\log \LR_C-\log\lambda<-b_\delta$, then $\log \LR_{C,G}-\log\lambda<0$ and $D_{C,G}=D_C=0$. Therefore
-\begin{equation}
-\Bigl\{D_{C,G}\neq D_C,\ |\log \LR_C-\log\lambda|>b_\delta\Bigr\}\subseteq \{|R_G|>b_\delta\},
-\end{equation}
-which yields \eqref{eq:stochastic-band-result} by A1$^\star$.
+so both rules classify positive. The negative-side case is symmetric. Hence
+\begin{multline}
+\Bigl\{D_{C_n,G}\neq D_{C_n},\
+|\log \LR_{C_n}-\log\lambda|>b_{\delta,n}\Bigr\}\\
+\subseteq \{|R_{G,n}|>b_{\delta,n}\},
+\end{multline}
+whose probability is at most $\delta$ by the definition of $b_{\delta,n}$.
 
-For part (iii), on the event $\{|R_{G,n}|\le b_\delta\}\cap\{\log\LR_{C_n}\ge K\}$,
+For part (iii), consider explicitly the upper disease-evidence event $\{\log\LR_{C_n}\ge K\}$ with $K>0$. On
 \begin{equation}
-\left|\frac{\log\LR_{C_n,G}}{\log\LR_{C_n}}-1\right|
+\{|R_{G,n}|\le b_\delta\}\cap\{\log\LR_{C_n}\ge K>0\},
+\end{equation}
+we have
+\begin{equation}
+\left|
+\frac{\log\LR_{C_n,G}-\log\LR_{C_n}}
+     {\log\LR_{C_n}}
+\right|
 =\frac{|R_{G,n}|}{\log\LR_{C_n}}
 \le \frac{b_\delta}{K}.
 \end{equation}
-Therefore violation of the relative bound on the clinical tail implies $|R_{G,n}|>b_\delta$, whose $\Pzero$ probability is at most $\delta$ uniformly in $n$ by A1$^\star$. A2 guarantees that such clinical tail events occur at arbitrarily large $K$, making $b_\delta/K$ arbitrarily small.
+Therefore violation of the relative bound on this upper tail implies $|R_{G,n}|>b_\delta$, whose $\Pzero$ probability is at most $\delta$ uniformly in $n$ by A1-U. A2 ensures only that such positive-probability upper-tail events exist for arbitrarily large $K$; it is not derived from the preceding algebra.
 \end{proof}
 
 \begin{corollary}[Deterministic bounded-residual special case]
 \label{cor:deterministic-band}
-If there exist constants $0<m\le 1\le M<\infty$ such that
+Fix a clinical representation $C$. If there exist constants $0<m\le1\le M<\infty$ such that
 \begin{equation}
 0<m\le \LR_{G\mid C}(g;c)\le M<\infty
 \label{eq:boundedconditional}
 \end{equation}
-for $\Pzero$-almost every relevant $(g,c)$, then A1$^\star$ holds with
-\begin{equation}
-b_\delta \equiv b=\max\{\log M,-\log m\}
-\end{equation}
-for every $\delta>0$. Consequently, genomic information can change which side of the threshold an observation occupies only if
+for $\Pzero$-almost every relevant $(g,c)$, then genomic information can change which side of threshold $\lambda$ an observation occupies only if
 \begin{equation}
 \boxed{\frac{\lambda}{M}\le \LR_C(c)\le \frac{\lambda}{m}.}
 \label{eq:boundaryband}
@@ -109,16 +125,16 @@ Equivalently,
 \boxed{-\log M\le \log \LR_C(c)-\log\lambda\le -\log m.}
 \label{eq:logboundaryband}
 \end{equation}
-Hence the deterministic decision-relevant band has fixed width $\log(M/m)$ on the clinical log-likelihood scale.
+The deterministic decision-relevant band has fixed width $\log(M/m)$ on the clinical log-likelihood scale. If the same $m$ and $M$ apply uniformly to every $C_n$, then A1-U also holds with $b_\delta=\max\{\log M,-\log m\}$.
 \end{corollary}
 
 \begin{proof}
-Under \eqref{eq:boundedconditional}, $R_G=\log \LR_{G\mid C}$ lies in $[\log m,\log M]$, so $|R_G|\le b$ almost surely. Applying Theorem~\ref{thm:main}(ii) with $\delta=0$ gives the exact localization claim. Writing out the two one-sided cases recovers \eqref{eq:boundaryband}--\eqref{eq:logboundaryband}.
+Under \eqref{eq:boundedconditional}, $R_G=\log \LR_{G\mid C}$ lies in $[\log m,\log M]$ almost surely. If $\LR_C<\lambda/M$, even the largest genomic factor cannot cross the threshold; if $\LR_C>\lambda/m$, even the smallest genomic factor cannot move the observation below threshold. This gives \eqref{eq:boundaryband}--\eqref{eq:logboundaryband}.
 \end{proof}
 
-\begin{corollary}[Posterior-risk form for ZeBRA]
+\begin{corollary}[Posterior-risk form for a calibrated clinical score]
 \label{cor:zebra}
-If ZeBRA is calibrated so that $Z=\mathbb{P}(Y=1\mid C)$, let $\tau\in(0,1)$ be any ZeBRA decision threshold and define posterior-odds threshold $\kappa=\tau/(1-\tau)$. Under Corollary~\ref{cor:deterministic-band}, genomic information can change the decision only if
+If a clinical score $Z$ is calibrated so that $Z=\mathbb{P}(Y=1\mid C)$, let $\tau\in(0,1)$ be any decision threshold and define posterior-odds threshold $\kappa=\tau/(1-\tau)$. Under Corollary~\ref{cor:deterministic-band}, genomic information can change the decision only if
 \begin{equation}
 \boxed{\frac{\kappa}{M}\le \frac{Z}{1-Z}\le \frac{\kappa}{m}.}
 \label{eq:zboundary}
@@ -127,11 +143,11 @@ Equivalently,
 \begin{equation}
 -\log M\le \operatorname{logit}(Z)-\operatorname{logit}(\tau)\le -\log m.
 \end{equation}
-Thus genomic utility is localized around whichever ZeBRA operating boundary is chosen.
+This corollary is a theoretical mapping for a calibrated posterior score. The raw ZeBRA output in the Colorado cohort is not calibrated as such and is therefore not inserted numerically into this formula.
 \end{corollary}
 
 \begin{proof}
-Equation \eqref{eq:zlr} shows that ZeBRA posterior odds differ from $\LR_C$ only by the positive constant prior odds $\pi/(1-\pi)$. Substituting into \eqref{eq:boundaryband} yields the result.
+Equation \eqref{eq:zlr} shows that posterior odds differ from $\LR_C$ only by the positive constant prior odds $\pi/(1-\pi)$. Substituting into \eqref{eq:boundaryband} yields the result.
 \end{proof}
 
 \begin{proposition}[Genomic-only power bound and extreme-specificity clinical superiority]
@@ -140,7 +156,7 @@ Assume the marginal genomic likelihood ratio
 \begin{equation}
 \LR_G(g)=\frac{p(g\mid Y=1)}{p(g\mid Y=0)}
 \end{equation}
-is bounded above by $M_G<\infty$ and A2 holds in the form that for arbitrarily large $K$ there are events with positive $\Pzero$ probability on which $\LR_C\ge K$. Then:
+is bounded above by $M_G<\infty$ and A2 holds. Then:
 
 \emph{(i)} for any genomic-only test $\phi(G)\in[0,1]$ with false-positive rate $\alpha=\Ezero[\phi(G)]$,
 \begin{equation}
@@ -174,19 +190,20 @@ For part (ii), define $A_K=\{c:\LR_C(c)\ge K\}$. Then
 &=\Ezero[\LR_C(C)\ind\{A_K\}]\\
 &\ge K\Pzero(A_K)=K\alpha_K,
 \end{align}
-which gives \eqref{eq:clinicalLRplus}. If $K>M_G$, then part (i) implies that any genomic-only test with false-positive rate $\alpha_K$ has power at most $M_G\alpha_K<K\alpha_K\le \Pone(A_K)$. Markov's inequality applied to $\Ezero[\LR_C]=1$ yields $\alpha_K\le 1/K$.
+which gives \eqref{eq:clinicalLRplus}. If $K>M_G$, part (i) implies that any genomic-only test with false-positive rate $\alpha_K$ has power at most $M_G\alpha_K<K\alpha_K\le \Pone(A_K)$. Markov's inequality applied to $\Ezero[\LR_C]=1$ yields $\alpha_K\le 1/K$.
 \end{proof}
 
-\begin{corollary}[Any genomic model inherits the marginal bound]
-Let $S=f(G)$ be any measurable genomic predictor, including a polygenic risk score, boosted tree, random forest, neural network, or other deterministic transformation of the measured genomic state. If $\LR_G$ is bounded above by $M_G$, then the likelihood ratio of $S$ is also bounded above by $M_G$. Therefore no deterministic compression of the same genomic information can evade Proposition~\ref{prop:genomicpower}.
+\begin{corollary}[Genomic post-processing inherits the marginal bound]
+\label{cor:genomic-postprocessing}
+Let $S$ be generated from the measured genomic state $G$ by a class-independent Markov kernel $Q(ds\mid g)$, so that $Y\to G\to S$ forms a Markov chain. This includes deterministic scores $S=f(G)$ and randomized post-processing whose additional randomness is independent of disease class conditional on $G$. If $\LR_G\le M_G$ almost surely under $\Pzero$, then $\LR_S\le M_G$ almost surely. Thus no such post-processing of the same genomic information can evade Proposition~\ref{prop:genomicpower}.
 \end{corollary}
 
 \begin{proof}
-For a score value $s$, the score likelihood ratio is the conditional expectation
+Under the class-independent channel $Q$, the score likelihood ratio satisfies
 \begin{equation}
 \LR_S(s)=\mathbb{E}_0[\LR_G(G)\mid S=s].
 \end{equation}
-A conditional expectation of a random variable bounded above by $M_G$ is itself bounded above by $M_G$, $\Pzero$-almost surely on the score support.
+A conditional expectation of a random variable bounded above by $M_G$ is itself bounded above by $M_G$. For a stochastic learning algorithm, this statement is interpreted conditional on the fitted model (or training sample); the deployment-time map from a new subject's $G$ to $S$ must satisfy the stated class-independence condition.
 \end{proof}
 
 \begin{proposition}[Local decision gain can coexist with negligible global AUC change]
@@ -205,7 +222,7 @@ Hence an augmented rule can produce a substantial change in decisions within a s
 AUC is the probability that a randomly drawn case receives a higher score than a randomly drawn control, with the usual half-credit convention for ties. If neither member of a case--control pair lies in $B$, then $S'=S$ for both members and the pairwise ranking contribution is unchanged. Therefore the AUC contribution can differ only when at least one member of the pair lies in $B$. The probability of that event is
 \begin{multline}
 1-(1-\Pone(B))(1-\Pzero(B))\\
-=\Pone(B)+\Pzero(B)-\Pone(B)\Pzero(B).
+=\Pone(B)+\Pzero(B)-\Pone(B)\Pzero(B),
 \end{multline}
 which bounds the maximum possible AUC change.
 \end{proof}
