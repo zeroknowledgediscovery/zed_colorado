@@ -41,6 +41,14 @@ Auxiliary proofs remain in the same compiled manuscript through:
 manuscript_appendix_proofs.tex
 ```
 
+References are maintained separately in:
+
+```text
+zebra_genomics_references.bib
+```
+
+The main manuscript uses standard BibTeX with `\bibliographystyle{IEEEtran}`. `latexmk` resolves the BibTeX pass automatically during the normal build.
+
 The older `zebra_genomics_boundary_theorem.tex` and `empirical_section_update.tex` are historical sources and are **not** part of the canonical build.
 
 ## Figure provenance
