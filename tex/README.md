@@ -35,37 +35,37 @@ The two sparse nonfibrotic endpoints explored during analysis development are no
 
 ## Figure hierarchy: exactly two integrated empirical figures
 
-The current publication layout uses one empirical figure in the main manuscript and one empirical figure in the Supplementary Material. This is intentional: future ADRD/APOE4 and HFrEF/TTNtv analyses can use the same panel architecture as disease-specific integrated figures.
+The current publication layout uses one empirical figure in the main manuscript and one empirical figure in the Supplementary Material. This is intentional: future ADRD/APOE4 and HFrEF/TTNtv analyses can later use the same disease-level integrated architecture.
 
-### Main Figure 1: integrated FILD/FILA evidence
+### Main Figure 1: 3x3 integrated FILD/FILA matrix
 
-`\figIntegratedFILD` contains eight panels:
+`\figIntegratedFILD` contains nine panels in a 3x3 matrix:
 
-1. FILD/FILA held-out AUC for ZeBRA, genomics, and the nonlinear combined learner;
-2. paired incremental FILD/FILA AUC after adding the complete genomic panel to ZeBRA;
-3. repeated-split SHAP recurrence showing ZeBRA as the dominant feature and rs35705950 MUC5B as the leading recurrent genomic feature;
-4. ZeBRA-to-MUC5B carrier-prediction AUC, showing that ZeBRA does not reconstruct genotype;
-5. local directional nested-model LR/deviance statistics across ZeBRA-defined control-FPR bands;
-6. empirical residual-genomic high-probability scales `bhat_delta` across the nine prespecified direct-LR estimators;
-7. the actual cross-fitted clinical `Lambda_Z` and residual `Lambda_{G|Z}` evidence channels along the ZeBRA axis; and
-8. localization of genomic-induced decision flips around the clinical likelihood-ratio boundary.
+1. **(a)** FILD/FILA held-out AUC for ZeBRA, genomics, and the nonlinear combined learner;
+2. **(b)** repeated-split SHAP recurrence showing ZeBRA as the dominant feature and rs35705950 MUC5B as the leading recurrent genomic feature;
+3. **(c)** local directional nested-model LR/deviance statistics across ZeBRA-defined control-FPR bands;
+4. **(d)** the actual cross-fitted clinical `Lambda_Z` and residual `Lambda_{G|Z}` evidence channels along the ZeBRA axis;
+5. **(e)** local adjusted ZeBRA and MUC5B effect-size trajectories;
+6. **(f)** matched-FPR MUC5B rescue sensitivity gain;
+7. **(g)** stringent held-out LR+ across ZeBRA, genomic, and combined models;
+8. **(h)** robustness of upper-tail clinical evidence exceeding the measured residual-genomic scale; and
+9. **(i)** the supporting ROC-envelope/hull AUC geometry, explicitly treated as descriptive rather than validated classifier performance.
 
-This one figure is intended to carry the complete empirical theorem-data argument: no reproducible global genomic increment, genuine use of MUC5B by the combined learner, distinct clinical/genomic channels, localized residual genomic information, direct LR factorization, finite residual scale, and boundary-localized decision changes.
+This panel set is intentionally selective. It emphasizes the global hierarchy, reproducible genomic contribution, localized conditional information, direct LR geometry, local effect-size structure, an operational consequence, stringent evidence ratios, finite-range tail dominance, and the supporting ROC geometry in one disease-level figure.
 
-### Supplementary Figure S1: integrated extended diagnostics
+### Supplementary Figure S1: displaced and secondary diagnostics
 
-`\figIntegratedSupplementary` contains eight panels:
+`\figIntegratedSupplementary` contains the panels not retained in main Figure 1:
 
-1. local adjusted ZeBRA and MUC5B effect-size trajectories;
-2. robustness of upper-tail clinical evidence exceeding the measured residual-genomic scale;
-3. matched-FPR rescue sensitivity gain;
-4. corresponding operational FPR change;
-5. stringent held-out LR+ across ZeBRA, genomic, and combined models;
-6. corresponding stringent held-out sensitivity;
-7. explicitly adjudicated-negative rescue-minus-matched FPR diagnostic; and
-8. supporting ROC-envelope/hull AUC quantities, clearly labeled as descriptive geometry rather than classifier performance.
+1. **(a)** paired incremental FILD/FILA AUC after adding the complete genomic panel to ZeBRA;
+2. **(b)** ZeBRA-to-MUC5B carrier-prediction AUC, showing that ZeBRA does not reconstruct genotype;
+3. **(c)** empirical residual-genomic high-probability scales `bhat_delta` across the nine prespecified direct-LR estimators;
+4. **(d)** localization of genomic-induced decision flips around the clinical likelihood-ratio boundary;
+5. **(e)** rescue-rule operational FPR change relative to matched ZeBRA;
+6. **(f)** stringent held-out sensitivity across ZeBRA, genomic, and combined models; and
+7. **(g)** explicitly adjudicated-negative rescue-minus-matched FPR diagnostics.
 
-Calibration and complete numerical summaries remain in Supplementary Tables because those values are more concise and less ambiguous in tabular form.
+The supplementary PGFPlots layout uses a 3x3 matrix with two intentionally empty cells rather than inventing additional graphical analyses solely to fill the grid. Calibration and complete numerical summaries remain in Supplementary Tables because those values are more concise and less ambiguous in tabular form.
 
 ## Figure implementation
 
@@ -78,7 +78,7 @@ empirical_figures_integrated.tex
 
 The first file defines the canonical result tables and compact extracted quantities. The second defines the only two empirical figures instantiated by the manuscript. Historical component figure files remain in the repository only for development provenance and are not loaded by the canonical build.
 
-All plotted empirical values are read from the canonical analysis results under `../zebra_comp/RESULTS`, except for explicitly documented repeated-split SHAP recurrence counts and the supplementary ROC-hull summary values. The actual cross-fitted LR channel curves are read from the moving-window summaries generated by the direct likelihood-ratio analysis.
+All plotted empirical values are read from the canonical analysis results under `../zebra_comp/RESULTS`, except for explicitly documented repeated-split SHAP recurrence counts and the ROC-hull summary values. The actual cross-fitted LR channel curves are read from the moving-window summaries generated by the direct likelihood-ratio analysis.
 
 ## Theory hierarchy
 
