@@ -24,6 +24,29 @@ ROOT = Path(__file__).resolve().parents[1]
 PARAM_FILE = ROOT / "run_parameters.json"
 
 
+def validate_expected_cohort(meta: dict, expected: dict) -> None:
+    if not expected:
+        return
+    failures = []
+    for key, wanted in expected.items():
+        if key not in meta:
+            failures.append(f"{key}: not available in cohort metadata (expected {wanted!r})")
+            continue
+        got = meta[key]
+        if isinstance(wanted, (int, float)) and isinstance(got, (int, float)):
+            ok = float(got) == float(wanted)
+        else:
+            ok = got == wanted
+        if not ok:
+            failures.append(f"{key}: got {got!r}, expected {wanted!r}")
+    if failures:
+        raise SystemExit(
+            "COHORT INVARIANT FAILURE. The configured analysis cohort does not match its expected reference:\n  - "
+            + "\n  - ".join(failures)
+            + "\nCheck phenotype-row semantics, score availability, join keys, and gene-call filtering before running analyses."
+        )
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Run disease-agnostic ZeBRA + genomics comparison pipeline")
     ap.add_argument("--config", required=True, help="Disease/gene JSON config")
@@ -53,6 +76,8 @@ def main() -> None:
         raise SystemExit("No genomic features available after selection/encoding")
 
     print(json.dumps(meta, indent=2))
+    validate_expected_cohort(meta, cfg.get("expected_cohort", {}))
+
     try:
         d.to_parquet(outroot / "analysis_frame.parquet", index=False)
     except Exception:
