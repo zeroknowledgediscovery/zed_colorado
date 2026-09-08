@@ -1,0 +1,4 @@
+target,zebra_mean,zebra_sd,genomic_mean,genomic_sd,combined_mean,combined_sd
+FILD/FILA,0.8142,0.0089,0.5662,0.0245,0.7988,0.0150
+Nonfibrotic ILD,0.8202,0.0257,0.5141,0.0719,0.6145,0.0953
+Nonfibrotic ILA,0.8281,0.0162,0.4717,0.0443,0.7112,0.0541

@@ -1,0 +1,4 @@
+target,delta_auc_mean,delta_auc_lo,delta_auc_hi,delta_ap_mean,delta_brier_mean,delta_logloss_mean
+FILD/FILA,0.0004349,-0.0050703,0.0040843,-0.0311,0.000312,0.00468
+Nonfibrotic ILD,-0.1005250,-0.2257717,-0.0050563,,,
+Nonfibrotic ILA,-0.0373684,-0.0738433,-0.0070462,,,

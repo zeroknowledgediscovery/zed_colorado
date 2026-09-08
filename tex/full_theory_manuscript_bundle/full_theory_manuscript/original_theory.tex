@@ -1,0 +1,407 @@
+\documentclass[journal]{IEEEtran}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{cite}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+
+\newcommand{\Pone}{\mathbb{P}_1}
+\newcommand{\Pzero}{\mathbb{P}_0}
+\newcommand{\Eone}{\mathbb{E}_1}
+\newcommand{\Ezero}{\mathbb{E}_0}
+\newcommand{\LR}{\Lambda}
+\newcommand{\ind}{\mathbf{1}}
+
+\title{Boundary-Localized Genomic Utility and Clinical-Tail Dominance:\\
+A Likelihood-Ratio Theory for ZeBRA and Fibrotic Interstitial Lung Disease}
+
+\author{Ishanu Chattopadhyay\\
+Division of Biomedical Informatics, University of Kentucky College of Medicine}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We consider two information channels for predicting future fibrotic interstitial lung disease (ILD): a static germline genomic channel and a longitudinal clinical-history channel summarized by the Zero-burden Risk Assessment (ZeBRA). Preliminary analyses in an adjudicated fibrotic ILD/fibrotic interstitial lung abnormality cohort show a characteristic pattern: ZeBRA has strong global discrimination, adding many genomic features produces little global AUC gain, yet the high-effect \textit{MUC5B} promoter variant rs35705950 can improve sensitivity in restricted ZeBRA score regions at essentially matched false-positive rate. We show that this pattern follows from a general likelihood-ratio argument. For a non-Mendelian disease, genomic evidence is bounded, whereas a longitudinal clinical sequence can accumulate likelihood evidence. Bayes factorization implies that genomic information can change a likelihood-ratio decision only in a bounded neighborhood of the clinical decision boundary; the width of this neighborhood is fixed on the log-likelihood scale by the strength of genomic evidence. By the Neyman--Pearson lemma, a clinical likelihood-ratio test is optimal among clinical-history tests at fixed false-positive rate. If the clinical likelihood ratio has an extended upper tail while genomic likelihood ratios are bounded, then at sufficiently extreme specificity the clinical channel strictly dominates every genomic-only rule. These results provide a formal explanation for why genomics may add little to global discrimination while remaining useful in selected boundary-adjacent patients.
+\end{abstract}
+
+\begin{IEEEkeywords}
+ZeBRA, fibrotic interstitial lung disease, idiopathic pulmonary fibrosis, MUC5B, genomics, likelihood ratio, Neyman--Pearson lemma, Bayesian inference, decision boundary.
+\end{IEEEkeywords}
+
+\section{Motivating problem: ZeBRA and genomic risk in fibrotic ILD}
+
+Fibrotic ILDs, including idiopathic pulmonary fibrosis (IPF), have a strong but non-Mendelian genetic component. The \textit{MUC5B} promoter variant rs35705950 is among the strongest common genetic risk factors for pulmonary fibrosis \cite{Seibold2011,Fingerlin2013,Allen2020}. In the original report, the minor allele was present much more frequently among subjects with IPF than among controls \cite{Seibold2011}. At the same time, disease emergence is accompanied by a growing sequence of clinically observable diagnoses, prescriptions, procedures, and comorbidities. ZeBRA is designed to summarize such routinely observed longitudinal clinical histories into a future-risk score without requiring laboratory tests, imaging, or questionnaires \cite{Onishchenko2026}.
+
+Our recent fibrotic ILD analyses ask whether genomic information improves prediction once ZeBRA is known. The empirical picture is not the one expected from a simple additive model. In repeated-split analyses of the adjudicated endpoint ``FILD or FILA ADJUDICATED,'' ZeBRA alone has AUC approximately $0.81$--$0.82$. Adding the available genomic variables with regularized discriminative models changes global AUC by only about $10^{-3}$. ZeBRA itself does not reconstruct \textit{MUC5B} carrier status: the observed AUC for predicting rs35705950 carrier status from ZeBRA is essentially $0.5$. Yet \textit{MUC5B} is enriched among some ZeBRA false negatives, and a rule that uses \textit{MUC5B} within selected ZeBRA-score regions improves sensitivity at a clinically relevant operating point. In one repeated-split analysis near a nominal $5\%$ false-positive-rate (FPR) operating point, sensitivity increased from approximately $45.8\%$ to $49.7\%$ at essentially unchanged realized FPR, with LR$+$ increasing from about $7.9$ to $8.5$ and LR$-$ decreasing from about $0.58$ to $0.54$. Local \textit{MUC5B} effects were particularly strong in selected intermediate-high ZeBRA percentile bands. These observations are exploratory and the particular percentile bands were selected post hoc; they motivate the theory below rather than constitute independent confirmation of it.
+
+The apparent paradox is therefore:
+\begin{quote}
+A strong genomic risk factor can be biologically important, and can improve decisions for selected individuals, while contributing almost nothing to global discrimination once a strong clinical-history predictor is available.
+\end{quote}
+
+We show that this behavior is expected under a general Bayesian likelihood-ratio formulation.
+
+\section{Latent-state and information-channel formulation}
+
+Let $B_t$ denote the latent biological state at time $t$, $G$ the germline genomic state, and $E_{0:t}$ the accumulated non-genetic exposure history. The biological state evolves under the influence of $G$ and $E_{0:t}$. For a fixed future horizon $h>0$, define the disease-risk functional
+\begin{equation}
+\rho_h(B_t)
+=\mathbb{P}(T\le t+h\mid T>t,B_t),
+\label{eq:rho}
+\end{equation}
+where $T$ is the disease-event time. The clinical event sequence $C_{0:t}$ is a noisy observation of the latent biological trajectory $B_{0:t}$. In the idealized Bayesian limit, a clinical-history predictor satisfies
+\begin{equation}
+Z_h(C_{0:t})
+=\mathbb{P}(T\le t+h\mid C_{0:t})
+=\int \rho_h(b)\,d\mathbb{P}(B_t=b\mid C_{0:t}).
+\label{eq:zposterior}
+\end{equation}
+Thus ZeBRA need not reconstruct $B_t$; it estimates the disease-relevant functional of $B_t$ from the clinical observation channel.
+
+For the theorem it is enough to reduce the problem to binary prediction. Let
+\begin{equation}
+Y=\ind\{T\le t+h\}\in\{0,1\},
+\end{equation}
+and write $C$ for the available clinical history. The genomic channel $G$ and clinical channel $C$ are then placed on equal statistical footing through their disease-versus-control likelihood ratios.
+
+\section{Likelihood-ratio representation}
+
+Let $\Pone(\cdot)=\mathbb{P}(\cdot\mid Y=1)$ and $\Pzero(\cdot)=\mathbb{P}(\cdot\mid Y=0)$. Assume the relevant distributions admit densities with respect to common dominating measures. Define the clinical likelihood ratio
+\begin{equation}
+\LR_C(c)=\frac{p(c\mid Y=1)}{p(c\mid Y=0)},
+\label{eq:clinicalLR}
+\end{equation}
+and the residual genomic likelihood ratio conditional on clinical history
+\begin{equation}
+\LR_{G\mid C}(g;c)
+=\frac{p(g\mid Y=1,C=c)}{p(g\mid Y=0,C=c)}.
+\label{eq:conditionalGLR}
+\end{equation}
+The full joint likelihood ratio is
+\begin{equation}
+\LR_{C,G}(c,g)
+=\frac{p(c,g\mid Y=1)}{p(c,g\mid Y=0)}.
+\end{equation}
+By the probability chain rule,
+\begin{equation}
+\boxed{
+\LR_{C,G}(c,g)
+=\LR_C(c)\,\LR_{G\mid C}(g;c).
+}
+\label{eq:factorization}
+\end{equation}
+No conditional-independence assumption is required.
+
+If $Z$ is a calibrated clinical posterior, $Z=\mathbb{P}(Y=1\mid C)$, and $\pi=\mathbb{P}(Y=1)$, Bayes' rule yields
+\begin{equation}
+\frac{Z}{1-Z}
+=\frac{\pi}{1-\pi}\LR_C(C),
+\label{eq:zlr}
+\end{equation}
+so thresholding calibrated ZeBRA is equivalent to thresholding $\LR_C$. More generally, the same results apply whenever the clinical score is a strictly monotone transformation of $\LR_C$.
+
+\section{Main theorem}
+
+The key biological assumptions are deliberately weak.
+
+\textbf{A1 (Non-Mendelian genomic evidence).} No measured germline genomic state determines disease with probability one or zero. Equivalently, genomic Bayes factors are finite. We assume constants $0<m\le 1\le M<\infty$ such that
+\begin{equation}
+0<m\le \LR_{G\mid C}(g;c)\le M<\infty
+\label{eq:boundedconditional}
+\end{equation}
+for relevant $(g,c)$, and that the marginal genomic likelihood ratio
+\begin{equation}
+\LR_G(g)=\frac{p(g\mid Y=1)}{p(g\mid Y=0)}
+\end{equation}
+is bounded above by $M_G<\infty$.
+
+\textbf{A2 (Accumulating clinical evidence).} Clinical history is sequential, $C_n=(X_1,\ldots,X_n)$, and continued diagnoses, prescriptions, procedures, and comorbidities can produce an extended disease-evidence tail. Formally, $\LR_C$ is not bounded above on the relevant sequence of clinical histories: for arbitrarily large $K$ there are events with positive $\Pzero$ probability on which $\LR_C\ge K$.
+
+\begin{theorem}[Boundary-localized genomic utility and clinical-tail dominance]
+\label{thm:main}
+Under A1--A2:
+
+\emph{(i) Exact factorization.} The optimal joint disease-versus-control likelihood ratio is
+\begin{equation}
+\LR_{C,G}=\LR_C\LR_{G\mid C}.
+\end{equation}
+
+\emph{(ii) Boundary localization.} For any likelihood-ratio decision threshold $\lambda>0$, genomic information can change which side of the threshold an observation occupies only if
+\begin{equation}
+\boxed{
+\frac{\lambda}{M}
+\le \LR_C(c)
+\le \frac{\lambda}{m}.
+}
+\label{eq:boundaryband}
+\end{equation}
+Equivalently,
+\begin{equation}
+\boxed{
+-\log M
+\le
+\log \LR_C(c)-\log\lambda
+\le
+-\log m.
+}
+\label{eq:logboundaryband}
+\end{equation}
+Hence the genomic decision-relevant region has fixed width
+\begin{equation}
+\log(M/m)
+\end{equation}
+on the clinical log-likelihood scale, independent of where the decision boundary $\lambda$ is placed.
+
+\emph{(iii) Genomic-only power is bounded.} For any test $\phi(G)\in[0,1]$ using genomics alone, with false-positive rate $\alpha=\Ezero[\phi(G)]$, its true-positive rate satisfies
+\begin{equation}
+\boxed{
+\Eone[\phi(G)]\le M_G\alpha.
+}
+\label{eq:genomicpowerbound}
+\end{equation}
+Thus the positive likelihood ratio of any genomic-only decision rule is at most $M_G$.
+
+\emph{(iv) Clinical superiority at extreme specificity.} For any $K>M_G$ with $\alpha_K=\Pzero(\LR_C\ge K)>0$, the clinical likelihood-ratio test
+\begin{equation}
+\phi_K(C)=\ind\{\LR_C(C)\ge K\}
+\end{equation}
+has
+\begin{equation}
+\frac{\Pone(\LR_C\ge K)}{\Pzero(\LR_C\ge K)}\ge K>M_G.
+\label{eq:clinicalLRplus}
+\end{equation}
+Therefore, at the same FPR $\alpha_K$, its power is strictly greater than that of every genomic-only test. Moreover,
+\begin{equation}
+\alpha_K\le \frac{1}{K}\to0
+\end{equation}
+as $K\to\infty$. Hence the superiority occurs in the extreme-specificity limit.
+
+\emph{(v) Clinical-tail dominance in the combined evidence.} Along sequences with $\LR_C\to\infty$,
+\begin{equation}
+\log \LR_{C,G}
+=\log \LR_C+O(1),
+\end{equation}
+and therefore
+\begin{equation}
+\boxed{
+\frac{\log\LR_{C,G}}{\log\LR_C}\to1.
+}
+\label{eq:taildominance}
+\end{equation}
+Thus bounded genomic evidence is asymptotically negligible relative to the accumulated clinical log-likelihood in the extreme clinical-evidence tail.
+\end{theorem}
+
+\begin{proof}
+Part (i) is the chain rule:
+\begin{align}
+\LR_{C,G}(c,g)
+&=\frac{p(c,g\mid Y=1)}{p(c,g\mid Y=0)}\\
+&=\frac{p(c\mid Y=1)p(g\mid Y=1,c)}
+        {p(c\mid Y=0)p(g\mid Y=0,c)}\\
+&=\LR_C(c)\LR_{G\mid C}(g;c).
+\end{align}
+
+For part (ii), compare the clinical-only decision $\LR_C\ge\lambda$ with the joint decision $\LR_C\LR_{G\mid C}\ge\lambda$. If
+\begin{equation}
+\LR_C<\lambda/M,
+\end{equation}
+then A1 gives
+\begin{equation}
+\LR_C\LR_{G\mid C}
+\le \LR_C M
+<\lambda,
+\end{equation}
+so no genomic state can move the observation above the threshold. Conversely, if
+\begin{equation}
+\LR_C>\lambda/m,
+\end{equation}
+then
+\begin{equation}
+\LR_C\LR_{G\mid C}
+\ge \LR_C m
+>\lambda,
+\end{equation}
+so no genomic state can move the observation below the threshold. Hence a threshold change is possible only on the interval in \eqref{eq:boundaryband}. Taking logarithms gives \eqref{eq:logboundaryband}; its width is
+\begin{equation}
+(-\log m)-(-\log M)=\log(M/m),
+\end{equation}
+which does not depend on $\lambda$.
+
+For part (iii), let $\phi(G)\in[0,1]$. Using the Radon--Nikodym identity under $\Pzero$,
+\begin{align}
+\Eone[\phi(G)]
+&=\Ezero[\LR_G(G)\phi(G)]\\
+&\le M_G\Ezero[\phi(G)]\\
+&=M_G\alpha.
+\end{align}
+This proves \eqref{eq:genomicpowerbound}. The result holds for randomized as well as deterministic genomic rules.
+
+For part (iv), define $A_K=\{c:\LR_C(c)\ge K\}$. Then
+\begin{align}
+\Pone(A_K)
+&=\Ezero[\LR_C(C)\ind\{A_K\}]\\
+&\ge K\Ezero[\ind\{A_K\}]\\
+&=K\Pzero(A_K)\\
+&=K\alpha_K.
+\end{align}
+Therefore the clinical rule has LR$+$ at least $K$. If $K>M_G$, any genomic-only test with the same FPR $\alpha_K$ has power at most $M_G\alpha_K<K\alpha_K\le\Pone(A_K)$. By the Neyman--Pearson lemma \cite{NeymanPearson1933}, thresholding $\LR_C$ is also the most powerful rule among all tests measurable with respect to $C$ at the corresponding size (with the usual boundary randomization if needed).
+
+Finally, because $\Ezero[\LR_C]=1$, Markov's inequality gives
+\begin{equation}
+\alpha_K
+=\Pzero(\LR_C\ge K)
+\le\frac{\Ezero[\LR_C]}{K}
+=\frac{1}{K},
+\end{equation}
+so $\alpha_K\to0$ as $K\to\infty$. This is precisely the high-specificity regime.
+
+For part (v), A1 implies
+\begin{equation}
+\log m\le\log\LR_{G\mid C}\le\log M,
+\end{equation}
+so $\log\LR_{G\mid C}=O(1)$. By part (i),
+\begin{equation}
+\log\LR_{C,G}
+=\log\LR_C+\log\LR_{G\mid C}
+=\log\LR_C+O(1).
+\end{equation}
+Dividing by $\log\LR_C$ and letting $\LR_C\to\infty$ yields \eqref{eq:taildominance}.
+\end{proof}
+
+\begin{corollary}[Posterior-risk form for ZeBRA]
+\label{cor:zebra}
+If ZeBRA is calibrated so that $Z=\mathbb{P}(Y=1\mid C)$, let $\tau\in(0,1)$ be any ZeBRA decision threshold and define posterior-odds threshold $\kappa=\tau/(1-\tau)$. Then genomic information can change the decision only if
+\begin{equation}
+\boxed{
+\frac{\kappa}{M}
+\le
+\frac{Z}{1-Z}
+\le
+\frac{\kappa}{m}.
+}
+\label{eq:zboundary}
+\end{equation}
+Equivalently,
+\begin{equation}
+-\log M
+\le
+\operatorname{logit}(Z)-\operatorname{logit}(\tau)
+\le
+-\log m.
+\end{equation}
+Thus genomic utility is localized around \emph{whatever} ZeBRA operating boundary is chosen.
+\end{corollary}
+
+\begin{proof}
+Equation \eqref{eq:zlr} shows that ZeBRA posterior odds differ from $\LR_C$ by the positive constant prior odds $\pi/(1-\pi)$. Substitution into Theorem~\ref{thm:main}(ii) yields the result.
+\end{proof}
+
+\begin{corollary}[Any genomic model inherits the bound]
+Let $S=f(G)$ be any measurable genomic predictor, including a polygenic risk score, gradient-boosted model, random forest, neural network, or generative genomic model. If the full genomic likelihood ratio is bounded, then the likelihood ratio of $S$ is also bounded. Therefore no deterministic compression or machine-learning transformation of the same genomic information can evade the finite-evidence and extreme-specificity conclusions of Theorem~\ref{thm:main}.
+\end{corollary}
+
+\begin{proof}
+For a score value $s$, the score likelihood ratio can be written as a conditional average of the full genomic likelihood ratio under $\Pzero$:
+\begin{equation}
+\LR_S(s)
+=\mathbb{E}_0[\LR_G(G)\mid S=s].
+\end{equation}
+A conditional expectation of a random variable bounded above by $M_G$ is itself bounded above by $M_G$. The analogous lower bound follows if $\LR_G$ is bounded away from zero.
+\end{proof}
+
+\section{Why the clinical channel can have an extended tail}
+
+The theorem does not assume that every later clinical event is informative, nor that disease becomes perfectly observable. It requires only that the clinical channel can accumulate sufficiently strong evidence on some disease trajectories. For a sequential history $C_n=(X_1,\ldots,X_n)$, the clinical likelihood ratio factorizes exactly as
+\begin{equation}
+\LR_C(C_n)
+=\prod_{k=1}^{n}
+\frac{p(X_k\mid Y=1,X_{<k})}
+     {p(X_k\mid Y=0,X_{<k})},
+\label{eq:sequentialLR}
+\end{equation}
+so that
+\begin{equation}
+\log\LR_C(C_n)
+=\sum_{k=1}^{n}
+\log
+\frac{p(X_k\mid Y=1,X_{<k})}
+     {p(X_k\mid Y=0,X_{<k})}.
+\label{eq:sequentiallogLR}
+\end{equation}
+This is the standard likelihood-ratio accumulation underlying sequential testing \cite{Wald1945}. The genomic state does not acquire new germline variants as the disease approaches, whereas the clinical history can acquire additional diagnoses, procedures, prescriptions, and comorbidities. The difference is therefore not that clinical and genomic predictors obey different probability laws; both enter Bayes' rule as evidence. The difference is that one channel is static and finite while the other is longitudinal and can supply repeated likelihood-ratio factors.
+
+Equation \eqref{eq:sequentialLR} also clarifies the sense in which clinical odds may rise sharply: likelihood evidence adds in log space but multiplies in odds space. No claim of exponential growth follows from AUC alone. Rather, when a sequence contains repeated positive log-likelihood increments, the posterior odds are the exponential of their accumulated sum.
+
+\section{Interpretation of the ILD/IPF observations}
+
+The theorem organizes the empirical findings into three statements.
+
+\subsection{Why global AUC need not improve}
+A strong clinical-history score can already rank most patients correctly. If the bounded genomic factor can change decisions only in the band \eqref{eq:boundaryband}, then only patients occupying that band can be materially reordered across the chosen clinical threshold. Global AUC averages over all case--control pairs, so a substantial local benefit can coexist with a negligible global AUC change. This is consistent with the observed mean AUC increment of order $10^{-3}$ when broad genomic features were added to ZeBRA.
+
+\subsection{Why \textit{MUC5B} can matter locally despite weak ZeBRA--genotype association}
+The observation that ZeBRA cannot predict rs35705950 carrier status globally does not imply that \textit{MUC5B} is irrelevant conditionally. The relevant quantity is not $I(Z;G)$ but the residual disease evidence supplied by $G$ at a particular clinical state, represented here by $\LR_{G\mid C}$. A high-burden allele can therefore be nearly independent of ZeBRA globally yet shift selected boundary-adjacent patients across a disease-decision threshold. This is consistent with the observed enrichment of \textit{MUC5B} among selected ZeBRA false negatives and the improved matched-FPR sensitivity obtained by genomic rescue rules.
+
+\subsection{Why ZeBRA should dominate at very high specificity}
+For any genomic-only rule, Theorem~\ref{thm:main}(iii) bounds the achievable LR$+$ by $M_G$. In contrast, a clinical likelihood-ratio tail above threshold $K$ has LR$+\ge K$, and its FPR is at most $1/K$. Therefore, once the clinical history reaches likelihood-ratio levels larger than the maximum genomic Bayes factor, the clinical channel must be superior to every genomic-only predictor at those extreme-specificity operating points. The empirical observation that ZeBRA achieves large LR$+$ at stringent specificity is therefore more directly relevant to this theory than AUC alone.
+
+The expected qualitative geometry is consequently a transition from genomic susceptibility, through a boundary region in which both channels can matter, to clinical-tail dominance; it is not a uniform competition between two globally interchangeable predictors.
+
+\section{Scope and limitations}
+
+The theory is a statement about information channels, not about a specific machine-learning algorithm. It applies to the full measured genomic state and to any predictor derived from it, provided disease is non-Mendelian in the finite-likelihood-ratio sense. It also does not require independence between genomics and clinical history; dependence is explicitly retained through $\LR_{G\mid C}$.
+
+Three qualifications are important. First, the theorem does not state that genomics changes no posterior probabilities away from the boundary; it states that bounded genomic evidence cannot change the \emph{decision} away from the boundary. Second, high AUC alone does not imply an extended likelihood-ratio tail. The relevant empirical evidence is high likelihood ratio at stringent specificity, together with the sequential nature of the clinical record. Third, the current percentile-specific \textit{MUC5B} rescue regions were identified exploratorily and require validation in an independent cohort or a fully prespecified held-out analysis.
+
+\section{Conclusion}
+
+For non-Mendelian disease, static genomic evidence is finite. Longitudinal clinical evidence, by contrast, can accumulate through repeated observations. Bayes' rule factorizes the joint evidence into clinical and residual genomic likelihood-ratio factors, while the Neyman--Pearson lemma identifies likelihood-ratio thresholding as the optimal fixed-FPR decision rule. These facts imply two general consequences: genomic information can alter a clinical decision only within a bounded neighborhood of the chosen clinical decision boundary, and a clinical channel with a sufficiently extended likelihood-ratio tail must eventually dominate any bounded genomic-only predictor at extreme specificity. The preliminary ZeBRA--fibrotic ILD results---negligible global AUC gain from broad genomic augmentation, local \textit{MUC5B} enrichment among false negatives, and improved sensitivity from boundary-targeted genomic rescue---are the empirical pattern predicted by this theory.
+
+\begin{thebibliography}{99}
+
+\bibitem{Onishchenko2026}
+D.~Onishchenko, J.~A. Mastrianni, and I.~Chattopadhyay,
+``Passive early screening for Alzheimer's disease and related dementias using EHR comorbidity patterns,''
+\emph{npj Digital Medicine}, vol.~9, 2026, doi: 10.1038/s41746-026-02954-2.
+
+\bibitem{Seibold2011}
+M.~A. Seibold \emph{et al.},
+``A common \textit{MUC5B} promoter polymorphism and pulmonary fibrosis,''
+\emph{New England Journal of Medicine}, vol.~364, no.~16, pp.~1503--1512, 2011, doi: 10.1056/NEJMoa1013660.
+
+\bibitem{Fingerlin2013}
+T.~E. Fingerlin \emph{et al.},
+``Genome-wide association study identifies multiple susceptibility loci for pulmonary fibrosis,''
+\emph{Nature Genetics}, vol.~45, no.~6, pp.~613--620, 2013, doi: 10.1038/ng.2609.
+
+\bibitem{Allen2020}
+R.~J. Allen \emph{et al.},
+``Genome-wide association study of susceptibility to idiopathic pulmonary fibrosis,''
+\emph{American Journal of Respiratory and Critical Care Medicine}, vol.~201, no.~5, pp.~564--574, 2020, doi: 10.1164/rccm.201905-1017OC.
+
+\bibitem{NeymanPearson1933}
+J.~Neyman and E.~S. Pearson,
+``On the problem of the most efficient tests of statistical hypotheses,''
+\emph{Philosophical Transactions of the Royal Society of London. Series A}, vol.~231, pp.~289--337, 1933, doi: 10.1098/rsta.1933.0009.
+
+\bibitem{Wald1945}
+A.~Wald,
+``Sequential tests of statistical hypotheses,''
+\emph{The Annals of Mathematical Statistics}, vol.~16, no.~2, pp.~117--186, 1945.
+
+\bibitem{CoverThomas2006}
+T.~M. Cover and J.~A. Thomas,
+\emph{Elements of Information Theory}, 2nd~ed.
+Hoboken, NJ, USA: Wiley, 2006.
+
+\end{thebibliography}
+
+\end{document}
