@@ -1,0 +1,55 @@
+\section{Scope and limitations}
+
+The theory is a statement about information channels, not about a particular machine-learning architecture. It does not require independence between genomics and clinical history; dependence is retained explicitly through $\LR_{G\mid C}$. It also applies to any deterministic genomic score derived from the measured genomic state through the corollary above.
+
+Several qualifications are essential. First, the new empirical results support a \emph{stochastic} residual-genomic bound under the control law for the measured \textit{MUC5B} residual channel; they do not prove a universal genome-wide bound or establish the same bound under the case law. Second, the deterministic bounded-residual corollary remains a useful idealization, but it should be read as a strong special case rather than as the primary biologic claim. Third, A2 is still an assumption about the existence of a sufficiently extended clinical-evidence tail. Sequential observations make likelihood-ratio accumulation possible, but high AUC alone does not establish an unbounded or sufficiently extended tail. Fourth, Theorem~\ref{thm:main}(ii) concerns threshold reversals, not all posterior-risk changes: genomics may still shift posterior risk away from the boundary even when it cannot change the decision. Fifth, the current broad genomic comparator is a selected panel fitted within this resource; it should not be interpreted as an upper bound on what an externally specified IPF polygenic risk score or a dedicated single-variant rule could achieve. Sixth, the operational FILD/FILA endpoint construction includes missing adjudication values in the target-zero comparison group; consequently, the target-zero group should not be described as a fully adjudicated control cohort without further confirmation. Finally, the local windows, direct LR estimators, and rescue grid are internally evaluated analyses rather than external replications, and the rescue rule in particular still requires prospective or independently prespecified validation.
+
+A stronger future validation should therefore calibrate ZeBRA explicitly onto a likelihood-ratio or posterior-probability scale, estimate uncertainty for the direct LR quantities, evaluate prespecified fixed-specificity thresholds prospectively, and replicate boundary-localized genomic rescue in an external cohort.
+
+\section{Conclusion}
+
+The central result is not that clinical history ``contains'' genomics, nor that genomics is globally useless. The two modalities are distinct evidence channels. Bayes' rule factorizes their joint evidence into a clinical likelihood ratio and a residual genomic likelihood ratio conditional on clinical state. The key theoretical refinement of this manuscript is that the primary assumption is now stochastic: if residual genomic log-evidence is bounded with high probability under controls, then genomic information can reverse a clinical threshold decision only inside a correspondingly narrow neighborhood of that threshold except on a small exceptional set. Under the stronger deterministic special case, the exact boundary band of the original theorem is recovered; under a marginal genomic likelihood-ratio bound, sufficiently extreme clinical evidence still dominates any genomic-only rule.
+
+The current Colorado results show direct empirical correspondence with this geometry. ZeBRA dominates global discrimination; broad genomic augmentation provides essentially zero incremental FILD/FILA AUC after conditioning on ZeBRA; ZeBRA does not reconstruct \textit{MUC5B}; residual \textit{MUC5B} disease information is heterogeneous across selected ZeBRA operating bands; a boundary-targeted rescue rule improves mean sensitivity and LR$+$ at closely matched operational FPR; and the new direct LR analysis estimates stable 95\% and 99\% control-side residual-genomic bounds, demonstrates that clinical log-LR clearly exceeds residual genomic scale in the extreme ZeBRA tail, and shows that genomic-induced decision flips remain close to the clinical boundary. The resulting picture is one of \emph{regime-dependent complementarity}: genomics can matter locally and operationally even when its global incremental discrimination is minimal.
+
+Because the direct LR analysis remains internal to the current cohort and focuses on the measured MUC5B residual channel, it should be understood as strong empirical support for the theorem's geometry rather than as a final proof of universal boundedness. Even so, the revised theory and data now align much more tightly: the principal assumptions are better matched to biological plausibility, and the central claims are supported by figures and tables that directly display the relevant likelihood-ratio quantities.
+
+\IEEEtriggeratref{4}
+\begin{thebibliography}{99}
+
+\bibitem{Onishchenko2026}
+D.~Onishchenko, J.~A. Mastrianni, and I.~Chattopadhyay,
+``Passive early screening for Alzheimer's disease and related dementias using EHR comorbidity patterns,''
+\emph{npj Digital Medicine}, vol.~9, 2026, doi: 10.1038/s41746-026-02954-2.
+
+\bibitem{Seibold2011}
+M.~A. Seibold \emph{et al.},
+``A common \textit{MUC5B} promoter polymorphism and pulmonary fibrosis,''
+\emph{New England Journal of Medicine}, vol.~364, no.~16, pp.~1503--1512, 2011, doi: 10.1056/NEJMoa1013660.
+
+\bibitem{Fingerlin2013}
+T.~E. Fingerlin \emph{et al.},
+``Genome-wide association study identifies multiple susceptibility loci for pulmonary fibrosis,''
+\emph{Nature Genetics}, vol.~45, no.~6, pp.~613--620, 2013, doi: 10.1038/ng.2609.
+
+\bibitem{Allen2020}
+R.~J. Allen \emph{et al.},
+``Genome-wide association study of susceptibility to idiopathic pulmonary fibrosis,''
+\emph{American Journal of Respiratory and Critical Care Medicine}, vol.~201, no.~5, pp.~564--574, 2020, doi: 10.1164/rccm.201905-1017OC.
+
+\bibitem{NeymanPearson1933}
+J.~Neyman and E.~S. Pearson,
+``On the problem of the most efficient tests of statistical hypotheses,''
+\emph{Philosophical Transactions of the Royal Society of London. Series A}, vol.~231, pp.~289--337, 1933, doi: 10.1098/rsta.1933.0009.
+
+\bibitem{Wald1945}
+A.~Wald,
+``Sequential tests of statistical hypotheses,''
+\emph{The Annals of Mathematical Statistics}, vol.~16, no.~2, pp.~117--186, 1945.
+
+\bibitem{CoverThomas2006}
+T.~M. Cover and J.~A. Thomas,
+\emph{Elements of Information Theory}, 2nd~ed.
+Hoboken, NJ, USA: Wiley, 2006.
+
+\end{thebibliography}
