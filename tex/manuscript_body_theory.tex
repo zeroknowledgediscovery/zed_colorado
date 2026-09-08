@@ -26,6 +26,19 @@ whenever this quantile is finite. Thus $b_{\delta,n}$ is a property of the resid
 \end{equation}
 This is stronger than finite-stage boundedness. It allows rare large residual genomic effects but excludes a residual genomic scale that grows without bound as the clinical record lengthens. The empirical analysis below estimates a fixed-score analogue of $b_{\delta,n}$ for \textit{MUC5B}; it does not establish A1-U for arbitrary genomic features or for all $n$.
 
+\begin{center}
+\footnotesize
+\begin{tabular}{@{}lp{0.68\columnwidth}@{}}
+\toprule
+Notation & Meaning \\
+\midrule
+$b_{\delta,n}$ & Finite-stage $(1-\delta)$ residual-genomic log-LR scale at a particular clinical-history stage $n$; no uniformity over history length is assumed. \\
+$b_{\delta}$ & A single $n$-independent residual-genomic bound available only under the stronger uniform-tightness condition A1-U. \\
+\bottomrule
+\end{tabular}
+\end{center}
+\noindent We use the subscript $n$ precisely to distinguish the empirically relevant finite-stage quantity from the stronger sequential bound.
+
 \textbf{A2 (Extended clinical-evidence tail).} Clinical history is assumed to admit arbitrarily strong disease evidence on rare trajectories. Formally, for arbitrarily large $K>0$ there exists an $n$ such that
 \begin{equation}
 \Pzero\bigl(\log \LR_{C_n}(C_n)\ge K\bigr)>0.
