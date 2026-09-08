@@ -1,0 +1,41 @@
+\section{Why the clinical channel can have an extended tail}
+
+The theorem does not assume that every later clinical event is informative, nor that disease becomes perfectly observable. It requires only that the clinical channel can accumulate sufficiently strong evidence on some disease trajectories. For a sequential history $C_n=(X_1,\ldots,X_n)$, the clinical likelihood ratio factorizes exactly as
+\begin{equation}
+\LR_C(C_n)
+=\prod_{k=1}^{n}
+\frac{p(X_k\mid Y=1,X_{<k})}
+     {p(X_k\mid Y=0,X_{<k})},
+\label{eq:sequentialLR}
+\end{equation}
+so that
+\begin{equation}
+\log\LR_C(C_n)
+=\sum_{k=1}^{n}
+\log
+\frac{p(X_k\mid Y=1,X_{<k})}
+     {p(X_k\mid Y=0,X_{<k})}.
+\label{eq:sequentiallogLR}
+\end{equation}
+This is the standard likelihood-ratio accumulation underlying sequential testing and information accumulation \cite{Wald1945,CoverThomas2006}. The genomic state does not acquire new germline variants as the disease approaches, whereas the clinical history can acquire additional diagnoses, procedures, prescriptions, and comorbidities. The difference is therefore not that clinical and genomic predictors obey different probability laws; both enter Bayes' rule as evidence. Under A1$^\star$ the residual contribution of the static germline channel is stochastically bounded, whereas the longitudinal clinical channel can acquire additional observations and supply repeated likelihood-ratio factors; under Corollary~\ref{cor:deterministic-band} the same statement sharpens to a literal deterministic bound.
+
+Equation \eqref{eq:sequentialLR} also clarifies the sense in which clinical odds may rise sharply: likelihood evidence adds in log space but multiplies in odds space. No claim of exponential growth follows from AUC alone. Rather, when a sequence contains repeated positive log-likelihood increments, the posterior odds are the exponential of their accumulated sum.
+
+\section{Interpretation of the theoretical result}
+
+The revised theory makes five distinct points that should not be conflated.
+
+\subsection{Global discrimination is not the quantity controlled by the theorem}
+Theorem~\ref{thm:main}(ii) controls where genomics can change a threshold decision, not the global ranking of all case--control pairs. If genomic information matters only in a narrow decision band, then only a restricted fraction of pairs can be reordered. Proposition~\ref{prop:auc-local} makes the consequence explicit: meaningful local operating-point improvement can coexist with negligible global AUC change.
+
+\subsection{Weak ZeBRA--genotype association does not imply zero conditional genomic disease information}
+The relevant residual quantity is $\LR_{G\mid C}$, not the marginal dependence between ZeBRA and genotype. ZeBRA can be nearly uninformative about rs35705950 carrier status while \textit{MUC5B} still changes disease odds conditional on a given clinical state.
+
+\subsection{The natural primary assumption is stochastic, not literally uniform}
+A1$^\star$ is weaker and biologically more plausible than a uniform bound over every conditioned clinical state. It says that under controls the residual genomic log-likelihood ratio is typically modest, allowing low-probability exceptional behavior. Corollary~\ref{cor:deterministic-band} shows that the earlier exact boundary band is recovered as the zero-exception special case.
+
+\subsection{Operating-threshold dependence is a feature, not a defect}
+Corollary~\ref{cor:zebra} shows that the decision-relevant genomic region is defined relative to the chosen ZeBRA threshold. There is no threshold-free universal ``useful band.'' Changing the tolerated false-positive rate moves the clinical boundary and therefore changes which patients are potentially reclassified by genomics.
+
+\subsection{Clinical-tail dominance is a stringent-operating-point statement}
+Proposition~\ref{prop:genomicpower} and Theorem~\ref{thm:main}(iii) concern the likelihood-ratio tail. The empirically relevant quantities are therefore direct likelihood-ratio estimates, decision-flip localization, and stringent-specificity LR$+$ behavior rather than global AUC alone.
