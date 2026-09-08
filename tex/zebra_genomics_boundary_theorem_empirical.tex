@@ -1,1 +1,83 @@
-PLACEHOLDER
+\documentclass[journal]{IEEEtran}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=1.18}
+\usepackage{cite}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+\usepackage{docmute}
+\usepackage{etoolbox}
+\usepackage{environ}
+
+% IEEE two-column float tuning. In particular, do not use FloatBarrier here:
+% forced barriers produced large blank regions in earlier manuscript builds.
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\dbltopfraction}{0.95}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.80}
+\renewcommand{\dblfloatpagefraction}{0.80}
+\setcounter{topnumber}{4}
+\setcounter{dbltopnumber}{4}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+
+\newcommand{\Pone}{\mathbb{P}_1}
+\newcommand{\Pzero}{\mathbb{P}_0}
+\newcommand{\Eone}{\mathbb{E}_1}
+\newcommand{\Ezero}{\mathbb{E}_0}
+\newcommand{\LR}{\Lambda}
+\newcommand{\ind}{\mathbf{1}}
+
+\title{Boundary-Localized Genomic Utility and Clinical-Tail Dominance:\\
+A Likelihood-Ratio Theory for ZeBRA and Fibrotic Interstitial Lung Disease}
+\author{Ishanu Chattopadhyay\\
+Division of Biomedical Informatics, University of Kentucky College of Medicine}
+
+% All result figures are PGFPlots/TikZ and read canonical analysis outputs
+% directly from ../zebra_comp/RESULTS at compile time.
+\input{empirical_figures.tex}
+
+\let\origabstract\abstract
+\let\endorigabstract\endabstract
+\RenewEnviron{abstract}{%
+\origabstract
+Genomic risk and longitudinal clinical history are distinct information channels for forecasting future disease. We study when a static germline genomic channel can add predictive value once a longitudinal clinical-history score has become strongly informative. The central object is the residual genomic likelihood ratio conditional on clinical history. If this residual genomic evidence is uniformly bounded while sequential clinical evidence can develop an extended likelihood-ratio tail, genomic information can change a likelihood-ratio decision only inside a bounded neighborhood of the clinical decision threshold, and at sufficiently extreme specificity the clinical likelihood-ratio test strictly dominates every genomic-only rule whose likelihood ratio is bounded. In the Colorado fibrotic interstitial lung disease analysis, ZeBRA dominates global discrimination, broad genomic augmentation provides essentially no global FILD/FILA gain after conditioning on ZeBRA, and ZeBRA predicts \textit{MUC5B} carrier status only at chance level. Nevertheless, \textit{MUC5B} shows localized conditional predictive association in restricted ZeBRA operating regimes. Across the evaluated two-threshold rescue grid, the largest mean held-out sensitivity gain is approximately 4.5 percentage points at essentially matched \emph{operational} false-positive rate. Moving-window analyses show residual genomic predictive information through intermediate/high ZeBRA regimes followed by a crossover to clinical-history dominance in the extreme ZeBRA tail. These Colorado results are correspondence evidence for the theorem's geometry, not proofs of its boundedness or tail assumptions.
+\endorigabstract}
+
+\newcommand{\empiricalcallout}{%
+\par\noindent
+The Colorado analysis in Section~\ref{sec:empirical} is organized as a correspondence test of the theorem rather than as a proof of its regularity assumptions. It separates global discrimination, paired incremental value, genotype reconstruction, localization of residual genomic predictive information, boundary-targeted rescue, calibration, and stringent operating-point behavior.
+\par
+}
+
+\newcommand{\empiricalsection}{}
+
+\newcommand{\theoryregularitynote}{%
+\par\noindent\textit{Regularity convention.}
+Throughout the likelihood-ratio arguments, the case laws are taken to be absolutely continuous with respect to the corresponding control laws, so the likelihood ratios are Radon--Nikodym derivatives and satisfy $\Ezero[\LR]=1$. Where a two-sided conditional genomic bound is invoked, the corresponding conditional laws are mutually absolutely continuous and the bounds are interpreted $\Pzero$-almost surely. Statements involving LR$+$ presume positive false-positive rate.
+\par
+}
+
+\begin{document}
+\let\origsection\section
+\renewcommand{\section}[1]{%
+  \ifstrequal{#1}{Latent-state and information-channel formulation}{\empiricalcallout}{}%
+  \ifstrequal{#1}{Scope and limitations}{\empiricalsection}{}%
+  \origsection{#1}%
+  \ifstrequal{#1}{Likelihood-ratio representation}{\theoryregularitynote}{}%
+}
+
+\let\origthebibliography\thebibliography
+\renewcommand{\thebibliography}[1]{\IEEEtriggeratref{4}\origthebibliography{#1}}
+
+\input{zebra_genomics_boundary_theorem.tex}
+\end{document}
