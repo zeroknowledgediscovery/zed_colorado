@@ -1,0 +1,77 @@
+\subsection{Direct empirical likelihood-ratio analysis supports the stochastic theorem}
+The earlier moving-window statistics describe conditional predictive contribution but are not themselves estimates of the individual-level likelihood-ratio factor in the theorem. We therefore instantiate the likelihood-ratio factorization directly at the observed ZeBRA-score level. Let $Z$ denote the ZeBRA score and $G\in\{0,1\}$ indicate \textit{MUC5B} T-carrier status. Then, without any sufficiency assumption,
+\begin{equation}
+\LR_{Z,G}(z,g)=\LR_Z(z)\LR_{G\mid Z}(g;z),
+\end{equation}
+where
+\begin{align}
+\LR_Z(z)&=\frac{p(z\mid Y=1)}{p(z\mid Y=0)},\\
+\LR_{G\mid Z}(g;z)&=\frac{p(g\mid Y=1,Z=z)}{p(g\mid Y=0,Z=z)}.
+\end{align}
+For carrier status, defining $q_y(z)=\mathbb{P}(G=1\mid Y=y,Z=z)$ gives
+\begin{equation}
+\LR_{G\mid Z}(1;z)=\frac{q_1(z)}{q_0(z)},\qquad
+\LR_{G\mid Z}(0;z)=\frac{1-q_1(z)}{1-q_0(z)}.
+\end{equation}
+These quantities are estimated by five repeats of fivefold cross-fitting with cubic spline logistic models. The primary specification uses five spline knots and logistic regularization $C=1$; a prespecified sensitivity grid uses four, five, or six knots crossed with $C\in\{0.3,1,3\}$. For each control subject, the statewise residual-genomic scale is
+\begin{equation}
+B(Z)=\max_{g\in\{0,1\}}\left|\log \widehat{\LR}_{G\mid Z}(g;Z)\right|,
+\end{equation}
+and the empirical stochastic bound is the $(1-\delta)$ control quantile $\widehat b_\delta=Q_{1-\delta}[B(Z)\mid Y=0]$. This is a score-level empirical analogue of A1$^\star$; it does not establish a population-wide bound for the complete clinical history $C$ or for the full genomic state.
+
+In the primary 5-knot/$C{=}1$ specification, the control-side high-probability residual-genomic bounds are $b_{0.05}=0.8699$, $b_{0.01}=0.9099$, and $b_{0.005}=0.9241$ on the log-LR scale. Across all nine specifications, the corresponding ranges are 0.8441--0.9083, 0.8635--0.9617, and 0.8697--1.6100. Thus the 95\% and 99\% bounds are stable, whereas the 99.5\% bound becomes unstable only in the most flexible 6-knot fits. This pattern is exactly what motivated the shift from a literal uniform bound to the stochastic assumption A1$^\star$.
+
+The clinical-tail comparison is similarly direct. In the primary specification, median clinical log-LR among subjects above the 95th, 97.5th, and 99th ZeBRA percentiles is 1.5175, 2.7325, and 3.8345, while the corresponding 95th percentiles of the estimated statewise residual genomic scale are only 0.9213, 0.7758, and 0.7384. The fraction of subjects whose clinical log-LR exceeds that genomic scale is 0.9045, 0.9938, and 1.0000, respectively. Across all nine specifications, the analogous fraction equals 1.0 at the 99th percentile cutoff in every case.
+
+Finally, decision flips induced by genomics remain localized near the clinical boundary. Across the nine specifications, the median distance of flipped points from the clinical boundary is 0.1345--0.3039 log-LR units at requested FPR 0.5\% and 0.2292--0.4991 at requested FPR 1\%; the corresponding numbers of flipped controls are only 2--7 and 21--69. Together these direct LR-based results provide the main empirical support for the revised theory.
+
+\figEmpiricalLRRobustness
+
+\subsection{Boundary-targeted \textit{MUC5B} use: held-out gain and an important control diagnostic}
+The two-threshold rescue rule is evaluated leakage-free: upper and lower ZeBRA thresholds are derived from training negatives, the MUC5B rescue is applied only to untouched outer-test subjects, and a ZeBRA-only threshold is separately selected on training data to match the rescue rule's training-set FPR before test evaluation. Across the six evaluated threshold pairs, the \emph{mean} held-out sensitivity gain is positive. For the 0.5\%/10\% pair, mean sensitivity increases by 0.0446 and mean operational FPR differs from the matched ZeBRA comparator by only $-2.5\times10^{-4}$.
+
+The existing result set also exposes an important limitation that should not be hidden. Among the small explicitly adjudicated-negative subset, the rescue rule has higher FPR than the original stringent ZeBRA baseline; for the 0.5\%/10\% rule the mean increase is 0.0666. The current analysis does \emph{not} calculate the corresponding explicitly-adjudicated-negative FPR for the fair matched-ZeBRA comparator, so this diagnostic cannot determine whether rescue is inferior to matched ZeBRA in that subset. We therefore describe the primary result as matched \emph{operational} FPR and reserve the adjudicated-negative matched comparison for a subsequent analysis.
+
+\figBoundaryRescue
+
+\begin{table*}[!t]
+\caption{All six evaluated rescue rules. $\Delta$FPR is rescue minus matched ZeBRA in the operational target-zero group; $\Delta$FPR$_{\rm adjud}$ is rescue minus the original stringent baseline among explicitly adjudicated negatives and is \emph{not} a matched-comparator quantity.}
+\label{tab:boundary-selected}\centering\footnotesize
+\begin{tabular}{lrrrr}
+\toprule
+Upper/lower target FPR & Mean $\Delta$sensitivity & Mean $\Delta$operational FPR & Mean LR$+$ gain & Mean $\Delta$FPR$_{\rm adjud}$\\
+\midrule
+0.5\% / 2\% & +0.0181 & +0.000012 & +1.51 & +0.0129\\
+0.5\% / 5\% & +0.0366 & -0.000040 & +2.48 & +0.0336\\
+0.5\% / 10\% & +0.0446 & -0.000253 & +1.96 & +0.0666\\
+1\% / 2\% & +0.0096 & +0.000007 & +0.60 & +0.0087\\
+1\% / 5\% & +0.0225 & -0.000184 & +1.33 & +0.0294\\
+1\% / 10\% & +0.0335 & -0.000178 & +1.20 & +0.0624\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Stringent operating points provide direct clinical-tail correspondence}
+The stringent held-out operating-point analysis provides a direct empirical comparison to the clinical-tail portion of the theory that is more informative than global AUC alone. At requested FPR 0.5\%, mean held-out LR$+$ is approximately 57.9 for ZeBRA, 4.28 for the genomic-only model, and 39.1 for the nonlinear combined model. At requested FPR 1\%, the corresponding means are 29.8, 3.62, and 26.7. Thus the evaluated clinical-history score dominates the evaluated genomic-only model in the stringent tail. Because raw ZeBRA is not calibrated onto a likelihood-ratio scale in this cohort, these LR$+$ values characterize the induced held-out decision rules rather than directly identifying a threshold $K$ on $\LR_C$. They therefore provide the appropriate operating-point correspondence to the theorem without proving either an unbounded clinical tail or a universal genomic bound $M_G$.
+
+The supporting hybrid ROC analysis reaches the same qualitative conclusion. The empirical hybrid AUC is 0.8095 versus 0.8142 for ZeBRA; the convex hull of the union of ZeBRA and hybrid ROC points has descriptive AUC 0.8260. The hull represents an attainable operating envelope, not a separately validated classifier.
+
+\figLowFPRGeometry
+
+\subsection{Calibration diagnostics delimit the present theory--data mapping}
+The raw ZeBRA score is not calibrated as an absolute FILD/FILA probability in this cohort. Across repeated held-out splits, the score has mean calibration slope approximately 0.18 and expected calibration error approximately 0.57; its mean value is about 0.59 while operational FILD/FILA prevalence is about 0.020. We therefore treat ZeBRA empirically as an ordinal clinical-history score in the current paper. Corollary~\ref{cor:zebra}, which maps a calibrated posterior probability to a likelihood ratio, remains conditional and is not invoked numerically with the raw score.
+
+\noindent\begin{minipage}{\columnwidth}
+\centering\scriptsize
+\textbf{Calibration summary for FILD/FILA}\\[2pt]
+\begin{tabular}{lrr}
+\toprule
+Model & Calibration slope & ECE\\
+\midrule
+ZeBRA & 0.180 & 0.570\\
+Genomic & 0.241 & 0.115\\
+Combined & 1.140 & 0.121\\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\par\smallskip
