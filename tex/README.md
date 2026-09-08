@@ -17,7 +17,7 @@ cd tex
 ./build_full_manuscript.sh
 ```
 
-The resulting PDF contains both the main manuscript and the complete Supplementary Material at the back. There is no separate supplementary document.
+The resulting PDF contains both the main manuscript and the complete Supplementary Material in the same document. The main-text bibliography appears before the Supplementary Material; the Supplementary Material begins on a fresh page. There is no separate supplementary document.
 
 The canonical narrative is modular and uses the external BibTeX bibliography `zebra_genomics_references.bib` with the standard `IEEEtran` bibliography style. The back-of-document Supplementary Material contains the auxiliary proofs and the full robustness/diagnostic analyses.
 
@@ -37,7 +37,7 @@ The two sparse nonfibrotic endpoints explored during analysis development are no
 
 The current publication layout uses one empirical figure in the main manuscript and one empirical figure in the Supplementary Material. This is intentional: future ADRD/APOE4 and HFrEF/TTNtv analyses can later use the same disease-level integrated architecture.
 
-### Main Figure 1: 3x3 integrated FILD/FILA matrix
+### Main Figure 1: full-width 3x3 integrated FILD/FILA matrix
 
 `\figIntegratedFILD` contains nine panels in a 3x3 matrix:
 
@@ -51,11 +51,11 @@ The current publication layout uses one empirical figure in the main manuscript 
 8. **(h)** robustness of upper-tail clinical evidence exceeding the measured residual-genomic scale; and
 9. **(i)** the supporting ROC-envelope/hull AUC geometry, explicitly treated as descriptive rather than validated classifier performance.
 
-The axes are deliberately near-square rather than compressed horizontal strips. The 3x3 matrix uses the full two-column text width with internal legends and abbreviated axis labels where needed, so labels, ticks, and data remain legible in the compiled PDF.
+The 3x3 matrix is explicitly scaled to the full two-column `\textwidth`. Axes remain near-square. Panel letters are placed outside the plotting rectangles, and every legend is placed above its panel rather than over the data.
 
-### Supplementary Figure S1: 3x2 robustness matrix
+### Supplementary Figure S1: full-width 3x2 robustness matrix
 
-The previous single-point paired-`Delta`AUC panel has been removed from the supplementary figure; that result remains stated numerically in the main text. `\figIntegratedSupplementary` now contains six substantive panels in a 3x2 near-square matrix:
+The previous single-point paired-`Delta`AUC panel has been removed from the supplementary figure; that result remains stated numerically in the main text. `\figIntegratedSupplementary` now contains six substantive panels in a full-width 3x2 matrix:
 
 1. **(a)** ZeBRA-to-MUC5B carrier-prediction AUC, showing that ZeBRA does not reconstruct genotype;
 2. **(b)** empirical residual-genomic high-probability scales `bhat_delta` across the nine prespecified direct-LR estimators;
@@ -64,11 +64,13 @@ The previous single-point paired-`Delta`AUC panel has been removed from the supp
 5. **(e)** stringent held-out sensitivity across ZeBRA, genomic, and combined models; and
 6. **(f)** explicitly adjudicated-negative rescue-minus-matched FPR diagnostics.
 
-Calibration and complete numerical summaries remain in Supplementary Tables because those values are more concise and less ambiguous in tabular form.
+As in the main figure, panel letters are outside the axes and legends are above the panels. Calibration and complete numerical summaries remain in Supplementary Tables because those values are more concise and less ambiguous in tabular form.
 
-## Table and float layout
+## Table, float, and paragraph layout
 
-The canonical manuscript loads `adjustbox` and `placeins`. Wide tables are constrained explicitly to `\textwidth`, single-column tables to `\columnwidth`, and dense tables use modestly reduced column spacing and controlled row spacing. The broad LR summary is a two-column `table*` rather than a squeezed single-column table. Float barriers keep the integrated figures and supplementary tables from drifting into unrelated text.
+Wide tables are constrained explicitly to `\textwidth`, single-column tables to `\columnwidth`, and dense tables use modestly reduced column spacing and controlled row spacing. The broad LR summary is a two-column `table*` rather than a squeezed single-column table.
+
+The manuscript does not force intermediate float barriers. This avoids premature float flushing and the large white blocks that can otherwise appear between sections or paragraphs. IEEE-style paragraph flow is retained with zero added paragraph skip and standard indentation.
 
 ## Figure implementation
 
@@ -99,7 +101,7 @@ and estimates the score-level empirical residual scale. It does not establish fu
 
 ## Supplementary Material
 
-The Supplementary Material is included after the conclusion in the same PDF. In addition to Supplementary Figure S1, it contains:
+The Supplementary Material begins on a new page after the main-text bibliography. In addition to Supplementary Figure S1, it contains:
 
 - proofs of auxiliary theoretical results;
 - detailed repeated-split SHAP stability;
