@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fibrotic ILD | Clinical vs Genomic Prediction — ZeD Lab</title>
+<meta name="description" content="Colorado fibrotic ILD: clinical prediction AUROC 0.809, negligible incremental discrimination from genotype data.">
+<style>
+:root{color-scheme:dark;--bg:#0b1425;--surface:#132139;--text:#f1f6ff;--muted:#a8bbd0;--blue:#72c7ff;--teal:#52ddc5;--gold:#ffce78}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 90% 5%,#1e3555 0%,var(--bg) 47%);color:var(--text);font:16px/1.48 system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+main{max-width:1280px;margin:auto;padding:35px 48px 26px}.eyebrow{letter-spacing:.2em;text-transform:uppercase;font-size:12px;font-weight:750;color:var(--teal)}h1{font-size:clamp(32px,4vw,56px);line-height:1.08;letter-spacing:-.045em;margin:14px 0 12px;max-width:1080px}
+.subtitle{color:var(--muted);font-size:19px;max-width:1000px;margin:0 0 26px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.stat{background:var(--surface);border:1px solid #30465d;border-radius:16px;padding:19px 22px}.stat .label{font-size:14px;color:var(--muted)}.stat .value{font-size:clamp(31px,4vw,53px);font-weight:800;letter-spacing:-.04em;margin:4px 0 0;font-variant-numeric:tabular-nums}.stat .detail{font-size:13px;color:var(--muted)}.teal{color:var(--teal)}.blue{color:var(--blue)}.gold{color:var(--gold)}
+.section{margin-top:27px;background:#101d32;border:1px solid #263b54;border-radius:18px;padding:22px 25px}.section h2{margin:0 0 15px;font-size:19px;letter-spacing:-.015em}
+.comparison{display:grid;grid-template-columns:205px minmax(0,1fr) 76px;gap:12px 17px;align-items:center}.comparison .name{font-size:14px;color:#dce7f6}.track{height:19px;border-radius:4px;background:#24344b;overflow:hidden;position:relative}.bar{height:100%;border-radius:4px;background:var(--blue)}.bar.teal-bg{background:var(--teal)}.bar.gold-bg{background:#8d9db8}.number{text-align:right;font-weight:750;font-variant-numeric:tabular-nums}.axis{display:flex;justify-content:space-between;margin:7px 77px 0 222px;color:var(--muted);font-size:11px}
+table{width:100%;border-collapse:collapse;font-size:14px}th{text-align:left;color:var(--muted);font-weight:650}td,th{padding:11px 8px;border-bottom:1px solid #2c3d54}td:last-child,th:last-child{text-align:right;font-variant-numeric:tabular-nums}tr:last-child td{border-bottom:0}.foot{margin-top:23px;display:flex;justify-content:space-between;gap:20px;color:var(--muted);font-size:12px}.foot a{color:var(--blue)}
+.bottom{border-left:4px solid var(--teal);padding:11px 19px;background:#13263a;margin-top:22px;border-radius:0 9px 9px 0;font-size:19px;font-weight:650}
+@media(max-width:760px){main{padding:24px 18px}.stats{grid-template-columns:1fr}.comparison{grid-template-columns:120px minmax(0,1fr) 53px;gap:12px 9px}.axis{margin-left:129px;margin-right:60px}.comparison .name{font-size:12px}.section{padding:18px 14px}.foot{display:block}}
+@media print{body{background:#fff;color:#17253b}main{max-width:100%;padding:20px}.stat,.section{background:#f4f7fa;color:#17253b;border-color:#d2dce5}.comparison .name,th{color:#17253b}.track{background:#e1eaf2}.subtitle,.stat .label,.stat .detail,.foot{color:#50637a}.bottom{background:#e8f4f5;color:#17253b}a{color:#145ca8}}
+</style></head><body><main>
+<div class="eyebrow">ZeD Lab / Colorado cohort · Research results</div>
+<h1>Clinical prediction is strong; genomics adds negligible discrimination</h1>
+<p class="subtitle">Fibrotic interstitial lung disease (ILD) · Independent held-out TEST evaluation</p>
+<section class="stats" aria-label="Key results">
+<div class="stat"><div class="label">Diagnosis LightGBM</div><div class="value blue">0.802</div><div class="detail">AUROC · 95% CI 0.771–0.832</div></div>
+<div class="stat"><div class="label">Diagnosis + LSM</div><div class="value teal">0.809</div><div class="detail">AUROC · 95% CI 0.777–0.838</div></div>
+<div class="stat"><div class="label">Gain from adding genome-wide SNPs</div><div class="value gold">+0.0002</div><div class="detail">ΔAUROC vs. diagnosis + LSM</div></div>
+</section>
+<section class="section"><h2>Held-out discrimination (AUROC)</h2><div class="comparison" role="img" aria-label="Diagnosis AUROC 0.8019; LSM 0.7766; diagnosis plus LSM 0.8086; full-width genotypes alone 0.4786; diagnosis plus LSM plus full-width genotypes 0.8088">
+<div class="name">Diagnosis LightGBM</div><div class="track"><div class="bar" style="width:80.19%"></div></div><div class="number">0.8019</div>
+<div class="name">LSM alone</div><div class="track"><div class="bar" style="width:77.66%"></div></div><div class="number">0.7766</div>
+<div class="name">Diagnosis + LSM</div><div class="track"><div class="bar teal-bg" style="width:80.86%"></div></div><div class="number teal">0.8086</div>
+<div class="name">Genome-wide SNPs alone</div><div class="track"><div class="bar gold-bg" style="width:47.86%"></div></div><div class="number">0.4786</div>
+<div class="name">Clinical + genome-wide SNPs</div><div class="track"><div class="bar teal-bg" style="width:80.88%"></div></div><div class="number teal">0.8088</div>
+</div><div class="axis"><span>0</span><span>0.25</span><span>0.50</span><span>0.75</span><span>1.0</span></div></section>
+<section class="section"><h2>Incremental effect of adding genomic predictors</h2>
+<table><thead><tr><th>Genotype representation added to diagnosis + LSM</th><th>ΔAUROC</th></tr></thead><tbody>
+<tr><td>Full width: 1,023,028 SNPs</td><td>+0.00020</td></tr>
+<tr><td>Supervised screen: top 50,000 SNPs</td><td>−0.00021</td></tr>
+<tr><td>Training-derived polygenic-style score: top 1,000</td><td>−0.00042</td></tr>
+<tr><td>Known ILD-associated variants: 26 SNPs</td><td>+0.00007</td></tr>
+</tbody></table></section>
+<div class="bottom">Clinical phenotype captures most of the measurable predictive signal in this cohort; none of the tested genomic models meaningfully improves discrimination.</div>
+<div class="foot"><div>TRAIN: 10,933 patients (303 cases) &nbsp;·&nbsp; TEST: 5,808 patients (243 cases)<br>Descriptive retrospective discrimination; not established prospective disease-onset prediction.</div>
+<div>Source: <a href="https://github.com/zeroknowledgediscovery/ZeBRA_open/blob/lsm-refsize-union-stacking/lsm_risk_score_analysis/genomics/results/result_final_test.json">Final test results</a> · <a href="https://github.com/zeroknowledgediscovery/ZeBRA_open/blob/lsm-refsize-union-stacking/lsm_risk_score_analysis/genomics/results/result_cv.json">Cross-validation</a></div></div>
+</main></body></html>
